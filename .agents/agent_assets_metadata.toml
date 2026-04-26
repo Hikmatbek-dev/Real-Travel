@@ -1,0 +1,80 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "oXBZ4z7AQtjbldV8gD1Xj"
+uri = "file://artifacts/real-travel/public/hero.png"
+type = "image"
+title = "Maldives overwater villa sunset"
+
+[[generated]]
+id = "ZqrTFAfqH4T-vuqAc23X0"
+uri = "file://artifacts/real-travel/public/tours/santorini.png"
+type = "image"
+title = "Santorini cliffside at sunset"
+
+[[generated]]
+id = "TtLqBNmSHPL2VRH2WdJEs"
+uri = "file://artifacts/real-travel/public/tours/kyoto.png"
+type = "image"
+title = "Kyoto temple in autumn"
+
+[[generated]]
+id = "4oRoYHza9N-huduF62ZUi"
+uri = "file://artifacts/real-travel/public/tours/patagonia.png"
+type = "image"
+title = "Patagonia jagged peaks lake"
+
+[[generated]]
+id = "zc_02Rv3JAMFLVsb7HO0E"
+uri = "file://artifacts/real-travel/public/tours/marrakech.png"
+type = "image"
+title = "Marrakech riad courtyard"
+
+[[generated]]
+id = "wuIxkolLPpWvNyBMV0gph"
+uri = "file://artifacts/real-travel/public/tours/banff.png"
+type = "image"
+title = "Banff Moraine lake mountains"
+
+[[generated]]
+id = "r8InLdjAY1Fc0Ogn2jB3-"
+uri = "file://artifacts/real-travel/public/tours/amalfi.png"
+type = "image"
+title = "Amalfi coast colorful cliffs"
+
+[[generated]]
+id = "X7_hcXNv8jfZpB5THMoNE"
+uri = "file://artifacts/real-travel-admin/public/tours/santorini.png"
+type = "image"
+title = "Santorini landscape"
+
+[[generated]]
+id = "vCfVwBQClazNdvJC6yEoQ"
+uri = "file://artifacts/real-travel-admin/public/tours/kyoto.png"
+type = "image"
+title = "Kyoto landscape"
+
+[[generated]]
+id = "ZYomHqEyur4yWaostT1iV"
+uri = "file://artifacts/real-travel-admin/public/tours/patagonia.png"
+type = "image"
+title = "Patagonia landscape"
+
+[[generated]]
+id = "nbMahAbKJX70Od97uPdKX"
+uri = "file://artifacts/real-travel-admin/public/tours/marrakech.png"
+type = "image"
+title = "Marrakech landscape"
+
+[[generated]]
+id = "w5FyXEkr1ulRtkQcBI5OA"
+uri = "file://artifacts/real-travel-admin/public/tours/banff.png"
+type = "image"
+title = "Banff landscape"
+
+[[generated]]
+id = "0vdfqrG_vNBfbigaK8mcN"
+uri = "file://artifacts/real-travel-admin/public/tours/amalfi.png"
+type = "image"
+title = "Amalfi landscape"
