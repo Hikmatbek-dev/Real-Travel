@@ -267,7 +267,7 @@ function TourModal({
           <div className="grid md:grid-cols-[1.1fr_0.9fr]">
             <div className="border-b md:border-b-0 md:border-r border-border/60">
               <div className="relative h-56 md:h-full min-h-[340px] overflow-hidden">
-                <img src={tour.image} alt={tour.name} className="h-full w-full object-cover" />
+                <img src={tour.image} alt={tour.name} className="h-full w-full object-contain bg-muted/30" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/35 to-transparent" />
                 <div className="absolute left-6 right-6 bottom-6 text-white">
                   <p className="mb-2 text-xs uppercase tracking-[0.25em] text-white/75">{t.detailsEyebrow}</p>
@@ -556,7 +556,7 @@ function PublicSite() {
                     >
                       <div className="relative h-72 md:h-80 overflow-hidden">
                         <div className="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                        <img src={tour.image} alt={tour.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out" />
+                        <img src={tour.image} alt={tour.name} className="w-full h-full object-contain bg-muted/10 transform group-hover:scale-105 transition-transform duration-700 ease-out" />
                         <div className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold tracking-wider">${tour.price}</div>
                       </div>
                       <div className="p-8">

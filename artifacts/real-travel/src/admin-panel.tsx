@@ -361,6 +361,43 @@ export function AdminPanel() {
     toast({ title: "Order created", description: "The booking queue was updated." });
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 1200;
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/webp", 0.8);
+          setTourForm({ ...tourForm, image: dataUrl });
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const SidebarContent = () => (
     <div className="flex h-full flex-col bg-sidebar border-r border-sidebar-border">
       <div className="flex h-16 shrink-0 items-center px-6">
@@ -534,7 +571,7 @@ export function AdminPanel() {
                         <TableBody>
                           {filteredTours.map((tour) => (
                             <TableRow key={tour.id}>
-                              <TableCell><div className="h-12 w-16 rounded overflow-hidden bg-muted border border-border">{tour.image ? <img src={tour.image} alt={tour.name} className="h-full w-full object-cover" /> : null}</div></TableCell>
+                              <TableCell><div className="h-20 w-28 rounded overflow-hidden bg-muted border border-border flex items-center justify-center p-1">{tour.image ? <img src={tour.image} alt={tour.name} className="max-h-full max-w-full object-contain" /> : null}</div></TableCell>
                               <TableCell><div className="font-medium">{tour.name}</div><div className="text-xs text-muted-foreground flex items-center mt-1"><MapPin className="h-3 w-3 mr-1" /> {tour.location}</div></TableCell>
                               <TableCell>{regionLabel(tour.region)}</TableCell>
                               <TableCell className="font-medium text-primary">${tour.price.toLocaleString()}</TableCell>
@@ -659,7 +696,15 @@ export function AdminPanel() {
               <div className="grid gap-2"><Label>Duration</Label><Input type="number" value={tourForm.duration || ""} onChange={(e) => setTourForm({ ...tourForm, duration: Number(e.target.value) })} /></div>
             </div>
             <div className="grid gap-2"><Label>Description</Label><Textarea value={tourForm.description || ""} onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })} className="min-h-[120px]" /></div>
-            <div className="grid gap-2"><Label>Image URL</Label><Input value={tourForm.image || ""} onChange={(e) => setTourForm({ ...tourForm, image: e.target.value })} placeholder="/tours/santorini.png" /></div>
+            <div className="grid gap-2">
+              <Label>Image</Label>
+              <Input type="file" accept="image/*" onChange={handleImageUpload} />
+              {tourForm.image && (
+                <div className="mt-2 relative h-40 w-full rounded-md border border-border bg-muted flex items-center justify-center overflow-hidden p-2">
+                  <img src={tourForm.image} alt="Preview" className="max-h-full max-w-full object-contain" />
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsTourModalOpen(false)}>Cancel</Button>
