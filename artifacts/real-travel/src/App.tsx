@@ -372,13 +372,23 @@ function TourModal({
 
 function PublicSite() {
   const { tours, isLoaded } = useSharedTravelData();
+
+  const maxTourPrice = useMemo(() => {
+    if (!tours || tours.length === 0) return 10000;
+    return Math.max(...tours.map((t) => t.price));
+  }, [tours]);
+
   const [language, setLanguage] = useState<Language>("uz");
   const [selectedTour, setSelectedTour] = useState<SharedTour | null>(null);
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState<PublicRegionKey>("all");
-  const [priceRange, setPriceRange] = useState([8000]);
+  const [priceRange, setPriceRange] = useState([10000]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = copy[language];
+
+  useEffect(() => {
+    setPriceRange((prev) => [Math.max(prev[0], maxTourPrice)]);
+  }, [maxTourPrice]);
 
   const filteredTours = useMemo(() => {
     return tours.filter((tour) => {
@@ -535,7 +545,7 @@ function PublicSite() {
                       <Label className="text-xs uppercase tracking-widest text-muted-foreground">{t.maxPrice}</Label>
                       <span className="text-sm font-medium">${priceRange[0]}</span>
                     </div>
-                    <Slider min={2000} max={10000} step={500} value={priceRange} onValueChange={setPriceRange} className="py-2" />
+                    <Slider min={2000} max={Math.max(10000, maxTourPrice)} step={500} value={priceRange} onValueChange={setPriceRange} className="py-2" />
                   </div>
                 </div>
               </div>
