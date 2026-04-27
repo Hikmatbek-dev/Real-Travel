@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @workspace/real-travel build && rm -rf dist && cp -r artifacts/real-travel/dist dist",
+  "buildCommand": "pnpm --filter @workspace/real-travel build && (test -d artifacts/real-travel/dist && rm -rf dist && cp -r artifacts/real-travel/dist dist || true)",
   "outputDirectory": "dist",
   "rewrites": [
     {
