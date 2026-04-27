@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Clock3, Globe2, Instagram, MapPin, MapPinned, Phone, Search, Sparkles } from "lucide-react";
+import { CheckCircle2, Clock3, Globe2, Instagram, MapPin, MapPinned, Phone, Search, Sparkles, Menu, X } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
@@ -377,6 +377,7 @@ function PublicSite() {
   const [search, setSearch] = useState("");
   const [region, setRegion] = useState<PublicRegionKey>("all");
   const [priceRange, setPriceRange] = useState([8000]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = copy[language];
 
   const filteredTours = useMemo(() => {
@@ -412,7 +413,7 @@ function PublicSite() {
       <div className="min-h-[100dvh] w-full flex flex-col bg-background font-sans">
         <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md shadow-sm py-4">
           <div className="container mx-auto px-6 md:px-12 flex items-center justify-between gap-4">
-            <button type="button" className="cursor-pointer" onClick={() => scrollTo("hero")}>
+            <button type="button" className="cursor-pointer z-50 relative" onClick={() => scrollTo("hero")}>
               <img src="/logo.jpg" alt="Real Travel" className="h-12 w-auto rounded-md object-contain" />
             </button>
             <div className="hidden md:flex items-center gap-8">
@@ -433,7 +434,47 @@ function PublicSite() {
                 ))}
               </div>
             </div>
+
+            {/* Mobile Toggle Button */}
+            <button 
+              className="md:hidden z-50 p-2 text-primary hover:bg-secondary rounded-full transition-colors relative"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-border flex flex-col md:hidden py-6 px-6 gap-6"
+              >
+                <div className="flex flex-col space-y-4 text-sm font-medium tracking-widest uppercase text-foreground">
+                  <button onClick={() => { scrollTo("tours"); setIsMobileMenuOpen(false); }} className="text-left py-2 hover:text-accent transition-colors">{t.navJourneys}</button>
+                  <button onClick={() => { scrollTo("about"); setIsMobileMenuOpen(false); }} className="text-left py-2 hover:text-accent transition-colors">{t.navAtelier}</button>
+                  <button onClick={() => { scrollTo("contact"); setIsMobileMenuOpen(false); }} className="text-left py-2 hover:text-accent transition-colors">{t.navContact}</button>
+                </div>
+                
+                <div className="flex items-center gap-1 rounded-full border px-1 py-1 border-primary/10 bg-white w-fit">
+                  <Globe2 className="ml-2 h-4 w-4 text-primary" />
+                  {(["uz", "ru", "en"] as Language[]).map((lang) => (
+                    <button key={lang} type="button" onClick={() => { setLanguage(lang); setIsMobileMenuOpen(false); }} className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${language === lang ? "bg-accent text-primary" : "text-primary/70"}`}>
+                      {lang.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+
+                <a href="tel:+998702277147" className="w-full">
+                  <Button className="w-full rounded-full px-5 h-12 text-base">{t.navCall}</Button>
+                </a>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </nav>
 
         <main className="flex-1">
