@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @workspace/real-travel build",
-  "outputDirectory": "artifacts/real-travel/dist",
+  "buildCommand": "pnpm --filter @workspace/real-travel build && rm -rf dist && cp -r artifacts/real-travel/dist dist",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
