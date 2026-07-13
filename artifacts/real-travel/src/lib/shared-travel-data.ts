@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export type RegionKey = "europe" | "asia" | "americas" | "africa";
 export type OrderStatus = "New" | "Confirmed" | "Cancelled";
@@ -28,24 +29,34 @@ export type SharedOrder = {
   notes: string;
 };
 
-const TOURS_KEY = "rt_shared_tours";
-const ORDERS_KEY = "rt_shared_orders";
-const UPDATE_EVENT = "rt-shared-data-update";
+// ----- Row types (Supabase, snake_case) -----
 
-const INITIAL_TOURS: SharedTour[] = [
-  { id: "t1", name: "Santorini Escape", location: "Santorini, Greece", region: "europe", price: 4500, duration: 5, description: "Cliffside suites, private catamaran cruising, wine tasting, and sunset dinners in Oia.", image: "/tours/santorini.png" },
-  { id: "t2", name: "Kyoto Seasons", location: "Kyoto, Japan", region: "asia", price: 5200, duration: 6, description: "Temple visits, tea ceremony, boutique ryokan stay, and a slow cultural rhythm through Kyoto.", image: "/tours/kyoto.png" },
-  { id: "t3", name: "Patagonia Expedition", location: "Patagonia, Chile", region: "americas", price: 6800, duration: 7, description: "Glacier trekking, striking mountain views, and warm evenings in a premium mountain lodge.", image: "/tours/patagonia.png" },
-  { id: "t4", name: "Marrakech Colors", location: "Marrakech, Morocco", region: "africa", price: 3900, duration: 4, description: "Luxury riad, guided souk walks, a desert camp dinner, and vibrant city textures.", image: "/tours/marrakech.png" },
-  { id: "t5", name: "Banff Alpine Retreat", location: "Banff, Canada", region: "americas", price: 4200, duration: 5, description: "Turquoise lakes, alpine viewpoints, spa time, and a grand chateau stay.", image: "/tours/banff.png" },
-  { id: "t6", name: "Amalfi Coast Signature", location: "Amalfi Coast, Italy", region: "europe", price: 5800, duration: 6, description: "Sea-view villa, private boat charter, chef-led dinner, and Positano day explorations.", image: "/tours/amalfi.png" }
-];
+type TourRow = {
+  id: string;
+  name: string;
+  location: string;
+  region: string;
+  price: number;
+  duration: number;
+  description: string;
+  image: string;
+};
 
-const INITIAL_ORDERS: SharedOrder[] = [
-  { id: "o1", orderNumber: "RT-1042", customerName: "Sarah Jenkins", email: "sarah.jenkins@example.com", phone: "+1 (555) 123-4567", travelers: 2, tourId: "t1", date: new Date(Date.now() - 2 * 86400000).toISOString(), status: "New", totalAmount: 9000, notes: "Interested in sea-view upgrade." },
-  { id: "o2", orderNumber: "RT-1043", customerName: "Michael Chen", email: "michael.chen@example.com", phone: "+1 (555) 987-6543", travelers: 1, tourId: "t2", date: new Date(Date.now() - 5 * 86400000).toISOString(), status: "Confirmed", totalAmount: 5200, notes: "Prefers vegetarian meals." },
-  { id: "o3", orderNumber: "RT-1044", customerName: "Emma Thompson", email: "emma.t@example.com", phone: "+44 7700 900077", travelers: 2, tourId: "t6", date: new Date(Date.now() - 1 * 86400000).toISOString(), status: "New", totalAmount: 11600, notes: "" }
-];
+type OrderRow = {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  email: string;
+  phone: string;
+  travelers: number;
+  tour_id: string | null;
+  date: string;
+  status: string;
+  total_amount: number;
+  notes: string | null;
+};
+
+// ----- Normalizers (defaults + type coercion) -----
 
 function normalizeTour(tour: Partial<SharedTour>): SharedTour {
   return {
@@ -60,10 +71,6 @@ function normalizeTour(tour: Partial<SharedTour>): SharedTour {
   };
 }
 
-function buildOrderNumber(index: number) {
-  return `RT-${1042 + index}`;
-}
-
 function normalizeOrder(order: Partial<SharedOrder>, tours: SharedTour[], index: number): SharedOrder {
   const tour = tours.find((item) => item.id === order.tourId);
   const travelers = Number(order.travelers) || 1;
@@ -71,7 +78,8 @@ function normalizeOrder(order: Partial<SharedOrder>, tours: SharedTour[], index:
 
   return {
     id: order.id || `o${Date.now()}${index}`,
-    orderNumber: order.orderNumber || buildOrderNumber(index),
+    // Empty on new orders — the DB order_number sequence assigns it on insert.
+    orderNumber: order.orderNumber || "",
     customerName: order.customerName || "",
     email: order.email || "",
     phone: order.phone || "",
@@ -84,71 +92,141 @@ function normalizeOrder(order: Partial<SharedOrder>, tours: SharedTour[], index:
   };
 }
 
-function readTours(): SharedTour[] {
-  const storedTours = localStorage.getItem(TOURS_KEY);
-  if (!storedTours) {
-    localStorage.setItem(TOURS_KEY, JSON.stringify(INITIAL_TOURS));
-    return INITIAL_TOURS;
-  }
+// ----- Row <-> app-model mapping -----
 
-  return JSON.parse(storedTours).map((tour: Partial<SharedTour>) => normalizeTour(tour));
+function rowToTour(row: TourRow): SharedTour {
+  return {
+    id: row.id,
+    name: row.name,
+    location: row.location,
+    region: (row.region as RegionKey) || "europe",
+    price: Number(row.price),
+    duration: Number(row.duration),
+    description: row.description,
+    image: row.image
+  };
 }
 
-function readOrders(tours: SharedTour[]): SharedOrder[] {
-  const storedOrders = localStorage.getItem(ORDERS_KEY);
-  if (!storedOrders) {
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(INITIAL_ORDERS));
-    return INITIAL_ORDERS;
-  }
-
-  return JSON.parse(storedOrders).map((order: Partial<SharedOrder>, index: number) => normalizeOrder(order, tours, index));
+function tourToRow(tour: SharedTour): TourRow {
+  return {
+    id: tour.id,
+    name: tour.name,
+    location: tour.location,
+    region: tour.region,
+    price: tour.price,
+    duration: tour.duration,
+    description: tour.description,
+    image: tour.image
+  };
 }
 
-function emitDataUpdate() {
-  window.dispatchEvent(new Event(UPDATE_EVENT));
+function rowToOrder(row: OrderRow): SharedOrder {
+  return {
+    id: row.id,
+    orderNumber: row.order_number,
+    customerName: row.customer_name,
+    email: row.email,
+    phone: row.phone,
+    travelers: Number(row.travelers),
+    tourId: row.tour_id || "",
+    date: new Date(row.date).toISOString(),
+    status: (row.status as OrderStatus) || "New",
+    totalAmount: Number(row.total_amount),
+    notes: row.notes || ""
+  };
 }
 
+function orderToRow(order: SharedOrder): Record<string, unknown> {
+  return {
+    id: order.id,
+    order_number: order.orderNumber,
+    customer_name: order.customerName,
+    email: order.email,
+    phone: order.phone,
+    travelers: order.travelers,
+    tour_id: order.tourId || null,
+    date: order.date,
+    status: order.status,
+    total_amount: order.totalAmount,
+    notes: order.notes
+  };
+}
+
+/**
+ * Shared data hook backed by Supabase.
+ *
+ * The public site and the admin panel both use this hook. Reads come from the
+ * `tours` / `orders` tables; writes upsert the provided array and delete any
+ * rows no longer present. A realtime subscription keeps every open tab in sync.
+ */
 export function useSharedTravelData() {
   const [tours, setTours] = useState<SharedTour[]>([]);
   const [orders, setOrders] = useState<SharedOrder[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const sync = () => {
-      const nextTours = readTours();
-      const nextOrders = readOrders(nextTours);
-      setTours(nextTours);
-      setOrders(nextOrders);
-      localStorage.setItem(TOURS_KEY, JSON.stringify(nextTours));
-      localStorage.setItem(ORDERS_KEY, JSON.stringify(nextOrders));
+    let active = true;
+
+    const load = async () => {
+      const [toursRes, ordersRes] = await Promise.all([
+        supabase.from("tours").select("*").order("created_at", { ascending: true }),
+        supabase.from("orders").select("*").order("date", { ascending: false })
+      ]);
+
+      if (!active) return;
+
+      setTours(((toursRes.data as TourRow[] | null) ?? []).map(rowToTour));
+      setOrders(((ordersRes.data as OrderRow[] | null) ?? []).map(rowToOrder));
       setIsLoaded(true);
     };
 
-    sync();
-    window.addEventListener("storage", sync);
-    window.addEventListener(UPDATE_EVENT, sync);
+    load();
+
+    const channel = supabase
+      .channel("rt-shared-data")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tours" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, load)
+      .subscribe();
+
+    // Reload when the admin signs in or out: RLS changes which rows (e.g. orders)
+    // are visible, so the initial anon fetch must be refreshed with the new role.
+    const { data: authSub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") load();
+    });
 
     return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener(UPDATE_EVENT, sync);
+      active = false;
+      supabase.removeChannel(channel);
+      authSub.subscription.unsubscribe();
     };
   }, []);
 
-  const saveTours = (nextTours: SharedTour[]) => {
-    const normalizedTours = nextTours.map((tour) => normalizeTour(tour));
-    const normalizedOrders = orders.map((order, index) => normalizeOrder(order, normalizedTours, index));
-    setTours(normalizedTours);
-    setOrders(normalizedOrders);
-    localStorage.setItem(TOURS_KEY, JSON.stringify(normalizedTours));
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(normalizedOrders));
-    emitDataUpdate();
+  const saveTours = async (nextTours: SharedTour[]) => {
+    const normalized = nextTours.map((tour) => normalizeTour(tour));
+    setTours(normalized); // optimistic
+
+    const keepIds = normalized.map((tour) => tour.id);
+    const { data: existing } = await supabase.from("tours").select("id");
+    const toDelete = ((existing as { id: string }[] | null) ?? [])
+      .map((row) => row.id)
+      .filter((id) => !keepIds.includes(id));
+
+    if (toDelete.length) await supabase.from("tours").delete().in("id", toDelete);
+    if (normalized.length) await supabase.from("tours").upsert(normalized.map(tourToRow));
   };
 
-  const saveOrders = (nextOrders: SharedOrder[]) => {
-    const normalizedOrders = nextOrders.map((order, index) => normalizeOrder(order, tours, index));
-    setOrders(normalizedOrders);
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(normalizedOrders));
-    emitDataUpdate();
+  const saveOrders = async (nextOrders: SharedOrder[]) => {
+    const normalized = nextOrders.map((order, index) => normalizeOrder(order, tours, index));
+    setOrders(normalized); // optimistic
+
+    const keepIds = normalized.map((order) => order.id);
+    const { data: existing } = await supabase.from("orders").select("id");
+    const toDelete = ((existing as { id: string }[] | null) ?? [])
+      .map((row) => row.id)
+      .filter((id) => !keepIds.includes(id));
+
+    if (toDelete.length) await supabase.from("orders").delete().in("id", toDelete);
+    if (normalized.length) await supabase.from("orders").upsert(normalized.map(orderToRow));
   };
 
   return {

@@ -28,6 +28,14 @@ node_modules
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# local tooling
+.claude/
+
 # misc
 /.sass-cache
 /connect.lock

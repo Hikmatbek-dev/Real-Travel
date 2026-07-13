@@ -231,7 +231,7 @@ function TourModal({
       saveOrders([
         {
           id: `o${Date.now()}`,
-          orderNumber: `RT-${1042 + orders.length + 1}`,
+          orderNumber: "", // assigned by the database (order_number sequence)
           customerName: formData.customerName,
           email: "",
           phone: `+998 ${formData.phone}`,

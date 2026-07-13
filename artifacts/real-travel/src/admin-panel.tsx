@@ -39,9 +39,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { OrderStatus, RegionKey, SharedOrder, SharedTour, useSharedTravelData } from "@/lib/shared-travel-data";
+import { useAdminAuth } from "@/lib/use-admin-auth";
 
 type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders";
-type UserInfo = { username: string; name: string };
 type TourFormState = Partial<SharedTour>;
 type OrderFormState = {
   customerName: string;
@@ -51,8 +51,6 @@ type OrderFormState = {
   travelers: number;
   notes: string;
 };
-
-const ADMIN_USER_KEY = "rt_admin_user";
 
 const emptyOrderForm: OrderFormState = {
   customerName: "",
@@ -93,13 +91,13 @@ function regionLabel(region: RegionKey) {
   return labels[region];
 }
 
-function LoginScreen({ onLogin }: { onLogin: (user: UserInfo) => void }) {
+function LoginScreen({ onSignIn }: { onSignIn: (username: string, password: string) => Promise<string | null> }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -108,16 +106,13 @@ function LoginScreen({ onLogin }: { onLogin: (user: UserInfo) => void }) {
       return;
     }
 
-    if (!(username === "lamerazza" && password === "admin123")) {
-      setError("Invalid login details.");
-      return;
-    }
-
     setIsLoading(true);
-    window.setTimeout(() => {
-      onLogin({ username, name: "Admin User" });
+    const message = await onSignIn(username, password);
+    if (message) {
+      setError(message === "Invalid login credentials" ? "Invalid username or password." : message);
       setIsLoading(false);
-    }, 500);
+    }
+    // On success, onAuthStateChange swaps this screen for the dashboard.
   };
 
   return (
@@ -138,7 +133,7 @@ function LoginScreen({ onLogin }: { onLogin: (user: UserInfo) => void }) {
               {error ? <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-md font-medium">{error}</div> : null}
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" className="h-11" />
+                <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" className="h-11" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -157,9 +152,9 @@ function LoginScreen({ onLogin }: { onLogin: (user: UserInfo) => void }) {
 
 export function AdminPanel() {
   const { tours, orders, saveTours, saveOrders, isLoaded } = useSharedTravelData();
+  const { user, displayName, loading: isAuthLoading, signIn, signOut } = useAdminAuth();
   const { toast } = useToast();
   const [route, setRoute] = useState<AdminRoute>(() => normalizeAdminRoute(window.location.pathname));
-  const [user, setUser] = useState<UserInfo | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [tourQuery, setTourQuery] = useState("");
@@ -177,13 +172,6 @@ export function AdminPanel() {
   const [orderForm, setOrderForm] = useState<OrderFormState>(emptyOrderForm);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem(ADMIN_USER_KEY);
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  useEffect(() => {
     const handlePopState = () => setRoute(normalizeAdminRoute(window.location.pathname));
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
@@ -195,15 +183,16 @@ export function AdminPanel() {
     setIsMobileMenuOpen(false);
   };
 
-  const handleLogin = (nextUser: UserInfo) => {
-    localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(nextUser));
-    setUser(nextUser);
-    navigate("/admin/dashboard");
+  const handleSignIn = async (username: string, password: string) => {
+    // Admins log in with a username; map it to the Supabase Auth email.
+    const email = username.includes("@") ? username : `${username.trim()}@realtravel.uz`;
+    const message = await signIn(email, password);
+    if (!message) navigate("/admin/dashboard");
+    return message;
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem(ADMIN_USER_KEY);
-    setUser(null);
+  const handleLogout = async () => {
+    await signOut();
     navigate("/admin");
   };
 
@@ -259,10 +248,18 @@ export function AdminPanel() {
 
   const recentOrders = [...orders].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
 
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <TooltipProvider>
-        <LoginScreen onLogin={handleLogin} />
+        <LoginScreen onSignIn={handleSignIn} />
         <Toaster />
       </TooltipProvider>
     );
@@ -343,7 +340,7 @@ export function AdminPanel() {
 
     const order: SharedOrder = {
       id: `o${Date.now()}`,
-      orderNumber: `RT-${1042 + orders.length + 1}`,
+      orderNumber: "", // assigned by the database (order_number sequence)
       customerName: orderForm.customerName,
       email: orderForm.email,
       phone: orderForm.phone,
@@ -429,7 +426,7 @@ export function AdminPanel() {
             <AvatarFallback className="bg-primary/10 text-primary font-medium">AD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium leading-none">{user.name}</span>
+            <span className="text-sm font-medium leading-none">{displayName}</span>
             <span className="text-xs text-muted-foreground mt-1">Admin</span>
           </div>
         </div>
