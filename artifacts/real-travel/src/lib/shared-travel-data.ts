@@ -4,6 +4,9 @@ import { supabase } from "@/lib/supabase";
 export type RegionKey = "europe" | "asia" | "americas" | "africa";
 export type OrderStatus = "New" | "Confirmed" | "Cancelled";
 
+// Gives each useSharedTravelData mount its own realtime channel topic.
+let channelSeq = 0;
+
 export type SharedTour = {
   id: string;
   name: string;
@@ -182,8 +185,11 @@ export function useSharedTravelData() {
 
     load();
 
+    // Unique per hook instance: the hook is mounted by more than one component
+    // at once (public site + tour modal), and two channels sharing a topic name
+    // collide ("cannot add postgres_changes callbacks after subscribe()").
     const channel = supabase
-      .channel("rt-shared-data")
+      .channel(`rt-shared-data-${channelSeq++}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "tours" }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, load)
       .subscribe();
