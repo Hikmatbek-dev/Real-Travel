@@ -223,11 +223,18 @@ export function useSharedTravelData() {
       .map((row) => row.id)
       .filter((id) => !keepIds.includes(id));
 
-    if (toDelete.length) await supabase.from("tours").delete().in("id", toDelete);
-    if (normalized.length) await supabase.from("tours").upsert(normalized.map(tourToRow));
+    if (toDelete.length) {
+      const { error } = await supabase.from("tours").delete().in("id", toDelete);
+      if (error) throw new Error(error.message);
+    }
+    if (normalized.length) {
+      const { error } = await supabase.from("tours").upsert(normalized.map(tourToRow));
+      if (error) throw new Error(error.message);
+    }
   };
 
   const saveOrders = async (nextOrders: SharedOrder[]) => {
+    const knownIds = new Set(orders.map((order) => order.id));
     const normalized = nextOrders.map((order, index) => normalizeOrder(order, tours, index));
     setOrders(normalized); // optimistic
 
@@ -237,8 +244,27 @@ export function useSharedTravelData() {
       .map((row) => row.id)
       .filter((id) => !keepIds.includes(id));
 
-    if (toDelete.length) await supabase.from("orders").delete().in("id", toDelete);
-    if (normalized.length) await supabase.from("orders").upsert(normalized.map(orderToRow));
+    if (toDelete.length) {
+      const { error } = await supabase.from("orders").delete().in("id", toDelete);
+      if (error) throw new Error(error.message);
+    }
+
+    // Brand-new rows are plain inserts. Upsert would compile to
+    // "INSERT ... ON CONFLICT DO UPDATE", which Postgres refuses for visitors
+    // because they only hold an INSERT policy on orders — that is how a public
+    // booking used to fail silently.
+    const rows = normalized.map(orderToRow);
+    const inserts = rows.filter((row) => !knownIds.has(row.id as string));
+    const updates = rows.filter((row) => knownIds.has(row.id as string));
+
+    if (inserts.length) {
+      const { error } = await supabase.from("orders").insert(inserts);
+      if (error) throw new Error(error.message);
+    }
+    if (updates.length) {
+      const { error } = await supabase.from("orders").upsert(updates);
+      if (error) throw new Error(error.message);
+    }
   };
 
   return {
