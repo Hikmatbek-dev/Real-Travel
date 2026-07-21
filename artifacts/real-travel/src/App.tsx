@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { AdminPanel } from "@/admin-panel";
 import { PaymentReturn } from "@/payment-return";
+import { PaymentMock } from "@/payment-mock";
 import { RegionKey, SharedTour, useSharedTravelData } from "@/lib/shared-travel-data";
 
 type Language = "uz" | "ru" | "en";
@@ -744,6 +745,10 @@ export default function App() {
 
   if (pathname.startsWith("/payment/return")) {
     return <PaymentReturn />;
+  }
+
+  if (pathname.startsWith("/payment/mock")) {
+    return <PaymentMock />;
   }
 
   return <PublicSite />;

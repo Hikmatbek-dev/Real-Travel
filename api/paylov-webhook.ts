@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { STATE_CANCELLED, STATE_SUCCESS, sbSelect, sbUpdate, type OrderRow } from "./_lib";
+import { STATE_CANCELLED, STATE_SUCCESS, sbSelect, sbUpdate, webhookSecret, type OrderRow } from "./_lib";
 
 type WebhookBody = {
   external_id?: string;
@@ -32,7 +32,7 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const secret = process.env.PAYLOV_WEBHOOK_SECRET || process.env.PAYLOV_API_SECRET;
+  const secret = webhookSecret();
   if (!secret) return res.status(500).json({ error: "Webhook secret is not configured" });
 
   try {

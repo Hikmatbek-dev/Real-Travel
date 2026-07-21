@@ -112,6 +112,30 @@ export async function sbUpdate(table: string, query: string, patch: Record<strin
 export const PAYMENT_PROVIDERS = ["payme", "click", "paylov", "uzum"] as const;
 export type PaymentProvider = (typeof PAYMENT_PROVIDERS)[number];
 
+// ---------------------------------------------------------------------------
+// Mock mode
+//
+// With PAYLOV_MOCK=1 the checkout skips Paylov entirely and sends the customer
+// to a local simulated payment page. The rest of the flow (webhook, signature
+// verification, order settlement) runs for real, so switching the flag off is
+// the only change needed once real Paylov credentials arrive.
+// ---------------------------------------------------------------------------
+
+const MOCK_WEBHOOK_SECRET = "mock-webhook-secret";
+
+export function isMockMode(): boolean {
+  return process.env.PAYLOV_MOCK === "1";
+}
+
+/** Secret used to sign/verify webhook payloads. Falls back to a fixed value in mock mode. */
+export function webhookSecret(): string | undefined {
+  return (
+    process.env.PAYLOV_WEBHOOK_SECRET ||
+    process.env.PAYLOV_API_SECRET ||
+    (isMockMode() ? MOCK_WEBHOOK_SECRET : undefined)
+  );
+}
+
 export const STATE_PENDING = 1;
 export const STATE_SUCCESS = 2;
 export const STATE_CANCELLED = -2;

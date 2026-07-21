@@ -2,6 +2,7 @@ import {
   PAYMENT_PROVIDERS,
   STATE_PENDING,
   STATE_SUCCESS,
+  isMockMode,
   paylovRequest,
   sbSelect,
   sbUpdate,
@@ -71,8 +72,25 @@ export default async function handler(req: any, res: any) {
       });
     }
 
-    // --- Create the checkout at Paylov ---
     const siteUrl = (process.env.SITE_URL || `https://${req.headers.host}`).replace(/\/$/, "");
+
+    // --- Mock mode: skip Paylov, send the customer to the simulated page ---
+    if (isMockMode()) {
+      const mockOrderId = `mock-${order.id}`;
+      await sbUpdate("orders", `id=eq.${encodeURIComponent(order.id)}`, {
+        payment_state: STATE_PENDING,
+        payment_provider: provider,
+        paylov_order_id: mockOrderId,
+        amount_tiyin: Number(amountTiyin),
+        total_amount: Number(priceUzs * travelers),
+      });
+      return res.status(200).json({
+        checkout_url: `${siteUrl}/payment/mock?order=${encodeURIComponent(order.id)}`,
+        mock: true,
+      });
+    }
+
+    // --- Create the checkout at Paylov ---
     const result = await paylovRequest<CheckoutResponse>("POST", "/integrations/checkout", {
       external_id: order.id,
       amount: Number(amountTiyin),
