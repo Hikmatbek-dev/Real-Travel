@@ -13,6 +13,8 @@ export type SharedTour = {
   location: string;
   region: RegionKey;
   price: number;
+  /** Price in so'm — what customers are actually charged via Paylov. */
+  priceUzs: number;
   duration: number;
   description: string;
   image: string;
@@ -40,6 +42,7 @@ type TourRow = {
   location: string;
   region: string;
   price: number;
+  price_uzs: number;
   duration: number;
   description: string;
   image: string;
@@ -68,6 +71,7 @@ function normalizeTour(tour: Partial<SharedTour>): SharedTour {
     location: tour.location || "",
     region: (tour.region as RegionKey) || "europe",
     price: Number(tour.price) || 0,
+    priceUzs: Number(tour.priceUzs) || 0,
     duration: Number(tour.duration) || 1,
     description: tour.description || "",
     image: tour.image || ""
@@ -104,6 +108,7 @@ function rowToTour(row: TourRow): SharedTour {
     location: row.location,
     region: (row.region as RegionKey) || "europe",
     price: Number(row.price),
+    priceUzs: Number(row.price_uzs ?? 0),
     duration: Number(row.duration),
     description: row.description,
     image: row.image
@@ -117,6 +122,7 @@ function tourToRow(tour: SharedTour): TourRow {
     location: tour.location,
     region: tour.region,
     price: tour.price,
+    price_uzs: tour.priceUzs,
     duration: tour.duration,
     description: tour.description,
     image: tour.image

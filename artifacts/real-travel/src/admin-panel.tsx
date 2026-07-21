@@ -286,6 +286,7 @@ export function AdminPanel() {
       location: "",
       region: "europe",
       price: 0,
+      priceUzs: 0,
       duration: 1,
       description: "",
       image: ""
@@ -571,7 +572,14 @@ export function AdminPanel() {
                               <TableCell><div className="h-20 w-28 rounded overflow-hidden bg-muted border border-border flex items-center justify-center p-1">{tour.image ? <img src={tour.image} alt={tour.name} className="max-h-full max-w-full object-contain" /> : null}</div></TableCell>
                               <TableCell><div className="font-medium">{tour.name}</div><div className="text-xs text-muted-foreground flex items-center mt-1"><MapPin className="h-3 w-3 mr-1" /> {tour.location}</div></TableCell>
                               <TableCell>{regionLabel(tour.region)}</TableCell>
-                              <TableCell className="font-medium text-primary">${tour.price.toLocaleString()}</TableCell>
+                              <TableCell className="font-medium text-primary">
+                                <div>${tour.price.toLocaleString()}</div>
+                                {tour.priceUzs > 0 ? (
+                                  <div className="text-xs font-normal text-muted-foreground">{tour.priceUzs.toLocaleString("uz-UZ")} so'm</div>
+                                ) : (
+                                  <div className="text-xs font-normal text-destructive">so'm narxi yo'q</div>
+                                )}
+                              </TableCell>
                               <TableCell className="hidden md:table-cell text-muted-foreground">{tour.duration} days</TableCell>
                               <TableCell className="text-right">
                                 <div className="flex justify-end gap-2">
@@ -689,7 +697,12 @@ export function AdminPanel() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2"><Label>Price</Label><Input type="number" value={tourForm.price || ""} onChange={(e) => setTourForm({ ...tourForm, price: Number(e.target.value) })} /></div>
+              <div className="grid gap-2"><Label>Price ($)</Label><Input type="number" value={tourForm.price || ""} onChange={(e) => setTourForm({ ...tourForm, price: Number(e.target.value) })} /></div>
+              <div className="grid gap-2">
+                <Label>Narx (so'm) — to'lov shu summada olinadi</Label>
+                <Input type="number" value={tourForm.priceUzs || ""} onChange={(e) => setTourForm({ ...tourForm, priceUzs: Number(e.target.value) })} />
+                {tourForm.priceUzs ? <p className="text-xs text-muted-foreground">{Number(tourForm.priceUzs).toLocaleString("uz-UZ")} so'm</p> : null}
+              </div>
               <div className="grid gap-2"><Label>Duration</Label><Input type="number" value={tourForm.duration || ""} onChange={(e) => setTourForm({ ...tourForm, duration: Number(e.target.value) })} /></div>
             </div>
             <div className="grid gap-2"><Label>Description</Label><Textarea value={tourForm.description || ""} onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })} className="min-h-[120px]" /></div>

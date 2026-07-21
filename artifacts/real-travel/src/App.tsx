@@ -10,10 +10,19 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { AdminPanel } from "@/admin-panel";
+import { PaymentReturn } from "@/payment-return";
 import { RegionKey, SharedTour, useSharedTravelData } from "@/lib/shared-travel-data";
 
 type Language = "uz" | "ru" | "en";
 type PublicRegionKey = "all" | RegionKey;
+type PaymentProvider = "payme" | "click" | "paylov" | "uzum";
+
+const PAYMENT_PROVIDERS: { id: PaymentProvider; label: string }[] = [
+  { id: "payme", label: "Payme" },
+  { id: "click", label: "Click" },
+  { id: "paylov", label: "Paylov" },
+  { id: "uzum", label: "Uzum" }
+];
 
 const copy = {
   uz: {
@@ -48,6 +57,11 @@ const copy = {
     note: "Izoh",
     submit: "So'rov yuborish",
     processing: "Yuborilmoqda...",
+    paymentLabel: "To'lov usuli",
+    payButton: "To'lovga o'tish",
+    payError: "To'lovni boshlab bo'lmadi",
+    totalLabel: "Jami to'lov",
+    noPrice: "Bu tur uchun so'mdagi narx hali belgilanmagan.",
     callback: "Buyurtma admin paneldagi ro'yxatga saqlandi.",
     successTitle: "So'rovingiz qabul qilindi",
     successText: "Bu buyurtma endi admin paneldagi orders bo'limida ko'rinadi.",
@@ -107,6 +121,11 @@ const copy = {
     note: "Комментарий",
     submit: "Отправить заявку",
     processing: "Отправка...",
+    paymentLabel: "Способ оплаты",
+    payButton: "Перейти к оплате",
+    payError: "Не удалось начать оплату",
+    totalLabel: "Итого к оплате",
+    noPrice: "Для этого тура ещё не указана цена в сумах.",
     callback: "Заявка сохранена в очереди admin panel.",
     successTitle: "Заявка принята",
     successText: "Теперь эта заявка видна в разделе orders админ-панели.",
@@ -166,6 +185,11 @@ const copy = {
     note: "Note",
     submit: "Submit inquiry",
     processing: "Sending...",
+    paymentLabel: "Payment method",
+    payButton: "Proceed to payment",
+    payError: "Could not start the payment",
+    totalLabel: "Total due",
+    noPrice: "This tour has no UZS price set yet.",
     callback: "The order has been saved into the admin queue.",
     successTitle: "Inquiry received",
     successText: "This booking is now visible in the admin orders section.",
@@ -210,6 +234,8 @@ function TourModal({
   const { orders, saveOrders } = useSharedTravelData();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [payError, setPayError] = useState("");
+  const [provider, setProvider] = useState<PaymentProvider>("payme");
   const [formData, setFormData] = useState({
     customerName: "",
     phone: "",
@@ -222,15 +248,21 @@ function TourModal({
     setFormData({ ...formData, phone: digits });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const totalUzs = (tour?.priceUzs || 0) * formData.travelers;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!tour) return;
+    setPayError("");
     setIsSubmitting(true);
 
-    window.setTimeout(() => {
-      saveOrders([
+    const orderId = `o${Date.now()}`;
+
+    try {
+      // 1. Record the (unpaid) order. The DB forces payment_state = 0 on insert.
+      await saveOrders([
         {
-          id: `o${Date.now()}`,
+          id: orderId,
           orderNumber: "", // assigned by the database (order_number sequence)
           customerName: formData.customerName,
           email: "",
@@ -239,14 +271,31 @@ function TourModal({
           tourId: tour.id,
           date: new Date().toISOString(),
           status: "New",
-          totalAmount: tour.price * formData.travelers,
+          totalAmount: totalUzs,
           notes: formData.notes
         },
         ...orders
       ]);
+
+      // 2. Ask our server to open a Paylov checkout. The server recomputes the
+      //    amount from the database, so the price cannot be tampered with here.
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, provider })
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.checkout_url) {
+        throw new Error(result.error || t.payError);
+      }
+
+      // 3. Hand the customer over to the payment provider.
+      window.location.href = result.checkout_url;
+    } catch (error) {
+      setPayError(error instanceof Error ? error.message : t.payError);
       setIsSubmitting(false);
-      setIsSuccess(true);
-    }, 800);
+    }
   };
 
   const handleClose = () => {
@@ -254,6 +303,7 @@ function TourModal({
     onClose();
     window.setTimeout(() => {
       setIsSuccess(false);
+      setPayError("");
       setFormData({ customerName: "", phone: "", travelers: 1, notes: "" });
     }, 200);
   };
@@ -344,8 +394,41 @@ function TourModal({
                       <Label htmlFor="notes">{t.note}</Label>
                       <Input id="notes" value={formData.notes} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} />
                     </div>
-                    <Button type="submit" disabled={isSubmitting} className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-widest h-12">
-                      {isSubmitting ? t.processing : t.submit}
+                    <div className="space-y-2">
+                      <Label>{t.paymentLabel}</Label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {PAYMENT_PROVIDERS.map((option) => (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => setProvider(option.id)}
+                            className={`rounded-md border px-2 py-2 text-xs font-medium transition-colors ${
+                              provider === option.id
+                                ? "border-primary bg-primary text-white"
+                                : "border-input bg-background text-muted-foreground hover:border-primary/50"
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {tour.priceUzs > 0 ? (
+                      <div className="flex items-center justify-between rounded-md bg-muted/50 px-4 py-3">
+                        <span className="text-sm text-muted-foreground">{t.totalLabel}</span>
+                        <span className="font-semibold text-primary">{totalUzs.toLocaleString("uz-UZ")} so'm</span>
+                      </div>
+                    ) : (
+                      <p className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">{t.noPrice}</p>
+                    )}
+
+                    {payError ? (
+                      <p className="rounded-md bg-destructive/10 px-4 py-3 text-sm text-destructive">{payError}</p>
+                    ) : null}
+
+                    <Button type="submit" disabled={isSubmitting || tour.priceUzs <= 0} className="w-full bg-primary text-white hover:bg-primary/90 rounded-none uppercase tracking-widest h-12">
+                      {isSubmitting ? t.processing : t.payButton}
                     </Button>
                     <p className="text-xs text-center text-muted-foreground font-light">{t.callback}</p>
                   </form>
@@ -657,6 +740,10 @@ export default function App() {
 
   if (pathname.startsWith("/admin")) {
     return <AdminPanel />;
+  }
+
+  if (pathname.startsWith("/payment/return")) {
+    return <PaymentReturn />;
   }
 
   return <PublicSite />;
