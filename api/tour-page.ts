@@ -10,6 +10,17 @@ type TourRow = {
   duration: number;
 };
 
+/**
+ * Crawlers cannot fetch a data: URL, and admin-uploaded images are stored as
+ * base64 — so anything that is not a real http(s) or root-relative URL falls
+ * back to the static share image rather than producing a broken preview.
+ */
+function absoluteImage(origin: string, image: string): string {
+  if (/^https?:\/\//i.test(image)) return image;
+  if (image.startsWith("/")) return `${origin}${image}`;
+  return `${origin}/opengraph.jpg`;
+}
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -64,7 +75,7 @@ export default async function handler(req: any, res: any) {
       const url = `${origin}${prefix}/tours/${tour.slug}`;
       const title = `${tour.name} — ${tour.location} | Real Travel`;
       const description = (tour.description || tour.location).slice(0, 200);
-      const image = tour.image?.startsWith("http") ? tour.image : `${origin}${tour.image || "/opengraph.jpg"}`;
+      const image = absoluteImage(origin, tour.image || "");
 
       html = html.replace(/<title>[^<]*<\/title>/i, `<title>${escapeHtml(title)}</title>`);
       html = setMeta(html, "name", "description", description);

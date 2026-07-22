@@ -149,6 +149,15 @@ export const en: Dictionary = {
     offer: "Public offer",
     copyright: "All rights reserved."
   },
+  legal: {
+    offerTitle: "Public offer",
+    termsTitle: "Terms of service",
+    privacyTitle: "Privacy policy",
+    draftNotice: "This document is being prepared. If you have questions about the terms, please contact us — phone and address are below.",
+    company: "Company details",
+    contacts: "Contact",
+    lastUpdated: "Last updated"
+  },
   regions: {
     all: "All",
     europe: "Europe",

@@ -149,6 +149,15 @@ export const uz: Dictionary = {
     offer: "Ommaviy oferta",
     copyright: "Barcha huquqlar himoyalangan."
   },
+  legal: {
+    offerTitle: "Ommaviy oferta",
+    termsTitle: "Foydalanish shartlari",
+    privacyTitle: "Maxfiylik siyosati",
+    draftNotice: "Ushbu hujjat matni tayyorlanmoqda. Shartlar bo'yicha savollaringiz bo'lsa, biz bilan bog'laning — telefon va manzil quyida.",
+    company: "Kompaniya ma'lumotlari",
+    contacts: "Aloqa",
+    lastUpdated: "Oxirgi yangilanish"
+  },
   regions: {
     all: "Barchasi",
     europe: "Yevropa",

@@ -128,5 +128,14 @@ export type Dictionary = {
     offer: string;
     copyright: string;
   };
+  legal: {
+    offerTitle: string;
+    termsTitle: string;
+    privacyTitle: string;
+    draftNotice: string;
+    company: string;
+    contacts: string;
+    lastUpdated: string;
+  };
   regions: { all: string; europe: string; asia: string; americas: string; africa: string };
 };

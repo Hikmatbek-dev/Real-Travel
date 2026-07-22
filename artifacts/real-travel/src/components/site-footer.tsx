@@ -62,19 +62,19 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <a href="/legal/oferta" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
+                <Link href="/legal/oferta" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
                   {t.footer.offer}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/legal/terms" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
+                <Link href="/legal/terms" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
                   {t.footer.terms}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/legal/privacy" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
+                <Link href="/legal/privacy" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
                   {t.footer.privacy}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

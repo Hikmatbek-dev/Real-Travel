@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { HomePage } from "@/pages/home";
 import { TourDetailPage } from "@/pages/tour-detail";
 import { OrderLookupPage } from "@/pages/order-lookup";
+import { LegalPage } from "@/pages/legal";
 import NotFound from "@/pages/not-found";
 import { AdminPanel } from "@/admin-panel";
 import { PaymentReturn } from "@/payment-return";
@@ -22,6 +23,7 @@ function PublicSite() {
           <Route path="/" component={HomePage} />
           <Route path="/tours/:slug" component={TourDetailPage} />
           <Route path="/order" component={OrderLookupPage} />
+          <Route path="/legal/:doc" component={LegalPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
