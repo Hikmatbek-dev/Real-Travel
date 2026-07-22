@@ -59,7 +59,7 @@ export function HomePage() {
           <p className="mx-auto mb-10 max-w-2xl font-light leading-relaxed text-white/85">{t.hero.text}</p>
           <Button
             size="lg"
-            className="rounded-full px-8"
+            className="h-12 rounded-full px-8 text-base"
             onClick={() => {
               const el = document.getElementById("tours");
               if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
@@ -97,7 +97,7 @@ export function HomePage() {
             <div className="space-y-2">
               <Label className="text-xs uppercase tracking-widest text-muted-foreground">{t.collection.regionLabel}</Label>
               <Select value={region} onValueChange={(value) => setRegion(value as RegionFilter)}>
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue placeholder={t.collection.regionPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>

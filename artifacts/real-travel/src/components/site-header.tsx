@@ -83,7 +83,7 @@ export function SiteHeader() {
         </div>
 
         <button
-          className="relative z-50 rounded-full p-2 text-primary transition-colors hover:bg-secondary md:hidden"
+          className="relative z-50 rounded-full p-3 text-primary transition-colors hover:bg-secondary md:hidden"
           aria-label="Menu"
           onClick={() => setIsMobileMenuOpen((open) => !open)}
         >

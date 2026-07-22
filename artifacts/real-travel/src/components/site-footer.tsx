@@ -21,7 +21,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 transition-colors hover:border-accent hover:bg-accent"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 transition-colors hover:border-accent hover:bg-accent"
             >
               <Instagram className="h-4 w-4" />
             </a>
@@ -31,7 +31,7 @@ export function SiteFooter() {
             <h4 className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.footer.contact}</h4>
             <ul className="space-y-4 text-sm font-light text-white/80">
               <li>
-                <a href={PHONE_HREF} className="flex items-center transition-colors hover:text-accent">
+                <a href={PHONE_HREF} className="flex min-h-11 items-center transition-colors hover:text-accent">
                   <Phone className="mr-3 h-4 w-4 text-accent" />
                   {COMPANY.phone}
                 </a>
@@ -45,7 +45,7 @@ export function SiteFooter() {
                   href={COMPANY.instagramUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center transition-colors hover:text-accent"
+                  className="flex min-h-11 items-center transition-colors hover:text-accent"
                 >
                   <Instagram className="mr-3 h-4 w-4 text-accent" />@{COMPANY.instagram}
                 </a>
@@ -57,22 +57,22 @@ export function SiteFooter() {
             <h4 className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.footer.legal}</h4>
             <ul className="space-y-3 text-sm font-light text-white/80">
               <li>
-                <Link href="/order" className="transition-colors hover:text-accent">
+                <Link href="/order" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
                   {t.order.title}
                 </Link>
               </li>
               <li>
-                <a href="/legal/oferta" className="transition-colors hover:text-accent">
+                <a href="/legal/oferta" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
                   {t.footer.offer}
                 </a>
               </li>
               <li>
-                <a href="/legal/terms" className="transition-colors hover:text-accent">
+                <a href="/legal/terms" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
                   {t.footer.terms}
                 </a>
               </li>
               <li>
-                <a href="/legal/privacy" className="transition-colors hover:text-accent">
+                <a href="/legal/privacy" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
                   {t.footer.privacy}
                 </a>
               </li>
