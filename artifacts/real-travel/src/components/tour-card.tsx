@@ -17,7 +17,7 @@ export function TourCard({ tour, index = 0 }: { tour: SharedTour; index?: number
     >
       <Link
         href={`/tours/${tour.slug}`}
-        className="group relative block overflow-hidden rounded-2xl bg-white text-left shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
+        className="group relative block overflow-hidden rounded-2xl bg-card text-left shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
       >
         <div className="relative h-72 overflow-hidden md:h-80">
           <img
@@ -27,7 +27,7 @@ export function TourCard({ tour, index = 0 }: { tour: SharedTour; index?: number
             className="h-full w-full transform bg-muted/10 object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
           {tour.priceUzs > 0 ? (
-            <div className="absolute right-4 top-4 z-20 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold tracking-wider backdrop-blur">
+            <div className="absolute right-4 top-4 z-20 rounded-full bg-card/90 px-3 py-1 text-xs font-semibold tracking-wider backdrop-blur">
               {formatUzs(tour.priceUzs, language)}
             </div>
           ) : null}

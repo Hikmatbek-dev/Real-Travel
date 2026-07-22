@@ -50,7 +50,9 @@ export function HomePage() {
     <>
       <section id="hero" className="relative flex h-[90vh] min-h-[560px] items-center justify-center overflow-hidden">
         <img src="/hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-primary/35" />
+        {/* Gradient rather than a flat wash: keeps the headline legible over a
+            busy photo while still showing the image at the top. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/30 via-primary/45 to-primary/75" />
         <div className="container relative mx-auto max-w-4xl px-6 text-center text-white">
           <p className="mb-6 text-sm uppercase tracking-[0.3em] text-white/80">{t.hero.eyebrow}</p>
           <h1 className="mb-8 font-serif text-5xl leading-tight md:text-7xl">
@@ -77,7 +79,7 @@ export function HomePage() {
             <p className="font-light leading-relaxed text-muted-foreground">{t.collection.subtitle}</p>
           </div>
 
-          <div className="mb-12 grid grid-cols-1 gap-6 rounded-2xl bg-white p-6 shadow-sm md:grid-cols-3">
+          <div className="mb-12 grid grid-cols-1 gap-6 rounded-2xl bg-card p-6 shadow-sm md:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="search" className="text-xs uppercase tracking-widest text-muted-foreground">
                 {t.collection.searchLabel}
@@ -126,11 +128,25 @@ export function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <AnimatePresence>
-              {filtered.map((tour, index) => (
-                <TourCard key={tour.id} tour={tour} index={index} />
-              ))}
-            </AnimatePresence>
+            {!isLoaded
+              ? Array.from({ length: 3 }, (_, i) => (
+                  <div key={i} className="overflow-hidden rounded-2xl bg-card shadow-sm">
+                    <div className="h-72 animate-pulse bg-muted md:h-80" />
+                    <div className="space-y-4 p-8">
+                      <div className="h-4 w-1/3 animate-pulse rounded-lg bg-muted" />
+                      <div className="h-6 w-2/3 animate-pulse rounded-lg bg-muted" />
+                      <div className="h-4 w-full animate-pulse rounded-lg bg-muted" />
+                      <div className="h-12 w-full animate-pulse rounded-lg bg-muted" />
+                    </div>
+                  </div>
+                ))
+              : (
+                <AnimatePresence>
+                  {filtered.map((tour, index) => (
+                    <TourCard key={tour.id} tour={tour} index={index} />
+                  ))}
+                </AnimatePresence>
+              )}
           </div>
 
           {isLoaded && filtered.length === 0 ? (
@@ -141,7 +157,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="about" className="bg-white py-24 md:py-32">
+      <section id="about" className="bg-card py-24 md:py-32">
         <div className="container mx-auto max-w-5xl px-6 md:px-12">
           <div className="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
             <div>

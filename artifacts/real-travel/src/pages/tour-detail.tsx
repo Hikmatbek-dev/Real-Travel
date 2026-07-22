@@ -81,16 +81,16 @@ export function TourDetailPage() {
           <h1 className="font-serif text-4xl md:text-6xl">{tour.name}</h1>
 
           <div className="mt-6 flex flex-wrap gap-3 text-sm">
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 backdrop-blur">
+            <span className="inline-flex items-center gap-1 rounded-full bg-card/15 px-3 py-1 backdrop-blur">
               <MapPin className="h-4 w-4" />
               {tour.location}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 backdrop-blur">
+            <span className="inline-flex items-center gap-1 rounded-full bg-card/15 px-3 py-1 backdrop-blur">
               <Clock3 className="h-4 w-4" />
               {tour.duration} {t.collection.days}
             </span>
             {tour.priceUzs > 0 ? (
-              <span className="rounded-full bg-white/15 px-3 py-1 backdrop-blur">
+              <span className="rounded-full bg-card/15 px-3 py-1 backdrop-blur">
                 {formatUzs(tour.priceUzs, language)} / {t.collection.perPerson}
               </span>
             ) : null}
@@ -128,7 +128,7 @@ export function TourDetailPage() {
           </div>
 
           <aside className="lg:sticky lg:top-28 lg:self-start">
-            <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <h2 className="mb-2 font-serif text-2xl text-primary">{t.booking.title}</h2>
               <p className="mb-6 text-sm text-muted-foreground">{t.booking.text}</p>
               <BookingForm tour={tour} />

@@ -63,7 +63,7 @@ export function OrderLookupPage() {
       <h1 className="mb-3 font-serif text-4xl text-primary">{t.order.title}</h1>
       <p className="mb-10 font-light text-muted-foreground">{t.order.text}</p>
 
-      <form onSubmit={handleSubmit} className="mb-10 space-y-4 rounded-2xl border border-border bg-white p-6 shadow-sm">
+      <form onSubmit={handleSubmit} className="mb-10 space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div className="space-y-2">
           <Label htmlFor="orderNumber">{t.order.orderNumber}</Label>
           <Input
@@ -117,7 +117,7 @@ export function OrderLookupPage() {
           const view = statusView(result.paymentState);
           const StatusIcon = view.icon;
           return (
-            <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
                 <span className="font-mono text-lg font-semibold text-primary">{result.orderNumber}</span>
                 <span className={`flex items-center gap-2 text-sm font-medium ${view.tone}`}>
