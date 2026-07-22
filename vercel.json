@@ -10,6 +10,18 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/tours/:slug",
+      "destination": "/api/tour-page?slug=:slug"
+    },
+    {
+      "source": "/:lang(ru|en)/tours/:slug",
+      "destination": "/api/tour-page?slug=:slug&lang=:lang"
+    },
+    {
       "source": "/:path*",
       "destination": "/index.html"
     }
