@@ -13,7 +13,13 @@ export const en: Dictionary = {
     titleAccent: "Real",
     titleAfter: "Travel",
     text: "Every destination is chosen by hand: tested hotels, experienced guides and an itinerary built around you.",
-    button: "Browse journeys"
+    button: "Browse journeys",
+    searchWhere: "Where",
+    searchWhen: "When",
+    searchWho: "Travelers",
+    searchButton: "Search",
+    anyDestination: "Anywhere",
+    anyMonth: "Any month"
   },
   collection: {
     title: "The collection",
@@ -27,7 +33,11 @@ export const en: Dictionary = {
     cardButton: "View details",
     perPerson: "per traveler",
     days: "days",
-    from: "from"
+    from: "from",
+    nextDeparture: "Next departure",
+    seatsLeft: "seats left",
+    datesSoon: "Dates coming soon",
+    featured: "Featured journey"
   },
   tour: {
     back: "All journeys",
@@ -63,6 +73,7 @@ export const en: Dictionary = {
     payNow: "Due now",
     remaining: "Due later",
     paymentLabel: "Payment method",
+    bookNow: "Book now",
     payButton: "Continue to payment",
     payError: "We could not start the payment. Please try again.",
     totalLabel: "Total due",

@@ -1,6 +1,6 @@
 import { STATE_PENDING, STATE_SUCCESS, sbSelect } from "./_lib";
 
-type TourDateRow = { id: string; departure_date: string; seats_total: number };
+type TourDateRow = { id: string; tour_id: string; departure_date: string; seats_total: number };
 type SeatRow = { tour_date_id: string | null; travelers: number };
 
 /**
@@ -16,13 +16,16 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  // Without ?tour= this returns every upcoming departure, so the collection
+  // page can label all cards from one request instead of one call per tour.
   const tourId = String(req.query?.tour ?? "").trim();
-  if (!tourId) return res.status(400).json({ error: "tour is required" });
 
   try {
     const dates = await sbSelect<TourDateRow>(
       "tour_dates",
-      `tour_id=eq.${encodeURIComponent(tourId)}&select=id,departure_date,seats_total&order=departure_date.asc`,
+      tourId
+        ? `tour_id=eq.${encodeURIComponent(tourId)}&select=id,tour_id,departure_date,seats_total&order=departure_date.asc`
+        : `select=id,tour_id,departure_date,seats_total&order=departure_date.asc`,
     );
 
     if (!dates.length) return res.status(200).json({ dates: [] });
@@ -47,6 +50,7 @@ export default async function handler(req: any, res: any) {
           const taken = takenByDate.get(date.id) ?? 0;
           return {
             id: date.id,
+            tourId: date.tour_id,
             departureDate: String(date.departure_date).slice(0, 10),
             seatsTotal: date.seats_total,
             // 0 seats configured means "no limit set" rather than "sold out".

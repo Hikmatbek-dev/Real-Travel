@@ -13,7 +13,13 @@ export const ru: Dictionary = {
     titleAccent: "Real",
     titleAfter: "Travel",
     text: "Каждое направление отобрано вручную: проверенные отели, опытные гиды и программа, составленная под вас.",
-    button: "Смотреть туры"
+    button: "Смотреть туры",
+    searchWhere: "Куда",
+    searchWhen: "Когда",
+    searchWho: "Сколько человек",
+    searchButton: "Найти",
+    anyDestination: "Любое направление",
+    anyMonth: "Любой месяц"
   },
   collection: {
     title: "Коллекция туров",
@@ -27,7 +33,11 @@ export const ru: Dictionary = {
     cardButton: "Подробнее",
     perPerson: "за человека",
     days: "дней",
-    from: "от"
+    from: "от",
+    nextDeparture: "Ближайший выезд",
+    seatsLeft: "мест осталось",
+    datesSoon: "Даты скоро",
+    featured: "Выбор редакции"
   },
   tour: {
     back: "Все туры",
@@ -63,6 +73,7 @@ export const ru: Dictionary = {
     payNow: "К оплате сейчас",
     remaining: "Оплатить позже",
     paymentLabel: "Способ оплаты",
+    bookNow: "Забронировать",
     payButton: "Перейти к оплате",
     payError: "Не удалось начать оплату. Пожалуйста, попробуйте ещё раз.",
     totalLabel: "Итого к оплате",

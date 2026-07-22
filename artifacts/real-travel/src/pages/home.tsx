@@ -1,152 +1,166 @@
 import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { TourCard } from "@/components/tour-card";
+import { TourCard, type Departure } from "@/components/tour-card";
+import { HeroSearch, type HeroQuery } from "@/components/hero-search";
 import { useLanguage } from "@/i18n";
 import { formatUzs } from "@/lib/format";
-import { useSharedTravelData, type RegionKey } from "@/lib/shared-travel-data";
+import { useSharedTravelData } from "@/lib/shared-travel-data";
 
-type RegionFilter = "all" | RegionKey;
+type AvailabilityRow = {
+  tourId: string;
+  departureDate: string;
+  seatsLeft: number | null;
+};
 
-const REGIONS: RegionFilter[] = ["all", "europe", "asia", "americas", "africa"];
+const scrollToTours = () => {
+  const el = document.getElementById("tours");
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+};
 
 export function HomePage() {
   const { t, language } = useLanguage();
   const { tours, isLoaded } = useSharedTravelData();
 
+  const [query, setQuery] = useState<HeroQuery>({ region: "all", month: "", travelers: 2 });
   const [search, setSearch] = useState("");
-  const [region, setRegion] = useState<RegionFilter>("all");
   const [maxPrice, setMaxPrice] = useState(0);
+  const [availability, setAvailability] = useState<AvailabilityRow[]>([]);
 
-  // Highest price in the catalogue — the slider ceiling has to follow the data,
-  // otherwise newly added (pricier) tours are filtered out by default.
-  const ceiling = useMemo(
-    () => tours.reduce((max, tour) => Math.max(max, tour.priceUzs), 0),
-    [tours]
-  );
+  // One request for every upcoming departure, so each card can show its next
+  // date and remaining seats without a call per tour.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/availability")
+      .then((r) => r.json())
+      .then((data) => active && setAvailability(data.dates ?? []))
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const ceiling = useMemo(() => tours.reduce((max, tour) => Math.max(max, tour.priceUzs), 0), [tours]);
 
   useEffect(() => {
     setMaxPrice(ceiling);
   }, [ceiling]);
 
+  /** Soonest upcoming departure per tour. */
+  const nextDeparture = useMemo(() => {
+    const map = new Map<string, Departure>();
+    for (const row of [...availability].sort((a, b) => a.departureDate.localeCompare(b.departureDate))) {
+      if (!map.has(row.tourId)) map.set(row.tourId, { departureDate: row.departureDate, seatsLeft: row.seatsLeft });
+    }
+    return map;
+  }, [availability]);
+
   const filtered = useMemo(
     () =>
       tours.filter((tour) => {
         const haystack = `${tour.name} ${tour.location} ${tour.description}`.toLowerCase();
-        const matchesSearch = haystack.includes(search.toLowerCase());
-        const matchesRegion = region === "all" || tour.region === region;
-        const matchesPrice = maxPrice <= 0 || tour.priceUzs <= maxPrice;
-        return matchesSearch && matchesRegion && matchesPrice;
+        if (!haystack.includes(search.toLowerCase())) return false;
+        if (query.region !== "all" && tour.region !== query.region) return false;
+        if (maxPrice > 0 && tour.priceUzs > maxPrice) return false;
+        if (query.month) {
+          const hasMonth = availability.some(
+            (row) => row.tourId === tour.id && row.departureDate.slice(0, 7) === query.month
+          );
+          if (!hasMonth) return false;
+        }
+        return true;
       }),
-    [maxPrice, region, search, tours]
+    [availability, maxPrice, query.month, query.region, search, tours]
   );
 
   return (
     <>
-      <section id="hero" className="relative flex h-[90vh] min-h-[560px] items-center justify-center overflow-hidden">
+      {/* ---------------------------------------------------------------- hero */}
+      <section id="hero" className="relative flex min-h-[92vh] flex-col justify-end overflow-hidden pb-10 pt-32">
         <img src="/hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        {/* Gradient rather than a flat wash: keeps the headline legible over a
-            busy photo while still showing the image at the top. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/30 via-primary/45 to-primary/75" />
-        <div className="container relative mx-auto max-w-4xl px-6 text-center text-white">
-          <p className="mb-6 text-sm uppercase tracking-[0.3em] text-white/80">{t.hero.eyebrow}</p>
-          <h1 className="mb-8 font-serif text-5xl leading-tight md:text-7xl">
-            {t.hero.titleBefore} <span className="italic">{t.hero.titleAccent}</span> {t.hero.titleAfter}
-          </h1>
-          <p className="mx-auto mb-10 max-w-2xl font-light leading-relaxed text-white/85">{t.hero.text}</p>
-          <Button
-            size="lg"
-            className="h-12 rounded-full px-8 text-base"
-            onClick={() => {
-              const el = document.getElementById("tours");
-              if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
-            }}
-          >
-            {t.hero.button}
-          </Button>
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/40 via-primary/45 to-primary/85" />
+
+        <div className="container relative mx-auto px-6 md:px-12">
+          {/* Left-aligned editorial block rather than a centred poster. */}
+          <div className="mb-12 max-w-3xl text-primary-foreground">
+            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-primary-foreground/75">{t.hero.eyebrow}</p>
+            <h1 className="mb-6 font-serif text-5xl leading-[1.05] md:text-7xl lg:text-8xl">
+              {t.hero.titleBefore} <span className="italic text-accent">{t.hero.titleAccent}</span>{" "}
+              {t.hero.titleAfter}
+            </h1>
+            <p className="max-w-xl text-base font-light leading-relaxed text-primary-foreground/85">{t.hero.text}</p>
+          </div>
+
+          <HeroSearch value={query} onChange={setQuery} onSubmit={scrollToTours} />
         </div>
       </section>
 
-      <section id="tours" className="bg-secondary/30 py-24 md:py-32">
+      {/* ----------------------------------------------------------- collection */}
+      <section id="tours" className="bg-background py-24 md:py-28">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="mb-12 max-w-2xl">
-            <h2 className="mb-4 font-serif text-4xl text-primary md:text-5xl">{t.collection.title}</h2>
-            <p className="font-light leading-relaxed text-muted-foreground">{t.collection.subtitle}</p>
-          </div>
+          <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-xl">
+              <h2 className="mb-3 font-serif text-4xl text-primary md:text-5xl">{t.collection.title}</h2>
+              <p className="font-light leading-relaxed text-muted-foreground">{t.collection.subtitle}</p>
+            </div>
 
-          <div className="mb-12 grid grid-cols-1 gap-6 rounded-2xl bg-card p-6 shadow-sm md:grid-cols-3">
-            <div className="space-y-2">
-              <Label htmlFor="search" className="text-xs uppercase tracking-widest text-muted-foreground">
-                {t.collection.searchLabel}
-              </Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="search"
-                  className="pl-9"
-                  placeholder={t.collection.searchPlaceholder}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+            <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end md:w-auto">
+              <div className="space-y-2 sm:w-56">
+                <Label htmlFor="search" className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                  {t.collection.searchLabel}
+                </Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="search"
+                    className="h-11 pl-9"
+                    placeholder={t.collection.searchPlaceholder}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2 sm:w-56">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                  {t.collection.maxPrice}: {maxPrice > 0 ? formatUzs(maxPrice, language) : "—"}
+                </Label>
+                <Slider
+                  min={0}
+                  max={ceiling || 1}
+                  step={Math.max(1, Math.round((ceiling || 1) / 50))}
+                  value={[maxPrice]}
+                  onValueChange={([value]) => setMaxPrice(value)}
+                  className="h-11 pt-5"
                 />
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-widest text-muted-foreground">{t.collection.regionLabel}</Label>
-              <Select value={region} onValueChange={(value) => setRegion(value as RegionFilter)}>
-                <SelectTrigger className="h-11">
-                  <SelectValue placeholder={t.collection.regionPlaceholder} />
-                </SelectTrigger>
-                <SelectContent>
-                  {REGIONS.map((key) => (
-                    <SelectItem key={key} value={key}>
-                      {t.regions[key]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-widest text-muted-foreground">
-                {t.collection.maxPrice}: {maxPrice > 0 ? formatUzs(maxPrice, language) : "—"}
-              </Label>
-              <Slider
-                min={0}
-                max={ceiling || 1}
-                step={Math.max(1, Math.round((ceiling || 1) / 50))}
-                value={[maxPrice]}
-                onValueChange={([value]) => setMaxPrice(value)}
-                className="pt-4"
-              />
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {!isLoaded
               ? Array.from({ length: 3 }, (_, i) => (
                   <div key={i} className="overflow-hidden rounded-2xl bg-card shadow-sm">
-                    <div className="h-72 animate-pulse bg-muted md:h-80" />
-                    <div className="space-y-4 p-8">
-                      <div className="h-4 w-1/3 animate-pulse rounded-lg bg-muted" />
-                      <div className="h-6 w-2/3 animate-pulse rounded-lg bg-muted" />
+                    <div className="h-72 animate-pulse bg-muted" />
+                    <div className="space-y-4 p-6">
+                      <div className="h-4 w-2/3 animate-pulse rounded-lg bg-muted" />
                       <div className="h-4 w-full animate-pulse rounded-lg bg-muted" />
-                      <div className="h-12 w-full animate-pulse rounded-lg bg-muted" />
                     </div>
                   </div>
                 ))
-              : (
-                <AnimatePresence>
-                  {filtered.map((tour, index) => (
-                    <TourCard key={tour.id} tour={tour} index={index} />
-                  ))}
-                </AnimatePresence>
-              )}
+              : filtered.map((tour, index) => (
+                  <TourCard
+                    key={tour.id}
+                    tour={tour}
+                    index={index}
+                    departure={nextDeparture.get(tour.id) ?? null}
+                    // The first card runs wide, so the grid has a focal point
+                    // instead of three identical boxes.
+                    featured={index === 0 && filtered.length > 2}
+                  />
+                ))}
           </div>
 
           {isLoaded && filtered.length === 0 ? (
@@ -157,27 +171,24 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="about" className="bg-card py-24 md:py-32">
+      {/* --------------------------------------------------------------- about */}
+      <section id="about" className="bg-secondary/40 py-24 md:py-32">
         <div className="container mx-auto max-w-5xl px-6 md:px-12">
           <div className="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
             <div>
-              <h2 className="mb-6 text-sm uppercase tracking-[0.3em] text-accent">{t.about.eyebrow}</h2>
+              <h2 className="mb-6 text-xs uppercase tracking-[0.35em] text-accent">{t.about.eyebrow}</h2>
               <h3 className="mb-8 font-serif text-4xl leading-tight text-primary md:text-5xl">
                 {t.about.titleA} <br />
                 <span className="italic">{t.about.titleB}</span>
               </h3>
-              <div className="space-y-6 font-light leading-relaxed text-muted-foreground">
+              <div className="space-y-5 font-light leading-relaxed text-muted-foreground">
                 {t.about.paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
             </div>
             <div className="relative h-[520px] overflow-hidden rounded-2xl">
-              <img
-                src={tours[0]?.image || "/hero.png"}
-                alt=""
-                className="h-full w-full object-cover"
-              />
+              <img src={tours[0]?.image || "/hero.png"} alt="" className="h-full w-full object-cover" />
             </div>
           </div>
         </div>

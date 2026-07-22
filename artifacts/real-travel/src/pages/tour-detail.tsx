@@ -3,6 +3,7 @@ import { Link, useRoute } from "wouter";
 import { ArrowLeft, CheckCircle2, Clock3, Loader2, MapPin, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingForm } from "@/components/booking-form";
+import { BookingBar } from "@/components/booking-bar";
 import { useLanguage } from "@/i18n";
 import { formatUzs } from "@/lib/format";
 import { COMPANY } from "@/lib/company";
@@ -98,7 +99,7 @@ export function TourDetailPage() {
         </div>
       </header>
 
-      <div className="container mx-auto max-w-5xl px-6 py-16 md:px-12">
+      <div className="container mx-auto max-w-5xl px-6 pb-32 pt-16 md:px-12 lg:pb-16">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-10">
             <p className="font-light leading-relaxed text-muted-foreground">{tour.description}</p>
@@ -127,7 +128,7 @@ export function TourDetailPage() {
             </section>
           </div>
 
-          <aside className="lg:sticky lg:top-28 lg:self-start">
+          <aside className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
               <h2 className="mb-2 font-serif text-2xl text-primary">{t.booking.title}</h2>
               <p className="mb-6 text-sm text-muted-foreground">{t.booking.text}</p>
@@ -136,6 +137,8 @@ export function TourDetailPage() {
           </aside>
         </div>
       </div>
+
+      <BookingBar tour={tour} />
     </article>
   );
 }

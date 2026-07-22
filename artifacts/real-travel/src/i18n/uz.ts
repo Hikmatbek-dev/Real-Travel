@@ -13,7 +13,13 @@ export const uz: Dictionary = {
     titleAccent: "Real",
     titleAfter: "Travel bilan kashf eting",
     text: "Har bir yo'nalish qo'lda tanlanadi: qulay mehmonxonalar, tajribali gidlar va siz uchun tuzilgan dastur.",
-    button: "Sayohatlarni ko'rish"
+    button: "Sayohatlarni ko'rish",
+    searchWhere: "Qayerga",
+    searchWhen: "Qachon",
+    searchWho: "Necha kishi",
+    searchButton: "Qidirish",
+    anyDestination: "Istalgan yo'nalish",
+    anyMonth: "Istalgan oy"
   },
   collection: {
     title: "Sayohatlar kolleksiyasi",
@@ -27,7 +33,11 @@ export const uz: Dictionary = {
     cardButton: "Batafsil ko'rish",
     perPerson: "kishi uchun",
     days: "kun",
-    from: "dan"
+    from: "dan",
+    nextDeparture: "Keyingi jo'nash",
+    seatsLeft: "o'rin qoldi",
+    datesSoon: "Sanalar tez orada",
+    featured: "Tanlangan yo'nalish"
   },
   tour: {
     back: "Barcha sayohatlar",
@@ -63,6 +73,7 @@ export const uz: Dictionary = {
     payNow: "Hozir to'lanadi",
     remaining: "Keyin to'lanadi",
     paymentLabel: "To'lov usuli",
+    bookNow: "Band qilish",
     payButton: "To'lovga o'tish",
     payError: "To'lovni boshlab bo'lmadi. Iltimos, qayta urinib ko'ring.",
     totalLabel: "Jami to'lov",

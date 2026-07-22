@@ -1,56 +1,107 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Clock3, MapPin } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Clock3, MapPin, Users } from "lucide-react";
 import { useLanguage } from "@/i18n";
 import { formatUzs } from "@/lib/format";
 import type { SharedTour } from "@/lib/shared-travel-data";
 
-export function TourCard({ tour, index = 0 }: { tour: SharedTour; index?: number }) {
+export type Departure = { departureDate: string; seatsLeft: number | null };
+
+/**
+ * A journey card. The image carries the price, and the footer carries the two
+ * things a buyer actually decides on — when it leaves and whether there is
+ * still room — instead of a third repetition of the description.
+ */
+export function TourCard({
+  tour,
+  departure,
+  index = 0,
+  featured = false
+}: {
+  tour: SharedTour;
+  departure?: Departure | null;
+  index?: number;
+  featured?: boolean;
+}) {
   const { t, language } = useLanguage();
+
+  const dateLabel = new Intl.DateTimeFormat(
+    language === "ru" ? "ru-RU" : language === "en" ? "en-GB" : "uz-UZ",
+    { day: "numeric", month: "short" }
+  );
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      transition={{ duration: 0.5, delay: Math.min(index, 4) * 0.07 }}
+      className={featured ? "md:col-span-2" : undefined}
     >
       <Link
         href={`/tours/${tour.slug}`}
-        className="group relative block overflow-hidden rounded-2xl bg-card text-left shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
+        className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-card shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
       >
-        <div className="relative h-72 overflow-hidden md:h-80">
+        <div className={`relative overflow-hidden ${featured ? "h-80 md:h-[26rem]" : "h-72"}`}>
           <img
             src={tour.image}
             alt={tour.name}
-            loading="lazy"
-            className="h-full w-full transform bg-muted/10 object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            loading={index > 2 ? "lazy" : undefined}
+            className="h-full w-full transform bg-muted object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           />
-          {tour.priceUzs > 0 ? (
-            <div className="absolute right-4 top-4 z-20 rounded-full bg-card/90 px-3 py-1 text-xs font-semibold tracking-wider backdrop-blur">
-              {formatUzs(tour.priceUzs, language)}
-            </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/85 via-primary/10 to-transparent" />
+
+          {featured ? (
+            <span className="absolute left-5 top-5 rounded-full bg-accent px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-accent-foreground">
+              {t.collection.featured}
+            </span>
           ) : null}
+
+          {/* Price sits on the image so it is visible before any scrolling. */}
+          <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-3 text-primary-foreground">
+            <div className="min-w-0">
+              <div className="mb-1 flex items-center gap-1.5 text-xs uppercase tracking-[0.15em] text-primary-foreground/75">
+                <MapPin className="h-3.5 w-3.5" />
+                {t.regions[tour.region]}
+              </div>
+              <h3 className={`font-serif leading-tight ${featured ? "text-3xl md:text-4xl" : "text-2xl"}`}>
+                {tour.name}
+              </h3>
+            </div>
+            {tour.priceUzs > 0 ? (
+              <div className="shrink-0 rounded-full bg-card/95 px-3 py-1.5 text-right backdrop-blur">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.collection.from}</div>
+                <div className="text-sm font-semibold text-primary">{formatUzs(tour.priceUzs, language)}</div>
+              </div>
+            ) : null}
+          </div>
         </div>
 
-        <div className="p-8">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div className="flex items-center text-sm font-medium tracking-wider text-accent">
-              <MapPin className="mr-1 h-4 w-4" />
-              {t.regions[tour.region]}
-            </div>
-            <div className="flex items-center gap-1 text-xs uppercase tracking-wider text-muted-foreground">
-              <Clock3 className="h-4 w-4" />
+        <div className="flex flex-1 flex-col p-6">
+          <p className="mb-5 line-clamp-2 font-light leading-relaxed text-muted-foreground">{tour.location}</p>
+
+          <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 text-sm">
+            <span className="flex items-center gap-1.5 text-muted-foreground">
+              <Clock3 className="h-4 w-4 text-accent" />
               {tour.duration} {t.collection.days}
-            </div>
-          </div>
+            </span>
 
-          <h3 className="mb-4 font-serif text-2xl text-primary">{tour.name}</h3>
-          <p className="mb-4 font-light leading-relaxed text-muted-foreground">{tour.location}</p>
-          <p className="mb-8 line-clamp-3 font-light leading-relaxed text-muted-foreground">{tour.description}</p>
+            {departure ? (
+              <span className="flex items-center gap-1.5 text-muted-foreground">
+                <CalendarDays className="h-4 w-4 text-accent" />
+                {dateLabel.format(new Date(`${departure.departureDate}T00:00:00`))}
+              </span>
+            ) : (
+              <span className="text-muted-foreground/70">{t.collection.datesSoon}</span>
+            )}
 
-          <div className="inline-flex w-full items-center justify-center rounded-lg border border-primary/20 px-4 py-4 text-xs uppercase tracking-widest text-primary transition-colors group-hover:bg-primary group-hover:text-white">
-            {t.collection.cardButton}
+            {departure && departure.seatsLeft !== null && departure.seatsLeft <= 5 ? (
+              <span className="flex items-center gap-1.5 font-medium text-accent">
+                <Users className="h-4 w-4" />
+                {departure.seatsLeft} {t.collection.seatsLeft}
+              </span>
+            ) : null}
+
+            <ArrowUpRight className="ml-auto h-5 w-5 text-primary transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </div>
         </div>
       </Link>

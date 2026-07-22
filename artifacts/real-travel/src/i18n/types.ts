@@ -12,6 +12,12 @@ export type Dictionary = {
     titleAfter: string;
     text: string;
     button: string;
+    searchWhere: string;
+    searchWhen: string;
+    searchWho: string;
+    searchButton: string;
+    anyDestination: string;
+    anyMonth: string;
   };
   collection: {
     title: string;
@@ -26,6 +32,10 @@ export type Dictionary = {
     perPerson: string;
     days: string;
     from: string;
+    nextDeparture: string;
+    seatsLeft: string;
+    datesSoon: string;
+    featured: string;
   };
   tour: {
     back: string;
@@ -61,6 +71,7 @@ export type Dictionary = {
     payNow: string;
     remaining: string;
     paymentLabel: string;
+    bookNow: string;
     payButton: string;
     payError: string;
     totalLabel: string;
