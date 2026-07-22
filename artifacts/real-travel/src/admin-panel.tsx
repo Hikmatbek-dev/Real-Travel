@@ -44,6 +44,7 @@ import { useAdminAuth } from "@/lib/use-admin-auth";
 import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
 import { TourContentEditor } from "@/components/admin/tour-content-editor";
 import { ReviewsManager } from "@/components/admin/reviews-manager";
+import { uploadTourImage } from "@/lib/upload-image";
 
 type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders" | "/admin/reviews";
 type TourFormState = Partial<SharedTour>;
@@ -169,6 +170,7 @@ export function AdminPanel() {
   const [datesTour, setDatesTour] = useState<SharedTour | null>(null);
   const [tourForm, setTourForm] = useState<TourFormState>({});
   const [tourToDelete, setTourToDelete] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const [orderQuery, setOrderQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
@@ -373,41 +375,24 @@ export function AdminPanel() {
     toast({ title: "Order created", description: "The booking queue was updated." });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
-        const maxDimension = 1200;
-
-        if (width > maxDimension || height > maxDimension) {
-          if (width > height) {
-            height = Math.round((height * maxDimension) / width);
-            width = maxDimension;
-          } else {
-            width = Math.round((width * maxDimension) / height);
-            height = maxDimension;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL("image/webp", 0.8);
-          setTourForm({ ...tourForm, image: dataUrl });
-        }
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+    setIsUploadingImage(true);
+    try {
+      const url = await uploadTourImage(file);
+      setTourForm((prev) => ({ ...prev, image: url }));
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: error instanceof Error ? error.message : "Could not upload the image.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = "";
+    }
   };
 
   const SidebarContent = () => (
@@ -734,7 +719,12 @@ export function AdminPanel() {
             <div className="grid gap-2"><Label>Description</Label><Textarea value={tourForm.description || ""} onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })} className="min-h-[120px]" /></div>
             <div className="grid gap-2">
               <Label>Image</Label>
-              <Input type="file" accept="image/*" onChange={handleImageUpload} />
+              <Input type="file" accept="image/*" disabled={isUploadingImage} onChange={handleImageUpload} />
+              {isUploadingImage ? (
+                <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading...
+                </p>
+              ) : null}
               {tourForm.image && (
                 <div className="mt-2 relative h-40 w-full rounded-md border border-border bg-muted flex items-center justify-center overflow-hidden p-2">
                   <img src={tourForm.image} alt="Preview" className="max-h-full max-w-full object-contain" />
