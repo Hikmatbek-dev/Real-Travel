@@ -77,7 +77,7 @@ export function OrderLookupPage() {
 
         <div className="space-y-2">
           <Label htmlFor="lookupPhone">{t.order.phone}</Label>
-          <div className="flex items-center rounded-md border border-input bg-background">
+          <div className="flex items-center rounded-lg border border-input bg-background">
             <span className="border-r border-input px-3 text-sm text-muted-foreground">+998</span>
             <Input
               id="lookupPhone"
@@ -96,7 +96,7 @@ export function OrderLookupPage() {
         </div>
 
         {error ? (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">{error}</div>
+          <div className="rounded-lg bg-destructive/10 p-3 text-sm font-medium text-destructive">{error}</div>
         ) : null}
 
         <Button type="submit" className="h-11 w-full" disabled={isChecking}>
@@ -173,7 +173,7 @@ export function OrderLookupPage() {
               </dl>
 
               {result.paymentMode === "deposit" && result.paymentState === 2 ? (
-                <p className="mt-5 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+                <p className="mt-5 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
                   {t.order.depositPaid} ({result.depositPercent}%)
                 </p>
               ) : null}

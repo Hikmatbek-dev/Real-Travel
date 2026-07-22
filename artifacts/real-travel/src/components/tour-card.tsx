@@ -49,7 +49,7 @@ export function TourCard({ tour, index = 0 }: { tour: SharedTour; index?: number
           <p className="mb-4 font-light leading-relaxed text-muted-foreground">{tour.location}</p>
           <p className="mb-8 line-clamp-3 font-light leading-relaxed text-muted-foreground">{tour.description}</p>
 
-          <div className="inline-flex w-full items-center justify-center rounded-none border border-primary/20 px-4 py-4 text-xs uppercase tracking-widest text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+          <div className="inline-flex w-full items-center justify-center rounded-lg border border-primary/20 px-4 py-4 text-xs uppercase tracking-widest text-primary transition-colors group-hover:bg-primary group-hover:text-white">
             {t.collection.cardButton}
           </div>
         </div>

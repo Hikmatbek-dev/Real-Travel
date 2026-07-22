@@ -66,7 +66,7 @@ export function PaymentMock() {
           </div>
 
           {error ? (
-            <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">{error}</div>
+            <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm font-medium text-destructive">{error}</div>
           ) : null}
 
           <div className="space-y-3">

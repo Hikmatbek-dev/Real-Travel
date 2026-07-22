@@ -65,7 +65,7 @@ export function SiteHeader() {
     <nav className="fixed top-0 z-50 w-full bg-white/90 py-4 shadow-sm backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between gap-4 px-6 md:px-12">
         <Link href="/" className="relative z-50">
-          <img src="/logo.jpg" alt="Real Travel" className="h-12 w-auto rounded-md object-contain" />
+          <img src="/logo.jpg" alt="Real Travel" className="h-12 w-auto rounded-lg object-contain" />
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

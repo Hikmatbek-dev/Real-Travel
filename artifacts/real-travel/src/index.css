@@ -51,73 +51,76 @@
 }
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 226 60% 10%;
+  /* Khiva majolica: deep petrol tile, warm clay, sand paper.
+     Warm background + cool primary + warm accent gives real hierarchy —
+     the previous palette was one blue accenting another blue. */
+  --background: 40 30% 97%;
+  --foreground: 195 25% 12%;
 
-  --border: 210 20% 90%;
-  --input: 210 20% 90%;
-  --ring: 208 88% 47%;
+  --border: 38 18% 87%;
+  --input: 38 18% 85%;
+  --ring: 22 68% 46%;
 
   --card: 0 0% 100%;
-  --card-foreground: 226 60% 10%;
-  --card-border: 210 20% 94%;
+  --card-foreground: 195 25% 12%;
+  --card-border: 38 18% 90%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 226 60% 10%;
-  --popover-border: 210 20% 90%;
+  --popover-foreground: 195 25% 12%;
+  --popover-border: 38 18% 87%;
 
-  --primary: 210 88% 33%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 192 60% 17%;
+  --primary-foreground: 40 30% 97%;
 
-  --secondary: 210 20% 96%;
-  --secondary-foreground: 226 60% 10%;
+  --secondary: 38 28% 93%;
+  --secondary-foreground: 195 25% 12%;
 
-  --muted: 210 20% 96%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 38 22% 94%;
+  --muted-foreground: 195 12% 40%;
 
-  --accent: 204 94% 58%;
-  --accent-foreground: 0 0% 100%;
+  --accent: 22 68% 46%;
+  --accent-foreground: 40 30% 97%;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 40 30% 97%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: 'Cormorant Garamond', serif;
   --app-font-mono: Menlo, monospace;
-  
+
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: 226 60% 10%;
-  --foreground: 0 0% 100%;
+  --background: 195 30% 9%;
+  --foreground: 40 30% 96%;
 
-  --border: 226 40% 20%;
-  --input: 226 40% 20%;
-  --ring: 204 94% 58%;
+  --border: 195 20% 20%;
+  --input: 195 20% 20%;
+  --ring: 22 68% 52%;
 
-  --card: 226 50% 12%;
-  --card-foreground: 0 0% 100%;
-  --card-border: 226 40% 18%;
+  --card: 195 28% 12%;
+  --card-foreground: 40 30% 96%;
+  --card-border: 195 20% 18%;
 
-  --popover: 226 50% 12%;
-  --popover-foreground: 0 0% 100%;
-  --popover-border: 226 40% 20%;
+  --popover: 195 28% 12%;
+  --popover-foreground: 40 30% 96%;
+  --popover-border: 195 20% 20%;
 
-  --primary: 0 0% 100%;
-  --primary-foreground: 226 60% 10%;
+  --primary: 40 30% 96%;
+  --primary-foreground: 195 30% 9%;
 
-  --secondary: 226 40% 18%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: 195 20% 18%;
+  --secondary-foreground: 40 30% 96%;
 
-  --muted: 226 40% 18%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 195 20% 18%;
+  --muted-foreground: 40 12% 65%;
 
-  --accent: 204 94% 58%;
-  --accent-foreground: 0 0% 100%;
+  --accent: 22 68% 52%;
+  --accent-foreground: 195 30% 9%;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 100%;
+  --destructive: 0 62% 40%;
+  --destructive-foreground: 40 30% 96%;
 }
 
 @layer base {

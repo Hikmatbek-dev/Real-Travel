@@ -113,7 +113,7 @@ export function PaymentReturn() {
           window.dispatchEvent(new PopStateEvent("popstate"));
         }}
         variant="outline"
-        className="rounded-none border-primary text-primary uppercase tracking-widest"
+        className="rounded-lg border-primary text-primary uppercase tracking-widest"
       >
         {t.home}
       </Button>

@@ -97,7 +97,7 @@ export function TourDatesDialog({
               <p className="py-6 text-center text-sm text-muted-foreground">No departure dates yet.</p>
             ) : (
               dates.map((date) => (
-                <div key={date.id} className="flex items-center gap-3 rounded-md border border-border px-3 py-2">
+                <div key={date.id} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2">
                   <span className="flex-1 text-sm font-medium">{date.departureDate}</span>
                   <Input
                     type="number"

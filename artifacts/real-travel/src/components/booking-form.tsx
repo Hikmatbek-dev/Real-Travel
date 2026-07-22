@@ -156,14 +156,14 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error ? (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive">{error}</div>
+        <div className="rounded-lg bg-destructive/10 p-3 text-sm font-medium text-destructive">{error}</div>
       ) : null}
 
       {/* Departure */}
       <div className="space-y-2">
         <Label htmlFor="departure">{t.booking.departure}</Label>
         {dates === null ? (
-          <div className="flex h-10 items-center rounded-md border border-input px-3 text-sm text-muted-foreground">
+          <div className="flex h-10 items-center rounded-lg border border-input px-3 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           </div>
         ) : (
@@ -172,7 +172,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
             required
             value={dateId}
             onChange={(e) => setDateId(e.target.value)}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+            className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm"
           >
             <option value="">{t.booking.selectDate}</option>
             {dates.map((date) => (
@@ -202,7 +202,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
 
       <div className="space-y-2">
         <Label htmlFor="phone">{t.booking.phone}</Label>
-        <div className="flex items-center rounded-md border border-input bg-background">
+        <div className="flex items-center rounded-lg border border-input bg-background">
           <span className="border-r border-input px-3 text-sm text-muted-foreground">+998</span>
           <Input
             id="phone"
@@ -277,7 +277,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
               key={option}
               type="button"
               onClick={() => setMode(option)}
-              className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                 mode === option
                   ? "border-primary bg-primary text-white"
                   : "border-input bg-background text-muted-foreground hover:border-primary/50"
@@ -298,7 +298,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
               key={option.id}
               type="button"
               onClick={() => setProvider(option.id)}
-              className={`rounded-md border px-2 py-2 text-xs font-medium transition-colors ${
+              className={`rounded-lg border px-2 py-2 text-xs font-medium transition-colors ${
                 provider === option.id
                   ? "border-primary bg-primary text-white"
                   : "border-input bg-background text-muted-foreground hover:border-primary/50"
@@ -311,7 +311,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
       </div>
 
       {/* Totals */}
-      <div className="space-y-1 rounded-md bg-muted/50 px-4 py-3">
+      <div className="space-y-1 rounded-lg bg-muted/50 px-4 py-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">{t.booking.totalLabel}</span>
           <span className="text-sm text-muted-foreground">{formatUzs(fullTotal, language)}</span>
