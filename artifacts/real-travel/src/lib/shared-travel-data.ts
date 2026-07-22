@@ -42,6 +42,10 @@ export type SharedOrder = {
   paymentMode?: PaymentMode;
   /** Deposit share actually charged — set by the server at checkout. */
   depositPercent?: number | null;
+  /** 0 unpaid, 1 pending, 2 paid, -2 cancelled — owned by the server. */
+  paymentState?: number;
+  /** What was actually charged, in tiyin. Server-set. */
+  amountTiyin?: number | null;
   travelersInfo?: TravelerInfo[];
   customerName: string;
   email: string;
@@ -122,6 +126,8 @@ type OrderRow = {
   tour_date_id?: string | null;
   payment_mode?: string;
   deposit_percent?: number | null;
+  payment_state?: number;
+  amount_tiyin?: number | null;
   travelers_info?: TravelerInfo[] | null;
   customer_name: string;
   email: string;
@@ -268,6 +274,8 @@ function rowToOrder(row: OrderRow): SharedOrder {
     tourDateId: row.tour_date_id ?? null,
     paymentMode: (row.payment_mode as PaymentMode) || "full",
     depositPercent: row.deposit_percent ?? null,
+    paymentState: Number(row.payment_state) || 0,
+    amountTiyin: row.amount_tiyin ?? null,
     travelersInfo: Array.isArray(row.travelers_info) ? row.travelers_info : [],
     customerName: row.customer_name,
     email: row.email,

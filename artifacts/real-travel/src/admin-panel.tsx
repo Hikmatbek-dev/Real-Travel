@@ -46,6 +46,7 @@ import { TourContentEditor } from "@/components/admin/tour-content-editor";
 import { ReviewsManager } from "@/components/admin/reviews-manager";
 import { uploadTourImage } from "@/lib/upload-image";
 import { supabase } from "@/lib/supabase";
+import { formatUzs } from "@/lib/format";
 
 type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders" | "/admin/reviews";
 type TourFormState = Partial<SharedTour>;
@@ -243,9 +244,19 @@ export function AdminPanel() {
 
   const pendingOrders = orders.filter((order) => order.status === "New").length;
   const confirmedOrders = orders.filter((order) => order.status === "Confirmed").length;
-  const confirmedRevenue = orders
-    .filter((order) => order.status === "Confirmed")
-    .reduce((sum, order) => sum + order.totalAmount, 0);
+  /** What a customer has actually paid, in so'm. Deposits pay only a share. */
+  const paidOf = (order: SharedOrder) =>
+    order.paymentState === 2 ? Math.round((order.amountTiyin ?? 0) / 100) : 0;
+
+  /** Still owed on a booking that has been paid for but only in part. */
+  const owedOf = (order: SharedOrder) =>
+    order.status === "Cancelled" ? 0 : Math.max(0, order.totalAmount - paidOf(order));
+
+  const collected = orders.reduce((sum, order) => sum + paidOf(order), 0);
+  const outstanding = orders
+    .filter((order) => order.paymentState === 2)
+    .reduce((sum, order) => sum + owedOf(order), 0);
+  const confirmedRevenue = collected;
 
   const statusCount = orders.reduce((acc, order) => {
     acc[order.status] = (acc[order.status] || 0) + 1;
@@ -482,7 +493,7 @@ export function AdminPanel() {
                     <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Tours</CardTitle><Map className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{tours.length}</div><p className="text-xs text-muted-foreground mt-1">Live catalog on 5173</p></CardContent></Card>
                     <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Orders</CardTitle><ShoppingCart className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{orders.length}</div><p className="text-xs text-muted-foreground mt-1">Shared with user booking flow</p></CardContent></Card>
                     <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Pending Approval</CardTitle><TrendingUp className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{pendingOrders}</div><p className="text-xs text-muted-foreground mt-1">Waiting for manager action</p></CardContent></Card>
-                    <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Confirmed Revenue</CardTitle><Wallet className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold text-primary">${confirmedRevenue.toLocaleString()}</div><p className="text-xs text-muted-foreground mt-1">Accepted orders only</p></CardContent></Card>
+                    <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Collected</CardTitle><Wallet className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{formatUzs(collected, "uz")}</div><p className="text-xs text-muted-foreground mt-1">Actually received</p></CardContent></Card>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-7">
@@ -609,7 +620,8 @@ export function AdminPanel() {
                   <div className="grid gap-4 md:grid-cols-3">
                     <Card><CardContent className="p-5"><div className="text-sm text-muted-foreground">New requests</div><div className="mt-2 text-3xl font-semibold">{pendingOrders}</div></CardContent></Card>
                     <Card><CardContent className="p-5"><div className="text-sm text-muted-foreground">Confirmed sales</div><div className="mt-2 text-3xl font-semibold">{confirmedOrders}</div></CardContent></Card>
-                    <Card><CardContent className="p-5"><div className="text-sm text-muted-foreground">Confirmed revenue</div><div className="mt-2 text-3xl font-semibold text-primary">${confirmedRevenue.toLocaleString()}</div></CardContent></Card>
+                    <Card><CardContent className="p-5"><div className="text-sm text-muted-foreground">Collected</div><div className="mt-2 text-3xl font-semibold text-primary">{formatUzs(collected, "uz")}</div></CardContent></Card>
+                    <Card><CardContent className="p-5"><div className="text-sm text-muted-foreground">Still owed</div><div className="mt-2 text-3xl font-semibold text-accent">{formatUzs(outstanding, "uz")}</div><p className="mt-1 text-xs text-muted-foreground">Balance on deposit bookings</p></CardContent></Card>
                   </div>
 
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -638,7 +650,7 @@ export function AdminPanel() {
                             <TableHead>Order #</TableHead>
                             <TableHead>Customer</TableHead>
                             <TableHead className="hidden md:table-cell">Tour</TableHead>
-                            <TableHead className="hidden lg:table-cell">Amount</TableHead>
+                            <TableHead className="hidden lg:table-cell">Paid / total</TableHead>
                             <TableHead className="hidden sm:table-cell">Date</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
@@ -652,7 +664,13 @@ export function AdminPanel() {
                                 <TableCell className="font-mono text-xs font-medium">{order.orderNumber}</TableCell>
                                 <TableCell><div className="font-medium">{order.customerName}</div><div className="mt-1 text-xs text-muted-foreground">{order.email}</div></TableCell>
                                 <TableCell className="hidden md:table-cell"><div className="flex flex-col"><span className="font-medium text-sm">{tour?.name || "Unknown Tour"}</span><span className="text-xs text-muted-foreground">{tour?.location}</span></div></TableCell>
-                                <TableCell className="hidden lg:table-cell text-sm font-medium text-primary">${order.totalAmount.toLocaleString()}</TableCell>
+                                <TableCell className="hidden lg:table-cell text-sm">
+                                  <div className="font-medium text-primary">{formatUzs(paidOf(order), "uz")}</div>
+                                  <div className="text-xs text-muted-foreground">of {formatUzs(order.totalAmount, "uz")}</div>
+                                  {owedOf(order) > 0 && order.paymentState === 2 ? (
+                                    <div className="text-xs font-medium text-accent">owes {formatUzs(owedOf(order), "uz")}</div>
+                                  ) : null}
+                                </TableCell>
                                 <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">{format(new Date(order.date), "MMM d, yyyy")}</TableCell>
                                 <TableCell><Badge variant="outline" className={`${getStatusColor(order.status)} border rounded-full px-2.5 font-medium`}>{order.status}</Badge></TableCell>
                                 <TableCell className="text-right">
