@@ -42,17 +42,28 @@ export async function paylovRequest<T>(
   const url = new URL(PAYLOV_BASE_URL.replace(/\/$/, "") + path);
   const rawBody = body === undefined ? "" : JSON.stringify(body);
   const timestamp = Date.now().toString();
+
+  // Always sign Paylov's own path — the signature must not depend on whether
+  // the request travels via the proxy.
   const signature = paylovSignature(method, url.pathname, timestamp, rawBody, apiSecret);
+
+  // Paylov whitelists our IP, and Vercel functions have no fixed outbound
+  // address, so in production the call is relayed through a host that does.
+  // The proxy keeps method, path and body byte-identical.
+  const proxyBase = process.env.PAYLOV_PROXY_URL?.replace(/\/$/, "");
+  const proxySecret = process.env.PAYLOV_PROXY_SECRET;
+  const target = proxyBase ? new URL(proxyBase + url.pathname + url.search) : url;
 
   let res: Response;
   try {
-    res = await fetch(url, {
+    res = await fetch(target, {
       method,
       headers: {
         "Content-Type": "application/json",
         "X-API-Key": apiKey,
         "X-Timestamp": timestamp,
         "X-Signature": signature,
+        ...(proxyBase && proxySecret ? { "X-Proxy-Secret": proxySecret } : {}),
       },
       body: method === "GET" ? undefined : rawBody,
     });
