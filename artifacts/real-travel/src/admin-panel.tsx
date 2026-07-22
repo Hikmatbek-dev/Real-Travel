@@ -177,6 +177,13 @@ export function AdminPanel() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
+  // Catch payments that settled at Paylov while the customer never came back.
+  // Realtime picks up whatever this confirms, so nothing else needs to react.
+  useEffect(() => {
+    if (!user || route !== "/admin/orders") return;
+    fetch("/api/reconcile", { method: "POST" }).catch(() => {});
+  }, [user, route]);
+
   const navigate = (nextRoute: AdminRoute) => {
     window.history.pushState({}, "", nextRoute);
     setRoute(nextRoute);

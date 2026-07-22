@@ -70,6 +70,31 @@ export async function paylovRequest<T>(
   }
 }
 
+/**
+ * Ask Paylov whether an order has been paid.
+ *
+ * Paylov only pushes a webhook to a URL it has registered for the partner, so
+ * we cannot rely on it being delivered. `GET /orders/{id}` lets us pull the
+ * authoritative state ourselves, which keeps settlement working regardless.
+ * Returns null when the state could not be determined.
+ */
+export async function paylovOrderState(
+  paylovOrderId: string,
+): Promise<{ paid: boolean; canceled: boolean } | null> {
+  type OrderStateResponse = { data?: { order?: { paid?: boolean; canceled?: boolean } } };
+
+  const result = await paylovRequest<OrderStateResponse>(
+    "GET",
+    `/orders/${encodeURIComponent(paylovOrderId)}`,
+  );
+  if (!result.ok) return null;
+
+  const order = result.data?.data?.order;
+  if (!order) return null;
+
+  return { paid: order.paid === true, canceled: order.canceled === true };
+}
+
 // ---------------------------------------------------------------------------
 // Supabase REST (service role — server side only, bypasses RLS)
 // ---------------------------------------------------------------------------
