@@ -40,6 +40,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { OrderStatus, RegionKey, SharedOrder, SharedTour, useSharedTravelData } from "@/lib/shared-travel-data";
 import { useAdminAuth } from "@/lib/use-admin-auth";
+import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
 
 type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders";
 type TourFormState = Partial<SharedTour>;
@@ -151,7 +152,7 @@ function LoginScreen({ onSignIn }: { onSignIn: (username: string, password: stri
 }
 
 export function AdminPanel() {
-  const { tours, orders, saveTours, saveOrders, isLoaded } = useSharedTravelData();
+  const { tours, tourDates, orders, saveTours, saveTourDates, saveOrders, isLoaded } = useSharedTravelData();
   const { user, displayName, loading: isAuthLoading, signIn, signOut } = useAdminAuth();
   const { toast } = useToast();
   const [route, setRoute] = useState<AdminRoute>(() => normalizeAdminRoute(window.location.pathname));
@@ -161,6 +162,7 @@ export function AdminPanel() {
   const [isTourModalOpen, setIsTourModalOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [editingTour, setEditingTour] = useState<SharedTour | null>(null);
+  const [datesTour, setDatesTour] = useState<SharedTour | null>(null);
   const [tourForm, setTourForm] = useState<TourFormState>({});
   const [tourToDelete, setTourToDelete] = useState<string | null>(null);
 
@@ -590,6 +592,7 @@ export function AdminPanel() {
                               <TableCell className="hidden md:table-cell text-muted-foreground">{tour.duration} days</TableCell>
                               <TableCell className="text-right">
                                 <div className="flex justify-end gap-2">
+                                  <Button variant="ghost" size="sm" onClick={() => setDatesTour(tour)}>Dates</Button>
                                   <Button variant="ghost" size="sm" onClick={() => openEditTour(tour)}>Edit</Button>
                                   <Button variant="ghost" size="sm" className="text-destructive" onClick={() => { setTourToDelete(tour.id); setIsDeleteAlertOpen(true); }}>Delete</Button>
                                 </div>
@@ -681,6 +684,13 @@ export function AdminPanel() {
           </main>
         </div>
       </div>
+
+      <TourDatesDialog
+        tour={datesTour}
+        tourDates={tourDates}
+        onSave={saveTourDates}
+        onOpenChange={(open) => { if (!open) setDatesTour(null); }}
+      />
 
       <Dialog open={isTourModalOpen} onOpenChange={setIsTourModalOpen}>
         <DialogContent className="sm:max-w-[560px]">

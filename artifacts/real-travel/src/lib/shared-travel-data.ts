@@ -22,9 +22,17 @@ export type SharedTour = {
   image: string;
 };
 
+export type TravelerInfo = { fullName: string; birthDate: string };
+
 export type SharedOrder = {
   id: string;
   orderNumber: string;
+  /** Chosen departure, when the tour publishes dates. */
+  tourDateId?: string | null;
+  paymentMode?: PaymentMode;
+  /** Deposit share actually charged — set by the server at checkout. */
+  depositPercent?: number | null;
+  travelersInfo?: TravelerInfo[];
   customerName: string;
   email: string;
   phone: string;
@@ -36,7 +44,24 @@ export type SharedOrder = {
   notes: string;
 };
 
+export type TourDate = {
+  id: string;
+  tourId: string;
+  /** ISO date (YYYY-MM-DD) — a departure, not a timestamp. */
+  departureDate: string;
+  seatsTotal: number;
+};
+
+export type PaymentMode = "full" | "deposit";
+
 // ----- Row types (Supabase, snake_case) -----
+
+type TourDateRow = {
+  id: string;
+  tour_id: string;
+  departure_date: string;
+  seats_total: number;
+};
 
 type TourRow = {
   id: string;
@@ -54,6 +79,10 @@ type TourRow = {
 type OrderRow = {
   id: string;
   order_number: string;
+  tour_date_id?: string | null;
+  payment_mode?: string;
+  deposit_percent?: number | null;
+  travelers_info?: TravelerInfo[] | null;
   customer_name: string;
   email: string;
   phone: string;
@@ -111,7 +140,11 @@ function normalizeOrder(order: Partial<SharedOrder>, tours: SharedTour[], index:
     date: order.date || new Date().toISOString(),
     status: (order.status as OrderStatus) || "New",
     totalAmount,
-    notes: order.notes || ""
+    notes: order.notes || "",
+    tourDateId: order.tourDateId ?? null,
+    paymentMode: order.paymentMode || "full",
+    depositPercent: order.depositPercent ?? null,
+    travelersInfo: order.travelersInfo ?? []
   };
 }
 
@@ -147,10 +180,23 @@ function tourToRow(tour: SharedTour): TourRow {
   };
 }
 
+function rowToTourDate(row: TourDateRow): TourDate {
+  return {
+    id: row.id,
+    tourId: row.tour_id,
+    departureDate: String(row.departure_date).slice(0, 10),
+    seatsTotal: Number(row.seats_total) || 0
+  };
+}
+
 function rowToOrder(row: OrderRow): SharedOrder {
   return {
     id: row.id,
     orderNumber: row.order_number,
+    tourDateId: row.tour_date_id ?? null,
+    paymentMode: (row.payment_mode as PaymentMode) || "full",
+    depositPercent: row.deposit_percent ?? null,
+    travelersInfo: Array.isArray(row.travelers_info) ? row.travelers_info : [],
     customerName: row.customer_name,
     email: row.email,
     phone: row.phone,
@@ -167,6 +213,9 @@ function orderToRow(order: SharedOrder): Record<string, unknown> {
   return {
     id: order.id,
     order_number: order.orderNumber,
+    tour_date_id: order.tourDateId || null,
+    payment_mode: order.paymentMode || "full",
+    travelers_info: order.travelersInfo ?? [],
     customer_name: order.customerName,
     email: order.email,
     phone: order.phone,
@@ -188,22 +237,31 @@ function orderToRow(order: SharedOrder): Record<string, unknown> {
  */
 export function useSharedTravelData() {
   const [tours, setTours] = useState<SharedTour[]>([]);
+  const [tourDates, setTourDates] = useState<TourDate[]>([]);
   const [orders, setOrders] = useState<SharedOrder[]>([]);
+  const [depositPercent, setDepositPercent] = useState(30);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     let active = true;
 
     const load = async () => {
-      const [toursRes, ordersRes] = await Promise.all([
+      const [toursRes, datesRes, ordersRes, settingsRes] = await Promise.all([
         supabase.from("tours").select("*").order("created_at", { ascending: true }),
-        supabase.from("orders").select("*").order("date", { ascending: false })
+        supabase.from("tour_dates").select("*").order("departure_date", { ascending: true }),
+        supabase.from("orders").select("*").order("date", { ascending: false }),
+        supabase.from("settings").select("*").eq("key", "deposit_percent").limit(1)
       ]);
 
       if (!active) return;
 
       setTours(((toursRes.data as TourRow[] | null) ?? []).map(rowToTour));
+      setTourDates(((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate));
       setOrders(((ordersRes.data as OrderRow[] | null) ?? []).map(rowToOrder));
+
+      const percent = Number((settingsRes.data as { value: string }[] | null)?.[0]?.value);
+      if (Number.isFinite(percent) && percent > 0) setDepositPercent(Math.round(percent));
+
       setIsLoaded(true);
     };
 
@@ -216,6 +274,7 @@ export function useSharedTravelData() {
       .channel(`rt-shared-data-${channelSeq++}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "tours" }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "tour_dates" }, load)
       .subscribe();
 
     // Reload when the admin signs in or out: RLS changes which rows (e.g. orders)
@@ -285,10 +344,40 @@ export function useSharedTravelData() {
     }
   };
 
+  /** Replaces the departure dates of one tour. Admin only (RLS enforces it). */
+  const saveTourDates = async (tourId: string, nextDates: TourDate[]) => {
+    setTourDates((prev) => [...prev.filter((d) => d.tourId !== tourId), ...nextDates]);
+
+    const keepIds = nextDates.map((d) => d.id);
+    const { data: existing } = await supabase.from("tour_dates").select("id").eq("tour_id", tourId);
+    const toDelete = ((existing as { id: string }[] | null) ?? [])
+      .map((row) => row.id)
+      .filter((id) => !keepIds.includes(id));
+
+    if (toDelete.length) {
+      const { error } = await supabase.from("tour_dates").delete().in("id", toDelete);
+      if (error) throw new Error(error.message);
+    }
+    if (nextDates.length) {
+      const { error } = await supabase.from("tour_dates").upsert(
+        nextDates.map((d) => ({
+          id: d.id,
+          tour_id: d.tourId,
+          departure_date: d.departureDate,
+          seats_total: d.seatsTotal
+        }))
+      );
+      if (error) throw new Error(error.message);
+    }
+  };
+
   return {
     tours,
+    tourDates,
     orders,
+    depositPercent,
     saveTours,
+    saveTourDates,
     saveOrders,
     isLoaded
   };

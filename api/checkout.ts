@@ -6,7 +6,6 @@ import {
   paylovRequest,
   sbSelect,
   sbUpdate,
-  type OrderRow,
   type PaymentProvider,
   type TourRow,
 } from "./_lib";
@@ -19,12 +18,36 @@ type CheckoutResponse = {
   message: string | null;
 };
 
+type OrderRow = {
+  id: string;
+  order_number: string;
+  travelers: number;
+  tour_id: string | null;
+  tour_date_id: string | null;
+  payment_mode: string;
+  payment_state: number;
+};
+
+type TourDateRow = { id: string; departure_date: string; seats_total: number };
+type SeatRow = { travelers: number };
+
+const DEFAULT_DEPOSIT_PERCENT = 30;
+
+/** Deposit share, read from the settings table so the admin can change it. */
+async function depositPercent(): Promise<number> {
+  const rows = await sbSelect<{ value: string }>("settings", "key=eq.deposit_percent&select=value&limit=1");
+  const parsed = Number(rows[0]?.value);
+  if (!Number.isFinite(parsed) || parsed <= 0 || parsed > 100) return DEFAULT_DEPOSIT_PERCENT;
+  return Math.round(parsed);
+}
+
 /**
  * POST /api/checkout  { orderId, provider }
  *
  * Creates a Paylov checkout for an existing (unpaid) order and returns the
- * hosted checkout URL. The charged amount is derived from the tour price in
- * the database — never from the client — so a tampered client cannot pay less.
+ * hosted checkout URL. Everything that decides the charge — tour price, seat
+ * availability and the deposit share — is read from the database here, never
+ * from the client, so a tampered browser cannot pay less or oversell a date.
  */
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
@@ -45,7 +68,7 @@ export default async function handler(req: any, res: any) {
     // --- Load the order ---
     const orders = await sbSelect<OrderRow>(
       "orders",
-      `id=eq.${encodeURIComponent(orderId)}&select=id,order_number,travelers,tour_id,payment_state&limit=1`,
+      `id=eq.${encodeURIComponent(orderId)}&select=id,order_number,travelers,tour_id,tour_date_id,payment_mode,payment_state&limit=1`,
     );
     const order = orders[0];
     if (!order) return res.status(404).json({ error: "Order not found" });
@@ -53,6 +76,35 @@ export default async function handler(req: any, res: any) {
       return res.status(409).json({ error: "Order is already paid" });
     }
     if (!order.tour_id) return res.status(422).json({ error: "Order has no tour attached" });
+
+    const travelers = Math.max(1, Number(order.travelers) || 1);
+
+    // --- Seat availability, when the order is tied to a departure ---
+    if (order.tour_date_id) {
+      const dates = await sbSelect<TourDateRow>(
+        "tour_dates",
+        `id=eq.${encodeURIComponent(order.tour_date_id)}&select=id,departure_date,seats_total&limit=1`,
+      );
+      const departure = dates[0];
+      if (!departure) return res.status(422).json({ error: "Departure date not found" });
+
+      if (departure.seats_total > 0) {
+        // Pending orders hold their seats too, otherwise two people paying at
+        // the same time could both get the last place.
+        const held = await sbSelect<SeatRow>(
+          "orders",
+          `tour_date_id=eq.${encodeURIComponent(order.tour_date_id)}&payment_state=in.(${STATE_PENDING},${STATE_SUCCESS})&id=neq.${encodeURIComponent(order.id)}&select=travelers`,
+        );
+        const taken = held.reduce((sum, row) => sum + (Number(row.travelers) || 0), 0);
+
+        if (taken + travelers > departure.seats_total) {
+          return res.status(409).json({
+            error: "not_enough_seats",
+            seatsLeft: Math.max(0, departure.seats_total - taken),
+          });
+        }
+      }
+    }
 
     // --- Price comes from the database, not the client ---
     const tours = await sbSelect<TourRow>(
@@ -63,27 +115,36 @@ export default async function handler(req: any, res: any) {
     if (!tour) return res.status(422).json({ error: "Tour not found" });
 
     const priceUzs = BigInt(tour.price_uzs ?? 0);
-    const travelers = BigInt(Math.max(1, Number(order.travelers) || 1));
-    const amountTiyin = priceUzs * travelers * 100n; // Paylov charges in tiyin
+    const fullUzs = priceUzs * BigInt(travelers);
 
-    if (amountTiyin <= 0n) {
+    if (fullUzs <= 0n) {
       return res.status(422).json({
         error: `Tour "${tour.name}" has no UZS price set. Set price_uzs in the admin panel.`,
       });
     }
 
+    const isDeposit = order.payment_mode === "deposit";
+    const percent = isDeposit ? await depositPercent() : 100;
+    const chargeUzs = isDeposit ? (fullUzs * BigInt(percent)) / 100n : fullUzs;
+    const amountTiyin = chargeUzs * 100n; // Paylov charges in tiyin
+
+    if (amountTiyin <= 0n) return res.status(422).json({ error: "Computed amount is zero" });
+
     const siteUrl = (process.env.SITE_URL || `https://${req.headers.host}`).replace(/\/$/, "");
+
+    const settle = (paylovOrderId: string) =>
+      sbUpdate("orders", `id=eq.${encodeURIComponent(order.id)}`, {
+        payment_state: STATE_PENDING,
+        payment_provider: provider,
+        paylov_order_id: paylovOrderId,
+        amount_tiyin: Number(amountTiyin),
+        total_amount: Number(fullUzs),
+        deposit_percent: isDeposit ? percent : null,
+      });
 
     // --- Mock mode: skip Paylov, send the customer to the simulated page ---
     if (isMockMode()) {
-      const mockOrderId = `mock-${order.id}`;
-      await sbUpdate("orders", `id=eq.${encodeURIComponent(order.id)}`, {
-        payment_state: STATE_PENDING,
-        payment_provider: provider,
-        paylov_order_id: mockOrderId,
-        amount_tiyin: Number(amountTiyin),
-        total_amount: Number(priceUzs * travelers),
-      });
+      await settle(`mock-${order.id}`);
       return res.status(200).json({
         checkout_url: `${siteUrl}/payment/mock?order=${encodeURIComponent(order.id)}`,
         mock: true,
@@ -107,14 +168,7 @@ export default async function handler(req: any, res: any) {
       return res.status(502).json({ error: "Paylov did not return a checkout_url", detail: result.data });
     }
 
-    // --- Remember what we asked Paylov to charge ---
-    await sbUpdate("orders", `id=eq.${encodeURIComponent(order.id)}`, {
-      payment_state: STATE_PENDING,
-      payment_provider: provider,
-      paylov_order_id: String(paylovOrderId),
-      amount_tiyin: Number(amountTiyin),
-      total_amount: Number(priceUzs * travelers),
-    });
+    await settle(String(paylovOrderId));
 
     return res.status(200).json({ checkout_url });
   } catch (err) {
