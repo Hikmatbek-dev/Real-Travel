@@ -41,6 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 import { OrderStatus, RegionKey, SharedOrder, SharedTour, useSharedTravelData } from "@/lib/shared-travel-data";
 import { useAdminAuth } from "@/lib/use-admin-auth";
 import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
+import { TourContentEditor } from "@/components/admin/tour-content-editor";
 
 type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders";
 type TourFormState = Partial<SharedTour>;
@@ -693,7 +694,7 @@ export function AdminPanel() {
       />
 
       <Dialog open={isTourModalOpen} onOpenChange={setIsTourModalOpen}>
-        <DialogContent className="sm:max-w-[560px]">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[560px]">
           <DialogHeader>
             <DialogTitle>{editingTour ? "Edit Tour" : "Add Tour"}</DialogTitle>
             <DialogDescription>Changes here are reflected in the user section too.</DialogDescription>
@@ -733,6 +734,8 @@ export function AdminPanel() {
               )}
             </div>
           </div>
+          <TourContentEditor draft={tourForm} onChange={(patch) => setTourForm({ ...tourForm, ...patch })} />
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsTourModalOpen(false)}>Cancel</Button>
             <Button onClick={saveTour}>Save tour</Button>

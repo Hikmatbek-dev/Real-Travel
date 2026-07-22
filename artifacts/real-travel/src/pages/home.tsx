@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { MapPinned, Search, UserCheck, Wallet } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -94,6 +94,25 @@ export function HomePage() {
           </div>
 
           <HeroSearch value={query} onChange={setQuery} onSubmit={scrollToTours} />
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- trust */}
+      <section className="border-b border-border bg-card">
+        <div className="container mx-auto max-w-6xl px-6 py-14 md:px-12 md:py-16">
+          <div className="grid gap-10 md:grid-cols-3 md:gap-12">
+            {[
+              { icon: MapPinned, title: t.tour.trust1Title, text: t.tour.trust1Text },
+              { icon: UserCheck, title: t.tour.trust2Title, text: t.tour.trust2Text },
+              { icon: Wallet, title: t.tour.trust3Title, text: t.tour.trust3Text }
+            ].map((item) => (
+              <div key={item.title}>
+                <item.icon className="mb-4 h-6 w-6 text-accent" />
+                <h3 className="mb-2 font-serif text-xl text-primary">{item.title}</h3>
+                <p className="font-light leading-relaxed text-muted-foreground">{item.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

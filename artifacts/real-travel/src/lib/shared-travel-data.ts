@@ -7,6 +7,8 @@ export type OrderStatus = "New" | "Confirmed" | "Cancelled";
 // Gives each useSharedTravelData mount its own realtime channel topic.
 let channelSeq = 0;
 
+export type ItineraryDay = { day: number; title: string; text: string };
+
 export type SharedTour = {
   id: string;
   /** URL-safe identifier used by /tours/:slug */
@@ -20,6 +22,14 @@ export type SharedTour = {
   duration: number;
   description: string;
   image: string;
+  /** Long-form content shown on the tour page. */
+  highlights: string[];
+  included: string[];
+  excluded: string[];
+  gallery: string[];
+  itinerary: ItineraryDay[];
+  /** 0 = not stated. */
+  groupSize: number;
 };
 
 export type TravelerInfo = { fullName: string; birthDate: string };
@@ -74,6 +84,12 @@ type TourRow = {
   duration: number;
   description: string;
   image: string;
+  highlights?: string[] | null;
+  included?: string[] | null;
+  excluded?: string[] | null;
+  gallery?: string[] | null;
+  itinerary?: ItineraryDay[] | null;
+  group_size?: number | null;
 };
 
 type OrderRow = {
@@ -119,7 +135,13 @@ function normalizeTour(tour: Partial<SharedTour>): SharedTour {
     priceUzs: Number(tour.priceUzs) || 0,
     duration: Number(tour.duration) || 1,
     description: tour.description || "",
-    image: tour.image || ""
+    image: tour.image || "",
+    highlights: tour.highlights ?? [],
+    included: tour.included ?? [],
+    excluded: tour.excluded ?? [],
+    gallery: tour.gallery ?? [],
+    itinerary: tour.itinerary ?? [],
+    groupSize: Number(tour.groupSize) || 0
   };
 }
 
@@ -161,7 +183,13 @@ function rowToTour(row: TourRow): SharedTour {
     priceUzs: Number(row.price_uzs ?? 0),
     duration: Number(row.duration),
     description: row.description,
-    image: row.image
+    image: row.image,
+    highlights: row.highlights ?? [],
+    included: row.included ?? [],
+    excluded: row.excluded ?? [],
+    gallery: row.gallery ?? [],
+    itinerary: Array.isArray(row.itinerary) ? row.itinerary : [],
+    groupSize: Number(row.group_size) || 0
   };
 }
 
@@ -176,7 +204,13 @@ function tourToRow(tour: SharedTour): TourRow {
     price_uzs: tour.priceUzs,
     duration: tour.duration,
     description: tour.description,
-    image: tour.image
+    image: tour.image,
+    highlights: tour.highlights ?? [],
+    included: tour.included ?? [],
+    excluded: tour.excluded ?? [],
+    gallery: tour.gallery ?? [],
+    itinerary: tour.itinerary ?? [],
+    group_size: tour.groupSize ?? 0
   };
 }
 
