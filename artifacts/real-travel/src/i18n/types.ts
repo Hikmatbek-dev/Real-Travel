@@ -116,6 +116,8 @@ export type Dictionary = {
     statusCancelled: string;
     depositPaid: string;
   };
+  reviews: { eyebrow: string; title: string; subtitle: string; empty: string };
+  cta: { title: string; text: string; call: string; write: string };
   about: { eyebrow: string; titleA: string; titleB: string; paragraphs: string[] };
   footer: {
     text: string;

@@ -16,6 +16,7 @@ import {
   Plus,
   Search,
   ShoppingCart,
+  Star,
   TrendingUp,
   User,
   Wallet
@@ -42,8 +43,9 @@ import { OrderStatus, RegionKey, SharedOrder, SharedTour, useSharedTravelData } 
 import { useAdminAuth } from "@/lib/use-admin-auth";
 import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
 import { TourContentEditor } from "@/components/admin/tour-content-editor";
+import { ReviewsManager } from "@/components/admin/reviews-manager";
 
-type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders";
+type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders" | "/admin/reviews";
 type TourFormState = Partial<SharedTour>;
 type OrderFormState = {
   customerName: string;
@@ -67,6 +69,7 @@ function normalizeAdminRoute(pathname: string): AdminRoute {
   if (pathname === "/admin" || pathname === "/admin/") return "/admin/dashboard";
   if (pathname.startsWith("/admin/tours")) return "/admin/tours";
   if (pathname.startsWith("/admin/orders")) return "/admin/orders";
+  if (pathname.startsWith("/admin/reviews")) return "/admin/reviews";
   return "/admin/dashboard";
 }
 
@@ -153,7 +156,7 @@ function LoginScreen({ onSignIn }: { onSignIn: (username: string, password: stri
 }
 
 export function AdminPanel() {
-  const { tours, tourDates, orders, saveTours, saveTourDates, saveOrders, isLoaded } = useSharedTravelData();
+  const { tours, tourDates, orders, reviews, saveTours, saveTourDates, saveOrders, saveReviews, isLoaded } = useSharedTravelData();
   const { user, displayName, loading: isAuthLoading, signIn, signOut } = useAdminAuth();
   const { toast } = useToast();
   const [route, setRoute] = useState<AdminRoute>(() => normalizeAdminRoute(window.location.pathname));
@@ -286,7 +289,8 @@ export function AdminPanel() {
   const navItems = [
     { href: "/admin/dashboard" as AdminRoute, label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/tours" as AdminRoute, label: "Tours", icon: Map },
-    { href: "/admin/orders" as AdminRoute, label: "Orders", icon: ShoppingCart }
+    { href: "/admin/orders" as AdminRoute, label: "Orders", icon: ShoppingCart },
+    { href: "/admin/reviews" as AdminRoute, label: "Reviews", icon: Star }
   ];
 
   const openAddTour = () => {
@@ -680,6 +684,10 @@ export function AdminPanel() {
                     </CardContent>
                   </Card>
                 </div>
+              ) : null}
+
+              {route === "/admin/reviews" ? (
+                <ReviewsManager reviews={reviews} onSave={saveReviews} />
               ) : null}
             </div>
           </main>

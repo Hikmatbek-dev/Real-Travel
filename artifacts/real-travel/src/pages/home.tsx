@@ -5,6 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { TourCard, type Departure } from "@/components/tour-card";
 import { HeroSearch, type HeroQuery } from "@/components/hero-search";
+import { ReviewsSection } from "@/components/reviews-section";
+import { CtaBand } from "@/components/cta-band";
 import { useLanguage } from "@/i18n";
 import { formatUzs } from "@/lib/format";
 import { useSharedTravelData } from "@/lib/shared-travel-data";
@@ -22,7 +24,7 @@ const scrollToTours = () => {
 
 export function HomePage() {
   const { t, language } = useLanguage();
-  const { tours, isLoaded } = useSharedTravelData();
+  const { tours, reviews, isLoaded } = useSharedTravelData();
 
   const [query, setQuery] = useState<HeroQuery>({ region: "all", month: "", travelers: 2 });
   const [search, setSearch] = useState("");
@@ -190,6 +192,8 @@ export function HomePage() {
         </div>
       </section>
 
+      <ReviewsSection reviews={reviews} />
+
       {/* --------------------------------------------------------------- about */}
       <section id="about" className="bg-secondary/40 py-24 md:py-32">
         <div className="container mx-auto max-w-5xl px-6 md:px-12">
@@ -212,6 +216,8 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      <CtaBand />
     </>
   );
 }

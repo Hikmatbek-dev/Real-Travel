@@ -118,6 +118,18 @@ export const en: Dictionary = {
     statusCancelled: "Cancelled",
     depositPaid: "Deposit paid"
   },
+  reviews: {
+    eyebrow: "Reviews",
+    title: "People who travelled with us",
+    subtitle: "What our clients said after their journey.",
+    empty: "The first review is coming soon."
+  },
+  cta: {
+    title: "Not sure which journey to pick?",
+    text: "Call us — we will find something that fits your dates and budget.",
+    call: "Call us",
+    write: "Message on Instagram"
+  },
   about: {
     eyebrow: "About us",
     titleA: "We craft memories,",

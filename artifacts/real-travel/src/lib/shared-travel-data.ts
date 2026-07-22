@@ -64,6 +64,18 @@ export type TourDate = {
 
 export type PaymentMode = "full" | "deposit";
 
+export type Review = {
+  id: string;
+  author: string;
+  location: string;
+  text: string;
+  rating: number;
+  photo: string;
+  tourId: string | null;
+  published: boolean;
+  sortOrder: number;
+};
+
 // ----- Row types (Supabase, snake_case) -----
 
 type TourDateRow = {
@@ -90,6 +102,18 @@ type TourRow = {
   gallery?: string[] | null;
   itinerary?: ItineraryDay[] | null;
   group_size?: number | null;
+};
+
+type ReviewRow = {
+  id: string;
+  author: string;
+  location: string;
+  text: string;
+  rating: number;
+  photo: string;
+  tour_id: string | null;
+  published: boolean;
+  sort_order: number;
 };
 
 type OrderRow = {
@@ -223,6 +247,20 @@ function rowToTourDate(row: TourDateRow): TourDate {
   };
 }
 
+function rowToReview(row: ReviewRow): Review {
+  return {
+    id: row.id,
+    author: row.author,
+    location: row.location,
+    text: row.text,
+    rating: Number(row.rating) || 5,
+    photo: row.photo,
+    tourId: row.tour_id,
+    published: row.published !== false,
+    sortOrder: Number(row.sort_order) || 0
+  };
+}
+
 function rowToOrder(row: OrderRow): SharedOrder {
   return {
     id: row.id,
@@ -273,6 +311,7 @@ export function useSharedTravelData() {
   const [tours, setTours] = useState<SharedTour[]>([]);
   const [tourDates, setTourDates] = useState<TourDate[]>([]);
   const [orders, setOrders] = useState<SharedOrder[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [depositPercent, setDepositPercent] = useState(30);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -280,11 +319,12 @@ export function useSharedTravelData() {
     let active = true;
 
     const load = async () => {
-      const [toursRes, datesRes, ordersRes, settingsRes] = await Promise.all([
+      const [toursRes, datesRes, ordersRes, settingsRes, reviewsRes] = await Promise.all([
         supabase.from("tours").select("*").order("created_at", { ascending: true }),
         supabase.from("tour_dates").select("*").order("departure_date", { ascending: true }),
         supabase.from("orders").select("*").order("date", { ascending: false }),
-        supabase.from("settings").select("*").eq("key", "deposit_percent").limit(1)
+        supabase.from("settings").select("*").eq("key", "deposit_percent").limit(1),
+        supabase.from("reviews").select("*").order("sort_order", { ascending: true })
       ]);
 
       if (!active) return;
@@ -292,6 +332,7 @@ export function useSharedTravelData() {
       setTours(((toursRes.data as TourRow[] | null) ?? []).map(rowToTour));
       setTourDates(((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate));
       setOrders(((ordersRes.data as OrderRow[] | null) ?? []).map(rowToOrder));
+      setReviews(((reviewsRes.data as ReviewRow[] | null) ?? []).map(rowToReview));
 
       const percent = Number((settingsRes.data as { value: string }[] | null)?.[0]?.value);
       if (Number.isFinite(percent) && percent > 0) setDepositPercent(Math.round(percent));
@@ -309,6 +350,7 @@ export function useSharedTravelData() {
       .on("postgres_changes", { event: "*", schema: "public", table: "tours" }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, load)
       .on("postgres_changes", { event: "*", schema: "public", table: "tour_dates" }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "reviews" }, load)
       .subscribe();
 
     // Reload when the admin signs in or out: RLS changes which rows (e.g. orders)
@@ -405,10 +447,44 @@ export function useSharedTravelData() {
     }
   };
 
+  /** Replaces the full review list. Admin only (RLS enforces it). */
+  const saveReviews = async (nextReviews: Review[]) => {
+    setReviews(nextReviews);
+
+    const keepIds = nextReviews.map((review) => review.id);
+    const { data: existing } = await supabase.from("reviews").select("id");
+    const toDelete = ((existing as { id: string }[] | null) ?? [])
+      .map((row) => row.id)
+      .filter((id) => !keepIds.includes(id));
+
+    if (toDelete.length) {
+      const { error } = await supabase.from("reviews").delete().in("id", toDelete);
+      if (error) throw new Error(error.message);
+    }
+    if (nextReviews.length) {
+      const { error } = await supabase.from("reviews").upsert(
+        nextReviews.map((review) => ({
+          id: review.id,
+          author: review.author,
+          location: review.location,
+          text: review.text,
+          rating: review.rating,
+          photo: review.photo,
+          tour_id: review.tourId,
+          published: review.published,
+          sort_order: review.sortOrder
+        }))
+      );
+      if (error) throw new Error(error.message);
+    }
+  };
+
   return {
     tours,
     tourDates,
     orders,
+    reviews,
+    saveReviews,
     depositPercent,
     saveTours,
     saveTourDates,

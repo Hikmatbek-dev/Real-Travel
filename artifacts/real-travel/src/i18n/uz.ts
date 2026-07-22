@@ -118,6 +118,18 @@ export const uz: Dictionary = {
     statusCancelled: "Bekor qilingan",
     depositPaid: "Oldindan to'lov qilingan"
   },
+  reviews: {
+    eyebrow: "Mijozlar fikri",
+    title: "Biz bilan sayohat qilganlar",
+    subtitle: "Haqiqiy mijozlarimizning sayohatdan keyingi fikrlari.",
+    empty: "Birinchi sharh tez orada."
+  },
+  cta: {
+    title: "Qaysi yo'nalishni tanlashni bilmayapsizmi?",
+    text: "Qo'ng'iroq qiling — byudjetingiz va sanangizga qarab variant tanlab beramiz.",
+    call: "Qo'ng'iroq qilish",
+    write: "Instagramda yozish"
+  },
   about: {
     eyebrow: "Biz haqimizda",
     titleA: "Xotiralarni yaratamiz,",
