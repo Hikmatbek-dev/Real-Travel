@@ -90,6 +90,7 @@ export const en: Dictionary = {
     bookNow: "Book now",
     payButton: "Continue to payment",
     payError: "We could not start the payment. Please try again.",
+    tooManyOrders: "Too many bookings from this number. Please wait a little or call us.",
     totalLabel: "Total due",
     noPrice: "Pricing for this journey is not published yet. Please contact us.",
     processing: "Sending...",

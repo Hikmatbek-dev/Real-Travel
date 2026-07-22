@@ -90,6 +90,7 @@ export const uz: Dictionary = {
     bookNow: "Band qilish",
     payButton: "To'lovga o'tish",
     payError: "To'lovni boshlab bo'lmadi. Iltimos, qayta urinib ko'ring.",
+    tooManyOrders: "Bu raqamdan juda ko'p bandlov qilindi. Bir oz kutib, qayta urinib ko'ring yoki bizga qo'ng'iroq qiling.",
     totalLabel: "Jami to'lov",
     noPrice: "Bu sayohat uchun narx hali belgilanmagan. Iltimos, biz bilan bog'laning.",
     processing: "Yuborilmoqda...",

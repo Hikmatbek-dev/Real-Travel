@@ -88,6 +88,7 @@ export type Dictionary = {
     bookNow: string;
     payButton: string;
     payError: string;
+    tooManyOrders: string;
     totalLabel: string;
     noPrice: string;
     processing: string;

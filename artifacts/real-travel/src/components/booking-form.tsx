@@ -130,7 +130,10 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
 
       window.location.href = result.checkout_url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : t.booking.payError);
+      const raw = err instanceof Error ? err.message : "";
+      // The database rejects a burst of bookings from one phone; show the
+      // customer what to do rather than the constraint name.
+      setError(raw.includes("too_many_orders") ? t.booking.tooManyOrders : raw || t.booking.payError);
       setIsSubmitting(false);
     }
   };
