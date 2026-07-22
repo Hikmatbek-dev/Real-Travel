@@ -2,6 +2,7 @@ import {
   STATE_CANCELLED,
   STATE_PENDING,
   STATE_SUCCESS,
+  isAdminRequest,
   paylovOrderState,
   sbSelect,
   sbUpdate,
@@ -19,13 +20,20 @@ const MAX_ORDERS = 25;
  * site, so neither the return page nor the (unregistered) webhook settles them.
  * The admin panel calls this when the orders view opens.
  *
- * Only pulls authoritative state from Paylov and writes what Paylov reports, so
- * the worst an extra call can do is cost a few API requests.
+ * Only pulls authoritative state from Paylov and writes what Paylov reports —
+ * it never invents a payment. Requires an admin session, because each call
+ * fans out into one Paylov request per pending order.
  */
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  // Every call fans out into one Paylov request per pending order, so this
+  // stays behind the admin session rather than being open to the internet.
+  if (!(await isAdminRequest(req))) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {

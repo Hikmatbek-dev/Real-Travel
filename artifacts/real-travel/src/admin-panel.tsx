@@ -45,6 +45,7 @@ import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
 import { TourContentEditor } from "@/components/admin/tour-content-editor";
 import { ReviewsManager } from "@/components/admin/reviews-manager";
 import { uploadTourImage } from "@/lib/upload-image";
+import { supabase } from "@/lib/supabase";
 
 type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders" | "/admin/reviews";
 type TourFormState = Partial<SharedTour>;
@@ -189,7 +190,14 @@ export function AdminPanel() {
   // Realtime picks up whatever this confirms, so nothing else needs to react.
   useEffect(() => {
     if (!user || route !== "/admin/orders") return;
-    fetch("/api/reconcile", { method: "POST" }).catch(() => {});
+    supabase.auth.getSession().then(({ data }) => {
+      const token = data.session?.access_token;
+      if (!token) return;
+      fetch("/api/reconcile", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => {});
+    });
   }, [user, route]);
 
   const navigate = (nextRoute: AdminRoute) => {

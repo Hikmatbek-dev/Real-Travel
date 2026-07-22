@@ -96,6 +96,34 @@ export async function paylovOrderState(
 }
 
 /**
+ * Verifies that the caller is a signed-in admin.
+ *
+ * Checks the request's bearer token against Supabase Auth. Used by endpoints
+ * that do real work on every call — without it they are an unauthenticated
+ * way to burn the Paylov API quota.
+ */
+export async function isAdminRequest(req: { headers: Record<string, unknown> }): Promise<boolean> {
+  const header = String(req.headers?.authorization ?? req.headers?.Authorization ?? "");
+  const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+  if (!token) return false;
+
+  const url = process.env.SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  if (!url) return false;
+
+  try {
+    const res = await fetch(`${url.replace(/\/$/, "")}/auth/v1/user`, {
+      headers: { Authorization: `Bearer ${token}`, ...(anonKey ? { apikey: anonKey } : {}) },
+    });
+    if (!res.ok) return false;
+    const user = (await res.json()) as { id?: string; role?: string };
+    return Boolean(user?.id) && user.role === "authenticated";
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Sends the operator a Telegram message — nobody sits watching the admin panel,
  * so a paid booking needs to reach a phone. Silently does nothing until
  * TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID are configured, and never throws:
