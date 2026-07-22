@@ -2,6 +2,7 @@ import {
   STATE_CANCELLED,
   STATE_PENDING,
   STATE_SUCCESS,
+  notifyTelegram,
   paylovOrderState,
   sbSelect,
   sbUpdate,
@@ -59,6 +60,9 @@ export default async function handler(req: any, res: any) {
           status: "Confirmed",
           paid_at: new Date().toISOString(),
         });
+        await notifyTelegram(
+          `\u2705 <b>To'lov qabul qilindi</b>\nBuyurtma: <b>${order.order_number}</b>\nSumma: ${Number(order.total_amount).toLocaleString("ru-RU")} so'm`,
+        );
       } else if (remote?.canceled) {
         paymentState = STATE_CANCELLED;
         await sbUpdate("orders", `id=eq.${encodeURIComponent(order.id)}`, {

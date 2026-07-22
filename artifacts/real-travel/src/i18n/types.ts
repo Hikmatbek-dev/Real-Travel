@@ -70,6 +70,27 @@ export type Dictionary = {
     successText: string;
     returnButton: string;
   };
+  order: {
+    title: string;
+    text: string;
+    orderNumber: string;
+    orderNumberHint: string;
+    phone: string;
+    check: string;
+    checking: string;
+    notFound: string;
+    tour: string;
+    departure: string;
+    travelers: string;
+    total: string;
+    paid: string;
+    remaining: string;
+    statusNew: string;
+    statusPending: string;
+    statusPaid: string;
+    statusCancelled: string;
+    depositPaid: string;
+  };
   about: { eyebrow: string; titleA: string; titleB: string; paragraphs: string[] };
   footer: {
     text: string;

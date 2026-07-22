@@ -72,6 +72,27 @@ export const uz: Dictionary = {
     successText: "Tez orada menejerimiz siz bilan bog'lanadi.",
     returnButton: "Sayohatlarga qaytish"
   },
+  order: {
+    title: "Buyurtmani kuzatish",
+    text: "Buyurtma raqamingiz va telefon raqamingizni kiriting.",
+    orderNumber: "Buyurtma raqami",
+    orderNumberHint: "Masalan: RT-1042",
+    phone: "Telefon",
+    check: "Tekshirish",
+    checking: "Tekshirilmoqda...",
+    notFound: "Buyurtma topilmadi. Raqam va telefonni tekshirib qayta urinib ko'ring.",
+    tour: "Sayohat",
+    departure: "Jo'nash sanasi",
+    travelers: "Sayohatchilar",
+    total: "Umumiy summa",
+    paid: "To'langan",
+    remaining: "Qolgan summa",
+    statusNew: "Qabul qilindi",
+    statusPending: "To'lov kutilmoqda",
+    statusPaid: "To'landi",
+    statusCancelled: "Bekor qilingan",
+    depositPaid: "Oldindan to'lov qilingan"
+  },
   about: {
     eyebrow: "Biz haqimizda",
     titleA: "Xotiralarni yaratamiz,",

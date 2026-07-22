@@ -72,6 +72,27 @@ export const ru: Dictionary = {
     successText: "Наш менеджер свяжется с вами в ближайшее время.",
     returnButton: "Вернуться к турам"
   },
+  order: {
+    title: "Отслеживание брони",
+    text: "Введите номер бронирования и ваш телефон.",
+    orderNumber: "Номер бронирования",
+    orderNumberHint: "Например: RT-1042",
+    phone: "Телефон",
+    check: "Проверить",
+    checking: "Проверяем...",
+    notFound: "Бронирование не найдено. Проверьте номер и телефон.",
+    tour: "Тур",
+    departure: "Дата выезда",
+    travelers: "Туристы",
+    total: "Общая сумма",
+    paid: "Оплачено",
+    remaining: "Остаток",
+    statusNew: "Принято",
+    statusPending: "Ожидает оплаты",
+    statusPaid: "Оплачено",
+    statusCancelled: "Отменено",
+    depositPaid: "Внесена предоплата"
+  },
   about: {
     eyebrow: "О нас",
     titleA: "Мы создаём воспоминания,",

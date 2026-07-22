@@ -72,6 +72,27 @@ export const en: Dictionary = {
     successText: "One of our travel managers will contact you shortly.",
     returnButton: "Back to journeys"
   },
+  order: {
+    title: "Track your booking",
+    text: "Enter your booking number and the phone you booked with.",
+    orderNumber: "Booking number",
+    orderNumberHint: "For example: RT-1042",
+    phone: "Phone",
+    check: "Check",
+    checking: "Checking...",
+    notFound: "Booking not found. Check the number and phone, then try again.",
+    tour: "Journey",
+    departure: "Departure",
+    travelers: "Travelers",
+    total: "Total",
+    paid: "Paid",
+    remaining: "Remaining",
+    statusNew: "Received",
+    statusPending: "Awaiting payment",
+    statusPaid: "Paid",
+    statusCancelled: "Cancelled",
+    depositPaid: "Deposit paid"
+  },
   about: {
     eyebrow: "About us",
     titleA: "We craft memories,",

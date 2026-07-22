@@ -95,6 +95,28 @@ export async function paylovOrderState(
   return { paid: order.paid === true, canceled: order.canceled === true };
 }
 
+/**
+ * Sends the operator a Telegram message — nobody sits watching the admin panel,
+ * so a paid booking needs to reach a phone. Silently does nothing until
+ * TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID are configured, and never throws:
+ * a failed notification must not roll back a settled payment.
+ */
+export async function notifyTelegram(text: string): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", disable_web_page_preview: true }),
+    });
+  } catch {
+    // Ignored on purpose — see the note above.
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Supabase REST (service role — server side only, bypasses RLS)
 // ---------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Instagram, MapPinned, Phone } from "lucide-react";
 import { COMPANY, PHONE_HREF } from "@/lib/company";
 import { useLanguage } from "@/i18n";
@@ -55,6 +56,11 @@ export function SiteFooter() {
           <div>
             <h4 className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.footer.legal}</h4>
             <ul className="space-y-3 text-sm font-light text-white/80">
+              <li>
+                <Link href="/order" className="transition-colors hover:text-accent">
+                  {t.order.title}
+                </Link>
+              </li>
               <li>
                 <a href="/legal/oferta" className="transition-colors hover:text-accent">
                   {t.footer.offer}

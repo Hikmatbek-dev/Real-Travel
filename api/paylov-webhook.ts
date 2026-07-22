@@ -1,5 +1,13 @@
 import crypto from "node:crypto";
-import { STATE_CANCELLED, STATE_SUCCESS, sbSelect, sbUpdate, webhookSecret, type OrderRow } from "./_lib";
+import {
+  STATE_CANCELLED,
+  STATE_SUCCESS,
+  notifyTelegram,
+  sbSelect,
+  sbUpdate,
+  webhookSecret,
+  type OrderRow,
+} from "./_lib";
 
 type WebhookBody = {
   external_id?: string;
@@ -89,6 +97,12 @@ export default async function handler(req: any, res: any) {
         ? { paid_at: new Date().toISOString(), status: "Confirmed" }
         : { status: "Cancelled" }),
     });
+
+    if (numericState === STATE_SUCCESS) {
+      await notifyTelegram(
+        `\u2705 <b>To'lov qabul qilindi</b>\nBuyurtma: <b>${order.order_number}</b>`,
+      );
+    }
 
     return res.status(200).json({ ok: true });
   } catch (err) {
