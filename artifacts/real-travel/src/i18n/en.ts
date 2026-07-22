@@ -1,0 +1,85 @@
+import type { Dictionary } from "./types";
+
+export const en: Dictionary = {
+  nav: {
+    tours: "Journeys",
+    about: "About us",
+    contact: "Contact",
+    call: "Call us"
+  },
+  hero: {
+    eyebrow: "Premium travel experiences",
+    titleBefore: "Discover the world with",
+    titleAccent: "Real",
+    titleAfter: "Travel",
+    text: "Every destination is chosen by hand: tested hotels, experienced guides and an itinerary built around you.",
+    button: "Browse journeys"
+  },
+  collection: {
+    title: "The collection",
+    subtitle: "Find the journey that fits — filter by price and length.",
+    searchLabel: "Search",
+    searchPlaceholder: "Destination or city",
+    regionLabel: "Region",
+    regionPlaceholder: "Choose a region",
+    maxPrice: "Maximum price",
+    noTours: "No journeys match your filters. Try adjusting them.",
+    cardButton: "View details",
+    perPerson: "per traveler",
+    days: "days",
+    from: "from"
+  },
+  tour: {
+    back: "All journeys",
+    eyebrow: "The itinerary",
+    duration: "Duration",
+    highlights: "Highlights",
+    included: "What's included",
+    notFound: "Journey not found",
+    notFoundText: "This journey does not exist or has been removed."
+  },
+  booking: {
+    title: "Book this journey",
+    text: "Leave your details — we will hold your place and get in touch.",
+    fullName: "Full name",
+    phone: "Phone",
+    travelers: "Travelers",
+    note: "Note",
+    notePlaceholder: "Tell us about any special requests",
+    paymentLabel: "Payment method",
+    payButton: "Continue to payment",
+    payError: "We could not start the payment. Please try again.",
+    totalLabel: "Total due",
+    noPrice: "Pricing for this journey is not published yet. Please contact us.",
+    processing: "Sending...",
+    successTitle: "Booking received",
+    successText: "One of our travel managers will contact you shortly.",
+    returnButton: "Back to journeys"
+  },
+  about: {
+    eyebrow: "About us",
+    titleA: "We craft memories,",
+    titleB: "not just itineraries.",
+    paragraphs: [
+      "Real Travel is a travel agency based in Khorezm. We do not sell off-the-shelf packages — we build each journey around the traveler.",
+      "We inspect every destination ourselves: hotels, transport, guides and the itinerary are all tested before we offer them.",
+      "From booking to the journey home, one of our managers stays in touch with you."
+    ]
+  },
+  footer: {
+    text: "Choose the journey — we will take care of the rest.",
+    contact: "Contact",
+    legal: "Legal",
+    terms: "Terms of service",
+    privacy: "Privacy policy",
+    offer: "Public offer",
+    copyright: "All rights reserved."
+  },
+  regions: {
+    all: "All",
+    europe: "Europe",
+    asia: "Asia",
+    americas: "Americas",
+    africa: "Africa"
+  }
+};

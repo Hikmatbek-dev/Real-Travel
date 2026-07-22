@@ -9,6 +9,8 @@ let channelSeq = 0;
 
 export type SharedTour = {
   id: string;
+  /** URL-safe identifier used by /tours/:slug */
+  slug: string;
   name: string;
   location: string;
   region: RegionKey;
@@ -38,6 +40,7 @@ export type SharedOrder = {
 
 type TourRow = {
   id: string;
+  slug: string;
   name: string;
   location: string;
   region: string;
@@ -64,9 +67,22 @@ type OrderRow = {
 
 // ----- Normalizers (defaults + type coercion) -----
 
+/** "Kyoto Seasons" -> "kyoto-seasons"; used for /tours/:slug. */
+export function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/['\u2019`]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function normalizeTour(tour: Partial<SharedTour>): SharedTour {
+  const id = tour.id || `t${Date.now()}`;
   return {
-    id: tour.id || `t${Date.now()}`,
+    id,
+    slug: tour.slug || slugify(tour.name || "") || `tour-${id}`,
     name: tour.name || "",
     location: tour.location || "",
     region: (tour.region as RegionKey) || "europe",
@@ -104,6 +120,7 @@ function normalizeOrder(order: Partial<SharedOrder>, tours: SharedTour[], index:
 function rowToTour(row: TourRow): SharedTour {
   return {
     id: row.id,
+    slug: row.slug,
     name: row.name,
     location: row.location,
     region: (row.region as RegionKey) || "europe",
@@ -118,6 +135,7 @@ function rowToTour(row: TourRow): SharedTour {
 function tourToRow(tour: SharedTour): TourRow {
   return {
     id: tour.id,
+    slug: tour.slug || slugify(tour.name) || tour.id,
     name: tour.name,
     location: tour.location,
     region: tour.region,
