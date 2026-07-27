@@ -28,6 +28,18 @@ export function paylovSignature(
 
 export type PaylovResult<T> = { ok: true; status: number; data: T } | { ok: false; status: number; error: string };
 
+// Throttle outage alerts so one broken proxy does not send a message per
+// request. Best-effort within a warm instance — good enough to avoid a flood.
+let lastPaylovAlert = 0;
+const PAYLOV_ALERT_INTERVAL_MS = 10 * 60 * 1000;
+
+async function alertPaylovDown(reason: string): Promise<void> {
+  const now = Date.now();
+  if (now - lastPaylovAlert < PAYLOV_ALERT_INTERVAL_MS) return;
+  lastPaylovAlert = now;
+  await notifyTelegram(`\u{1F6A8} <b>To'lov tizimi ishlamayapti</b>\n${reason}`);
+}
+
 export async function paylovRequest<T>(
   method: "GET" | "POST",
   path: string,
@@ -68,11 +80,21 @@ export async function paylovRequest<T>(
       body: method === "GET" ? undefined : rawBody,
     });
   } catch (err) {
+    // Reaching Paylov failed — through the proxy this usually means the VM or
+    // its IP is down, and payments are silently broken until someone notices.
+    // Alert the operator so a dead proxy does not go unseen.
+    void alertPaylovDown(`Paylov ${proxyBase ? "(proxy) " : ""}so'rovi ishlamadi: ${(err as Error).message}`);
     return { ok: false, status: 502, error: `Paylov unreachable: ${(err as Error).message}` };
   }
 
   const text = await res.text();
-  if (!res.ok) return { ok: false, status: res.status, error: text || res.statusText };
+  if (!res.ok) {
+    // 403 through the proxy is the classic "IP no longer whitelisted" signature.
+    if (res.status === 403 && proxyBase) {
+      void alertPaylovDown("Paylov 403 qaytardi — IP whitelist mos kelmayapti (proxy IP o'zgargan bo'lishi mumkin).");
+    }
+    return { ok: false, status: res.status, error: text || res.statusText };
+  }
 
   try {
     return { ok: true, status: res.status, data: JSON.parse(text) as T };
