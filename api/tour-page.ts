@@ -104,10 +104,13 @@ export default async function handler(req: any, res: any) {
           : {}),
       };
 
+      // Escape "<" so a description containing "</script>" cannot break out of
+      // the JSON-LD block and inject markup.
+      const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
       html = html.replace(
         "</head>",
         `    <link rel="canonical" href="${url}" />\n` +
-          `    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>\n  </head>`,
+          `    <script type="application/ld+json">${jsonLdSafe}</script>\n  </head>`,
       );
     }
   } catch {
