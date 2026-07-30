@@ -160,7 +160,7 @@ export default async function handler(req: any, res: any) {
     });
 
     if (!result.ok) {
-      return res.status(502).json({ error: "Paylov checkout failed", detail: result.error });
+      return res.status(502).json({ error: `Paylov backend xatosi: ${result.error}`, detail: result.error });
     }
 
     const { checkout_url, order_id: paylovOrderId } = result.data;

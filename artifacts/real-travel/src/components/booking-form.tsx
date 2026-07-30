@@ -133,7 +133,9 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
       const result = await response.json();
 
       if (!response.ok || !result.checkout_url) {
-        throw new Error(result.error === "not_enough_seats" ? t.booking.soldOut : result.error || t.booking.payError);
+        const errorDetail = result.detail ? `: ${result.detail}` : "";
+        const fullMessage = result.error ? `${result.error}${errorDetail}` : t.booking.payError;
+        throw new Error(result.error === "not_enough_seats" ? t.booking.soldOut : fullMessage);
       }
 
       window.location.href = result.checkout_url;
