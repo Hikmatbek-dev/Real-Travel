@@ -46,11 +46,11 @@ export async function paylovRequest<T>(
   body?: unknown,
 ): Promise<PaylovResult<T>> {
   const apiKey = process.env.PAYLOV_API_KEY;
-  const apiSecret = process.env.PAYLOV_API_SECRET || apiKey;
-  const partnerId = process.env.PAYLOV_PARTNER_ID || "91";
   if (!apiKey) {
     return { ok: false, status: 500, error: "PAYLOV_API_KEY is not configured" };
   }
+  const apiSecret = process.env.PAYLOV_API_SECRET || apiKey;
+  const partnerId = process.env.PAYLOV_PARTNER_ID || "91";
 
   const url = new URL(PAYLOV_BASE_URL.replace(/\/$/, "") + path);
   const rawBody = body === undefined ? "" : JSON.stringify(body);
