@@ -9,7 +9,7 @@ import crypto from "node:crypto";
 // bytes we send, so the serialized body is reused verbatim as the request body.
 // ---------------------------------------------------------------------------
 
-const PAYLOV_BASE_URL = process.env.PAYLOV_BASE_URL ?? "https://apidev.wlcm.uz/api/v1";
+const PAYLOV_BASE_URL = process.env.PAYLOV_BASE_URL ?? "https://api.wlcm.uz/api/v1";
 
 export function sha256Hex(input: string): string {
   return crypto.createHash("sha256").update(input, "utf8").digest("hex");
@@ -46,9 +46,10 @@ export async function paylovRequest<T>(
   body?: unknown,
 ): Promise<PaylovResult<T>> {
   const apiKey = process.env.PAYLOV_API_KEY;
-  const apiSecret = process.env.PAYLOV_API_SECRET;
-  if (!apiKey || !apiSecret) {
-    return { ok: false, status: 500, error: "PAYLOV_API_KEY / PAYLOV_API_SECRET are not configured" };
+  const apiSecret = process.env.PAYLOV_API_SECRET || apiKey;
+  const partnerId = process.env.PAYLOV_PARTNER_ID || "91";
+  if (!apiKey) {
+    return { ok: false, status: 500, error: "PAYLOV_API_KEY is not configured" };
   }
 
   const url = new URL(PAYLOV_BASE_URL.replace(/\/$/, "") + path);
@@ -72,7 +73,9 @@ export async function paylovRequest<T>(
       method,
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
         "X-API-Key": apiKey,
+        "X-Partner-Id": partnerId,
         "X-Timestamp": timestamp,
         "X-Signature": signature,
         ...(proxyBase && proxySecret ? { "X-Proxy-Secret": proxySecret } : {}),
@@ -114,7 +117,12 @@ export async function paylovRequest<T>(
 export async function paylovOrderState(
   paylovOrderId: string,
 ): Promise<{ paid: boolean; canceled: boolean } | null> {
-  type OrderStateResponse = { data?: { order?: { paid?: boolean; canceled?: boolean } } };
+  type OrderStateResponse = {
+    data?: { order?: { paid?: boolean; canceled?: boolean } };
+    order?: { paid?: boolean; canceled?: boolean };
+    paid?: boolean;
+    canceled?: boolean;
+  };
 
   const result = await paylovRequest<OrderStateResponse>(
     "GET",
@@ -122,7 +130,7 @@ export async function paylovOrderState(
   );
   if (!result.ok) return null;
 
-  const order = result.data?.data?.order;
+  const order = result.data?.data?.order ?? result.data?.order ?? result.data;
   if (!order) return null;
 
   return { paid: order.paid === true, canceled: order.canceled === true };

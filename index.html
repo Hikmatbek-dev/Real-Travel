@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Turizm Agentligi | Dunyoni Biz Bilan Kashf Eting</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Eng unutilmas sayohat lahzalarini biz bilan kashf eting. Plyaj, Umra, Tog' va Ekskursiya turlari eng yaxshi narxlarda.">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (CDN for Vanilla JS setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#1E3A8A', /* Royal Blue */
+                            light: '#3B82F6',
+                            neon: '#00E5FF', /* Neon Cyan for CTA */
+                            dark: '#0F172A',
+                            accent: '#F59E0B' /* Star Yellow */
+                        }
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(100vw)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Smooth scrolling and custom utilities */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .filter-glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom Select styling */
+        select.custom-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E3A8A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 0.65em auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- 1. HEADER & NAVIGATION -->
+    <header class="fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer">
+                    <svg class="h-8 w-8 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
+                        <!-- Plane/Travel Icon SVG -->
+                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                    </svg>
+                    <span class="ml-2 text-2xl font-bold text-brand-blue tracking-tight">Real Travel</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8 items-center">
+                    <div class="relative group">
+                        <button class="flex items-center text-gray-700 hover:text-brand-blue font-medium transition-colors">
+                            Turlar
+                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <!-- Dropdown -->
+                        <div class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <div class="py-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Yevropa turlari</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Osiyo turlari</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Arab amirliklari</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#" class="text-gray-700 hover:text-brand-blue font-medium transition-colors">Sayohat turlari</a>
+                    <a href="#" class="text-gray-700 hover:text-brand-blue font-medium transition-colors">Kompaniya</a>
+                    <a href="#" class="text-gray-700 hover:text-brand-blue font-medium transition-colors">Blog</a>
+                </nav>
+
+                <!-- Right Actions -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <div class="flex items-center space-x-2 text-brand-blue font-semibold">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        <span>+998 (71) 123-45-67</span>
+                    </div>
+                    <!-- Language Selector -->
+                    <select class="bg-transparent text-gray-700 font-medium focus:outline-none cursor-pointer">
+                        <option value="uz">UZ</option>
+                        <option value="ru">RU</option>
+                        <option value="en">EN</option>
+                    </select>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-brand-blue focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg border-t">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Turlar</a>
+                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Sayohat turlari</a>
+                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Kompaniya</a>
+                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Blog</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. HERO SECTION & SMART FILTER -->
+    <main>
+        <section class="relative h-[85vh] min-h-[600px] flex items-center justify-center pt-20">
+            <!-- Background Image/Video Overlay -->
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Sayohat manzarasi" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-r from-brand-dark/80 to-brand-blue/60"></div>
+            </div>
+
+            <div class="relative z-10 text-center px-4 w-full max-w-7xl mx-auto">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 drop-shadow-lg">
+                    Dunyoni Biz Bilan <span class="text-brand-neon">KASHF ETING!</span>
+                </h1>
+                <p class="mt-4 text-xl md:text-2xl text-gray-200 mb-12 font-light">
+                    Eng unutilmas lahzalar sizni kutmoqda.
+                </p>
+
+                <!-- Smart Filter -->
+                <div class="filter-glass p-4 rounded-2xl mx-auto flex flex-col md:flex-row gap-4 max-w-5xl shadow-2xl animate-fade-in-up">
+                    <div class="flex-1">
+                        <div class="relative">
+                            <span class="absolute left-3 top-3.5 text-gray-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </span>
+                            <select class="custom-select w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-10 focus:ring-2 focus:ring-brand-blue focus:border-transparent outline-none transition-all">
+                                <option value="" disabled selected>Qayerga?</option>
+                                <option value="dubai">Dubay, BAA</option>
+                                <option value="istanbul">Istanbul, Turkiya</option>
+                                <option value="egypt">Sharm el-Shayx, Misr</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1">
+                        <div class="relative">
+                            <span class="absolute left-3 top-3.5 text-gray-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </span>
+                            <input type="date" class="w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-brand-blue outline-none transition-all" />
+                        </div>
+                    </div>
+
+                    <div class="flex-1">
+                        <div class="relative">
+                            <span class="absolute left-3 top-3.5 text-gray-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            <select class="custom-select w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-10 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                                <option value="" disabled selected>Tur turi</option>
+                                <option>Plyaj</option>
+                                <option>Tog'</option>
+                                <option>Umra</option>
+                                <option>Ekstremal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex-1">
+                        <div class="relative">
+                            <span class="absolute left-3 top-3.5 text-gray-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            <select class="custom-select w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-10 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                                <option value="" disabled selected>Narxi</option>
+                                <option>$500 gacha</option>
+                                <option>$500 - $1000</option>
+                                <option>$1000 dan yuqori</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="bg-brand-neon hover:bg-teal-300 text-brand-dark font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full md:w-auto flex-shrink-0">
+                        QIDIRISH
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TICKER PANEL (Tezyurar takliflar) -->
+        <div class="bg-brand-blue text-white overflow-hidden py-3 shadow-inner relative flex items-center">
+            <div class="px-4 font-bold whitespace-nowrap bg-brand-blue z-10 flex items-center shadow-[10px_0_15px_-5px_rgba(30,58,138,1)]">
+                <span class="text-brand-neon mr-2">⚡️ Ayni muddao:</span>
+            </div>
+            <div class="overflow-hidden w-full relative">
+                <div class="whitespace-nowrap inline-block animate-marquee">
+                    <span class="mx-8">🔥 Misr - $399 (So'nggi 2 joy)</span>
+                    <span class="mx-8">🔥 Dubay - $450 (Chiptalar kiritilgan)</span>
+                    <span class="mx-8">🔥 Istanbul - $350 (Hafta oxiri uchun)</span>
+                    <span class="mx-8">🔥 Umra ziyorati - $1200 (Ramzon oyi)</span>
+                    <!-- Duplicate for infinite effect -->
+                    <span class="mx-8">🔥 Misr - $399 (So'nggi 2 joy)</span>
+                    <span class="mx-8">🔥 Dubay - $450 (Chiptalar kiritilgan)</span>
+                </div>
+            </div>
+            <div class="px-4 font-bold bg-brand-blue z-10 right-0 shadow-[-10px_0_15px_-5px_rgba(30,58,138,1)]">
+                <a href="#" class="text-brand-neon hover:text-white transition-colors underline text-sm">Hammasi</a>
+            </div>
+        </div>
+
+        <!-- 4. CATEGORIES (Grid) -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2 uppercase tracking-wide">Kategoriyalar bo'yicha izlash</h2>
+                <div class="w-24 h-1 bg-brand-neon mx-auto mb-10 rounded-full"></div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                    <!-- Category 1 -->
+                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Plyaj" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                            <span class="text-4xl mb-2">🏝</span>
+                            Plyaj
+                        </div>
+                    </a>
+                    <!-- Category 2 -->
+                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tog'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                            <span class="text-4xl mb-2">🏔</span>
+                            Tog'
+                        </div>
+                    </a>
+                    <!-- Category 3 -->
+                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekskursiya" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                            <span class="text-4xl mb-2">🏛</span>
+                            Ekskursiya
+                        </div>
+                    </a>
+                    <!-- Category 4 -->
+                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1565552643954-1e548cf5f420?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Umra" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                            <span class="text-4xl mb-2">🕋</span>
+                            Umra
+                        </div>
+                    </a>
+                    <!-- Category 5 -->
+                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                        <img src="https://images.unsplash.com/photo-1533240332313-0db49b459ad6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekstremal" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                            <span class="text-4xl mb-2">🎒</span>
+                            Ekstremal
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. TOP TOUR PACKAGES -->
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-end mb-10">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 uppercase tracking-wide">Top Sayohat Paketlari</h2>
+                        <div class="w-24 h-1 bg-brand-blue mt-2 rounded-full"></div>
+                    </div>
+                    <a href="#" class="text-brand-blue font-semibold hover:text-brand-light flex items-center hidden sm:flex">
+                        Barchasini ko'rish
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Package Card 1 -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-gray-100 flex flex-col">
+                        <div class="relative h-64 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Istanbul" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-gray-800 shadow-sm">
+                                7 kun / 6 kecha
+                            </div>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-gray-900">Istanbul Mo'jizasi</h3>
+                                <div class="flex items-center text-brand-accent">
+                                    <span class="mr-1">⭐</span>
+                                    <span class="font-bold text-gray-800">4.9</span>
+                                    <span class="text-xs text-gray-500 ml-1">(120)</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3 my-4 text-gray-400">
+                                <span title="Aviachipta">✈️</span>
+                                <span>+</span>
+                                <span title="Mehmonxona">🏨</span>
+                                <span>+</span>
+                                <span title="Sug'urta">🎫</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-6 flex-1">Eng yaxshi mehmonxonalar, Bosphorus sayohati va tarixiy obidalar bo'ylab ekskursiya.</p>
+                            <div class="flex justify-between items-center mt-auto border-t border-gray-100 pt-4">
+                                <div>
+                                    <span class="text-xs text-gray-400 uppercase">Kishi boshiga</span>
+                                    <div class="text-2xl font-black text-brand-blue">$550</div>
+                                </div>
+                                <button class="bg-brand-blue hover:bg-brand-dark text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-md">
+                                    Band qilish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Package Card 2 -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-gray-100 flex flex-col relative">
+                        <div class="absolute top-4 left-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-r-lg z-10 uppercase tracking-wide">
+                            Qaynoq
+                        </div>
+                        <div class="relative h-64 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Bali" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-gray-800 shadow-sm">
+                                10 kun / 9 kecha
+                            </div>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-gray-900">Tropik Bali</h3>
+                                <div class="flex items-center text-brand-accent">
+                                    <span class="mr-1">⭐</span>
+                                    <span class="font-bold text-gray-800">5.0</span>
+                                    <span class="text-xs text-gray-500 ml-1">(85)</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3 my-4 text-gray-400">
+                                <span title="Aviachipta">✈️</span>
+                                <span>+</span>
+                                <span title="Mehmonxona">🏨</span>
+                                <span>+</span>
+                                <span title="Sug'urta">🎫</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-6 flex-1">Oq qumli sohillar, toza havo va unutilmas tabiat qo'ynidagi dam olish.</p>
+                            <div class="flex justify-between items-center mt-auto border-t border-gray-100 pt-4">
+                                <div>
+                                    <span class="text-xs text-gray-400 uppercase">Kishi boshiga</span>
+                                    <div class="text-2xl font-black text-brand-blue">$1200</div>
+                                </div>
+                                <button class="bg-brand-blue hover:bg-brand-dark text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-md">
+                                    Band qilish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Package Card 3 -->
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-gray-100 flex flex-col">
+                        <div class="relative h-64 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1502602898657-3e90760b3838?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Parij" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-gray-800 shadow-sm">
+                                5 kun / 4 kecha
+                            </div>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-2xl font-bold text-gray-900">Romantik Parij</h3>
+                                <div class="flex items-center text-brand-accent">
+                                    <span class="mr-1">⭐</span>
+                                    <span class="font-bold text-gray-800">4.8</span>
+                                    <span class="text-xs text-gray-500 ml-1">(94)</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3 my-4 text-gray-400">
+                                <span title="Aviachipta">✈️</span>
+                                <span>+</span>
+                                <span title="Mehmonxona">🏨</span>
+                                <span>+</span>
+                                <span title="Sug'urta">🎫</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mb-6 flex-1">Eiffel minorasi, Luvr va romantik ko'chalar - orzudagi sayohat.</p>
+                            <div class="flex justify-between items-center mt-auto border-t border-gray-100 pt-4">
+                                <div>
+                                    <span class="text-xs text-gray-400 uppercase">Kishi boshiga</span>
+                                    <div class="text-2xl font-black text-brand-blue">$890</div>
+                                </div>
+                                <button class="bg-brand-blue hover:bg-brand-dark text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-md">
+                                    Band qilish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. VALUE PROPOSITION -->
+        <section class="py-20 bg-brand-blue text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Nega minglab mijozlar aynan bizni tanlashadi?</h2>
+                    <p class="text-blue-200 text-lg">Bizning ustuvorligimiz - sizning xavfsizligingiz va qulayligingiz.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <!-- Value 1 -->
+                    <div class="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                        <div class="w-20 h-20 mx-auto bg-brand-neon/20 rounded-full flex items-center justify-center mb-6">
+                            <span class="text-4xl">🛡️</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">100% Sug'urta</h3>
+                        <p class="text-blue-100 text-sm leading-relaxed">Sayohat davomida kutilmagan xarajatlardan to'liq himoya qilamiz. Biz barcha rasmiyatchilikni o'z zimmamizga olamiz.</p>
+                    </div>
+                    
+                    <!-- Value 2 -->
+                    <div class="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                        <div class="w-20 h-20 mx-auto bg-brand-neon/20 rounded-full flex items-center justify-center mb-6">
+                            <span class="text-4xl">✈️</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">To'g'ridan-to'g'ri reyslar</h3>
+                        <p class="text-blue-100 text-sm leading-relaxed">Ortiqcha vaqt yo'qotmasdan, qulay va to'g'ridan-to'g'ri reyslar hamda lyuks mehmonxonalar kafolatlanadi.</p>
+                    </div>
+
+                    <!-- Value 3 -->
+                    <div class="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                        <div class="w-20 h-20 mx-auto bg-brand-neon/20 rounded-full flex items-center justify-center mb-6">
+                            <span class="text-4xl">💰</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Shaffof narxlar</h3>
+                        <p class="text-blue-100 text-sm leading-relaxed">Hech qanday yashirin to'lovlarsiz! Saytda va shartnomada ko'rsatilgan narx to'liq yakuniy hisoblanadi.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. SOCIAL PROOF (Testimonials) -->
+        <section class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 uppercase tracking-wide">Mijozlarimiz taassurotlari</h2>
+                    <div class="w-24 h-1 bg-brand-blue mx-auto mt-4 rounded-full"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative">
+                        <div class="absolute -top-5 right-8 text-6xl text-gray-200">"</div>
+                        <div class="flex text-brand-accent mb-4 text-sm">
+                            ⭐⭐⭐⭐⭐
+                        </div>
+                        <p class="text-gray-600 mb-6 italic relative z-10">"Viza muammosiz bo'ldi, mehmonxona ajoyib! Umuman ortiqcha qiyinchiliksiz ajoyib dam oldik. Rahmat katta jamoaga!"</p>
+                        <div class="flex items-center">
+                            <img src="https://i.pravatar.cc/150?img=11" alt="Sardor" class="w-12 h-12 rounded-full mr-4 border-2 border-brand-blue/20">
+                            <div>
+                                <h4 class="font-bold text-gray-900">Sardor</h4>
+                                <p class="text-xs text-gray-500">Toshkent</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative">
+                        <div class="absolute -top-5 right-8 text-6xl text-gray-200">"</div>
+                        <div class="flex text-brand-accent mb-4 text-sm">
+                            ⭐⭐⭐⭐⭐
+                        </div>
+                        <p class="text-gray-600 mb-6 italic relative z-10">"Tashkilotchilik yuqori darajada ekan, rahm! Tur davomida hamma narsa soatdek aniq ishladi, juda mamnunmiz."</p>
+                        <div class="flex items-center">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="Laylo" class="w-12 h-12 rounded-full mr-4 border-2 border-brand-blue/20">
+                            <div>
+                                <h4 class="font-bold text-gray-900">Laylo</h4>
+                                <p class="text-xs text-gray-500">Samarqand</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative">
+                        <div class="absolute -top-5 right-8 text-6xl text-gray-200">"</div>
+                        <div class="flex text-brand-accent mb-4 text-sm">
+                            ⭐⭐⭐⭐⭐
+                        </div>
+                        <p class="text-gray-600 mb-6 italic relative z-10">"Gidimiz juda bilimli edi, tarixiy joylar haqida qiziqarli ma'lumotlar berdi. Keyingi safar ham albatta shu agentlik bilan ketamiz."</p>
+                        <div class="flex items-center">
+                            <img src="https://i.pravatar.cc/150?img=68" alt="Bobur" class="w-12 h-12 rounded-full mr-4 border-2 border-brand-blue/20">
+                            <div>
+                                <h4 class="font-bold text-gray-900">Bobur</h4>
+                                <p class="text-xs text-gray-500">Farg'ona</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. LEAD MAGNET FORM (CTA) -->
+        <section class="py-20 relative">
+            <!-- Background Image -->
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Airplane CTA" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-brand-dark/80"></div>
+            </div>
+            
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="bg-brand-blue/90 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl border border-white/10 flex flex-col md:flex-row items-center gap-10">
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">Sayohat bo'yicha bepul ekspert maslahatini oling</h2>
+                        <p class="text-blue-100 text-lg">Mutaxassisimiz sizga 10 daqiqa ichida moliyaviy va istaklaringizga mos tur tanlab beradi.</p>
+                    </div>
+                    
+                    <div class="flex-1 w-full">
+                        <form class="space-y-4 bg-white p-6 rounded-2xl shadow-inner">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Ismingiz</label>
+                                <input type="text" id="name" placeholder="Masalan: Jamshid" class="w-full border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefon raqamingiz</label>
+                                <input type="tel" id="phone" placeholder="+998 __ _______" class="w-full border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                            </div>
+                            <button type="button" class="w-full bg-brand-neon hover:bg-teal-300 text-brand-dark font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-md mt-2 uppercase tracking-wide text-sm">
+                                Mijozlar menejeri bilan bog'lanish (Bepul)
+                            </button>
+                            <p class="text-xs text-gray-400 text-center mt-3">Ma'lumotlaringiz xavfsizligi kafolatlanadi.</p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BLOG / EXPERTISE PREVIEW -->
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900 uppercase tracking-wide">Foydali Ma'lumotlar (Blog)</h2>
+                    <div class="w-24 h-1 bg-brand-blue mx-auto mt-4 rounded-full"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="#" class="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Visa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-brand-blue transition-colors">Shengen vizasini olish sirlari 2026</h3>
+                            <p class="text-sm text-gray-500 mt-2">Yevropaga viza olish tartibi va kerakli hujjatlar to'liq ro'yxati.</p>
+                        </div>
+                    </a>
+                    
+                    <a href="#" class="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dubai" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-brand-blue transition-colors">Dubayga borishda nimalarni bilish shart?</h3>
+                            <p class="text-sm text-gray-500 mt-2">Qonun-qoidalar, arzon xaridlar va eng zo'r joylar haqida.</p>
+                        </div>
+                    </a>
+
+                    <a href="#" class="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Baggage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-brand-blue transition-colors">Sayohat yukxaltasi sirlari</h3>
+                            <p class="text-sm text-gray-500 mt-2">Joyni tejash va faqat kerakli narsalarni olish bo'yicha layfxaklar.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 9. FOOTER -->
+    <footer class="bg-brand-dark text-gray-300 border-t border-white/10 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 border-b border-gray-800 pb-12">
+                <!-- Brand Info -->
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center mb-6">
+                        <svg class="h-8 w-8 text-brand-neon" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                        </svg>
+                        <span class="ml-2 text-2xl font-bold text-white tracking-tight">Real Travel</span>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed mb-6">Sizning ishonchli hamkoringiz. Dunyoning istalgan nuqtasiga premium darajadagi sayohatlarni tashkillashtiramiz.</p>
+                    <div class="flex space-x-4">
+                        <!-- Social Icons -->
+                        <a href="#" class="text-gray-400 hover:text-brand-neon transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-brand-neon transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.686c.223-.195-.054-.31-.35-.11l-6.4 4.02-2.76-.86c-.6-.188-.61-.6.126-.89l10.814-4.17c.5-.19.95.12.828.91z"/></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-brand-neon transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                    </div>
+                </div>
+
+                <!-- Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Biz Haqimizda</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#" class="hover:text-brand-neon transition-colors">Kompaniya haqida</a></li>
+                        <li><a href="#" class="hover:text-brand-neon transition-colors">Hamkorlar</a></li>
+                        <li><a href="#" class="hover:text-brand-neon transition-colors">Litsenziyalar va sertifikatlar</a></li>
+                        <li><a href="#" class="hover:text-brand-neon transition-colors">Mijozlar bilan ishlash</a></li>
+                        <li><a href="#" class="hover:text-brand-neon transition-colors">Ommaviy oferta</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contacts -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Aloqa</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 mr-3 text-brand-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            <span>+998 (71) 123-45-67<br><span class="text-xs text-gray-500">Du-Yak 09:00 - 20:00</span></span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 mr-3 text-brand-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span>Toshkent sh, Yunusobod tumani,<br>Amir Temur shoh ko'chasi 14A</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Payments -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">To'lov Turlari</h4>
+                    <p class="text-sm text-gray-400 mb-4">Quyidagi to'lov tizimlari orqali xavfsiz to'lovlarni qabul qilamiz:</p>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Pseudo badges for payments -->
+                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">UZCARD</div>
+                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">HUMO</div>
+                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">VISA</div>
+                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">PAYME</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2026 Real Travel Agency. Barcha huquqlar himoyalangan.</p>
+                <p class="mt-2 md:mt-0">Design & Developed by Antigravity AI.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // Simple JS for Mobile Menu Toggle and Navbar Scroll Effect
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            const navbar = document.getElementById('navbar');
+
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+
+            window.addEventListener('scroll', () => {
+                if(window.scrollY > 10) {
+                    navbar.classList.add('bg-white/95', 'backdrop-blur-sm', 'shadow-md');
+                    navbar.classList.remove('bg-transparent', 'text-white');
+                } else {
+                    navbar.classList.remove('bg-white/95', 'backdrop-blur-sm', 'shadow-md');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
