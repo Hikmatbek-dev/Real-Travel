@@ -80,8 +80,11 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 text-center text-xs font-light tracking-wider text-white/40">
-          &copy; {new Date().getFullYear()} {COMPANY.legalName}. {t.footer.copyright}
+        <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/10 pt-8 text-xs font-light tracking-wider text-white/40">
+          <p>&copy; {new Date().getFullYear()} {COMPANY.legalName}. {t.footer.copyright}</p>
+          <p className="mt-2 md:mt-0">
+            Design & Developed by <a href="https://t.me/Hikmatdeb" target="_blank" rel="noreferrer" className="text-white hover:text-accent transition-colors font-medium">Hikmatbek</a>.
+          </p>
         </div>
       </div>
     </footer>

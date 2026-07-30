@@ -41,10 +41,10 @@ export function HeroSearch({
     { month: "long", year: "numeric" }
   );
 
-  const field = "flex-1 min-w-0 px-4 py-3 sm:py-4";
-  const label = "block text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground";
+  const field = "flex-1 min-w-0 px-5 py-3 sm:py-4 rounded-xl transition-colors hover:bg-white/5";
+  const label = "block text-[11px] font-bold uppercase tracking-widest text-white/70 mb-1";
   const control =
-    "mt-1 w-full border-0 bg-transparent p-0 text-sm font-medium text-foreground outline-none focus:ring-0";
+    "w-full border-0 bg-transparent p-0 text-base font-semibold text-white outline-none focus:ring-0 [&>option]:text-gray-900";
 
   return (
     <form
@@ -52,7 +52,7 @@ export function HeroSearch({
         event.preventDefault();
         onSubmit();
       }}
-      className="mx-auto flex w-full max-w-4xl flex-col gap-2 rounded-2xl bg-card p-2 shadow-xl sm:flex-row sm:items-stretch sm:gap-0 sm:rounded-full sm:p-1.5"
+      className="mx-auto flex w-full max-w-5xl flex-col gap-2 rounded-[2rem] bg-white/10 p-3 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-md border border-white/20 sm:flex-row sm:items-center sm:gap-1 sm:p-2"
     >
       <div className={field}>
         <label htmlFor="heroRegion" className={label}>
@@ -72,7 +72,7 @@ export function HeroSearch({
         </select>
       </div>
 
-      <div className="hidden w-px shrink-0 self-center bg-border sm:block sm:h-8" />
+      <div className="hidden w-px shrink-0 self-stretch bg-white/20 sm:block my-2" />
 
       <div className={field}>
         <label htmlFor="heroMonth" className={label}>
@@ -93,9 +93,9 @@ export function HeroSearch({
         </select>
       </div>
 
-      <div className="hidden w-px shrink-0 self-center bg-border sm:block sm:h-8" />
+      <div className="hidden w-px shrink-0 self-stretch bg-white/20 sm:block my-2" />
 
-      <div className={`${field} sm:max-w-[8rem]`}>
+      <div className={`${field} sm:max-w-[9rem]`}>
         <label htmlFor="heroTravelers" className={label}>
           {t.hero.searchWho}
         </label>
@@ -110,8 +110,8 @@ export function HeroSearch({
         />
       </div>
 
-      <Button type="submit" className="h-12 shrink-0 rounded-full px-6 sm:h-auto sm:px-8">
-        <Search className="mr-2 h-4 w-4" />
+      <Button type="submit" className="h-14 shrink-0 rounded-[1.5rem] bg-accent px-8 text-accent-foreground hover:bg-accent/90 font-bold tracking-wide text-base shadow-lg transition-transform hover:-translate-y-0.5 sm:ml-2">
+        <Search className="mr-2 h-5 w-5" />
         {t.hero.searchButton}
       </Button>
     </form>

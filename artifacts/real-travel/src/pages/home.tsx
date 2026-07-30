@@ -6,7 +6,6 @@ import { Slider } from "@/components/ui/slider";
 import { TourCard, type Departure } from "@/components/tour-card";
 import { HeroSearch, type HeroQuery } from "@/components/hero-search";
 import { ReviewsSection } from "@/components/reviews-section";
-import { CtaBand } from "@/components/cta-band";
 import { useLanguage } from "@/i18n";
 import { formatUzs } from "@/lib/format";
 import { useSharedTravelData } from "@/lib/shared-travel-data";
@@ -80,41 +79,126 @@ export function HomePage() {
   return (
     <>
       {/* ---------------------------------------------------------------- hero */}
-      <section id="hero" className="relative flex min-h-[92vh] flex-col justify-end overflow-hidden pb-10 pt-32">
-        <img src="/hero.png" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/40 via-primary/45 to-primary/85" />
+      <section id="hero" className="relative flex min-h-[85vh] flex-col justify-center overflow-hidden pb-10 pt-20 font-sans">
+        <div className="absolute inset-0 z-0">
+          <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Sayohat manzarasi" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-[#1E3A8A]/60" />
+        </div>
 
-        <div className="container relative mx-auto px-6 md:px-12">
-          {/* Left-aligned editorial block rather than a centred poster. */}
-          <div className="mb-12 max-w-3xl text-primary-foreground">
-            <p className="mb-5 text-xs uppercase tracking-[0.35em] text-primary-foreground/75">{t.hero.eyebrow}</p>
-            <h1 className="mb-6 font-serif text-5xl leading-[1.05] md:text-7xl lg:text-8xl">
-              {t.hero.titleBefore} <span className="italic text-accent">{t.hero.titleAccent}</span>{" "}
-              {t.hero.titleAfter}
+        <div className="container relative mx-auto px-6 md:px-12 z-10 text-center">
+          <div className="mb-12 mx-auto max-w-4xl">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 drop-shadow-lg">
+                Dunyoni Biz Bilan <span className="text-[#00E5FF]">KASHF ETING!</span>
             </h1>
-            <p className="max-w-xl text-base font-light leading-relaxed text-primary-foreground/85">{t.hero.text}</p>
+            <p className="mt-4 text-xl md:text-2xl text-gray-200 mb-12 font-light">
+                Eng unutilmas lahzalar sizni kutmoqda.
+            </p>
           </div>
 
           <HeroSearch value={query} onChange={setQuery} onSubmit={scrollToTours} />
         </div>
       </section>
 
-      {/* ---------------------------------------------------------------- trust */}
-      <section className="border-b border-border bg-card">
-        <div className="container mx-auto max-w-6xl px-6 py-14 md:px-12 md:py-16">
-          <div className="grid gap-10 md:grid-cols-3 md:gap-12">
-            {[
-              { icon: MapPinned, title: t.tour.trust1Title, text: t.tour.trust1Text },
-              { icon: UserCheck, title: t.tour.trust2Title, text: t.tour.trust2Text },
-              { icon: Wallet, title: t.tour.trust3Title, text: t.tour.trust3Text }
-            ].map((item) => (
-              <div key={item.title}>
-                <item.icon className="mb-4 h-6 w-6 text-accent" />
-                <h3 className="mb-2 font-serif text-xl text-primary">{item.title}</h3>
-                <p className="font-light leading-relaxed text-muted-foreground">{item.text}</p>
+      {/* ---------------------------------------------------------------- ticker */}
+      <div className="bg-primary text-primary-foreground overflow-hidden py-3 shadow-inner relative flex items-center">
+        <div className="px-4 font-bold whitespace-nowrap bg-primary z-10 flex items-center shadow-[10px_0_15px_-5px_hsl(var(--primary))]">
+            <span className="text-accent mr-2">⚡️ Ayni muddao:</span>
+        </div>
+        <div className="overflow-hidden w-full relative">
+            <div className="whitespace-nowrap inline-block animate-marquee font-sans">
+                {isLoaded && tours.length > 0 ? (
+                    <>
+                        {tours.map(tour => (
+                            <span key={`ticker1-${tour.id}`} className="mx-8">
+                                🔥 {tour.name} - {formatUzs(tour.priceUzs, language)}
+                            </span>
+                        ))}
+                        {tours.map(tour => (
+                            <span key={`ticker2-${tour.id}`} className="mx-8">
+                                🔥 {tour.name} - {formatUzs(tour.priceUzs, language)}
+                            </span>
+                        ))}
+                    </>
+                ) : (
+                    <span className="mx-8">Yuklanmoqda...</span>
+                )}
+            </div>
+        </div>
+        <div className="px-4 font-bold bg-primary z-10 right-0 shadow-[-10px_0_15px_-5px_hsl(var(--primary))] hidden sm:block">
+            <a href="#tours" className="text-accent hover:text-primary-foreground transition-colors underline text-sm whitespace-nowrap">Hammasi</a>
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------------------- categories */}
+      <section className="py-16 bg-background font-sans border-b border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <h2 className="text-3xl font-bold text-foreground mb-2 uppercase tracking-wide">Kategoriyalar bo'yicha izlash</h2>
+              <div className="w-24 h-1 bg-accent mx-auto mb-10 rounded-full"></div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {/* Category 1 */}
+                  <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Plyaj" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                      <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                          <span className="text-4xl mb-2">🏝</span>
+                          Plyaj
+                      </div>
+                  </a>
+                  {/* Category 2 */}
+                  <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                      <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tog'" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                      <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                          <span className="text-4xl mb-2">🏔</span>
+                          Tog'
+                      </div>
+                  </a>
+                  {/* Category 3 */}
+                  <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                      <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekskursiya" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                      <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                          <span className="text-4xl mb-2">🏛</span>
+                          Ekskursiya
+                      </div>
+                  </a>
+                  {/* Category 4 */}
+                  <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
+                      <img src="https://images.unsplash.com/photo-1533240332313-0db49b459ad6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekstremal" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
+                      <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
+                          <span className="text-4xl mb-2">🎒</span>
+                          Ekstremal
+                      </div>
+                  </a>
               </div>
-            ))}
           </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- trust */}
+      <section className="py-20 bg-primary text-primary-foreground font-sans">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary-foreground">Nega minglab mijozlar aynan bizni tanlashadi?</h2>
+                <p className="text-primary-foreground/80 text-lg">Bizning ustuvorligimiz - sizning xavfsizligingiz va qulayligingiz.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              {[
+                { emoji: "🛡️", title: t.tour.trust1Title, text: t.tour.trust1Text },
+                { emoji: "✈️", title: t.tour.trust2Title, text: t.tour.trust2Text },
+                { emoji: "💰", title: t.tour.trust3Title, text: t.tour.trust3Text }
+              ].map((item) => (
+                <div key={item.title} className="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                    <div className="w-20 h-20 mx-auto bg-accent/20 rounded-full flex items-center justify-center mb-6">
+                        <span className="text-4xl">{item.emoji}</span>
+                    </div>
+                    <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                    <p className="text-primary-foreground/80 text-sm leading-relaxed">{item.text}</p>
+                </div>
+              ))}
+            </div>
         </div>
       </section>
 
@@ -217,7 +301,6 @@ export function HomePage() {
         </div>
       </section>
 
-      <CtaBand />
     </>
   );
 }

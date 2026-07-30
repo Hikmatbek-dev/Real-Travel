@@ -48,41 +48,45 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-marquee: marquee 25s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
 }
 
 :root {
-  /* Khiva majolica: deep petrol tile, warm clay, sand paper.
-     Warm background + cool primary + warm accent gives real hierarchy —
-     the previous palette was one blue accenting another blue. */
-  --background: 40 30% 97%;
-  --foreground: 195 25% 12%;
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
 
-  --border: 38 18% 87%;
-  --input: 38 18% 85%;
-  --ring: 22 68% 46%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 30%;
 
   --card: 0 0% 100%;
-  --card-foreground: 195 25% 12%;
-  --card-border: 38 18% 90%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 214 32% 91%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 195 25% 12%;
-  --popover-border: 38 18% 87%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 214 32% 91%;
 
-  --primary: 192 60% 17%;
-  --primary-foreground: 40 30% 97%;
+  --primary: 221 83% 30%;
+  --primary-foreground: 210 40% 98%;
 
-  --secondary: 38 28% 93%;
-  --secondary-foreground: 195 25% 12%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222 47% 11%;
 
-  --muted: 38 22% 94%;
-  --muted-foreground: 195 12% 40%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
 
-  --accent: 22 68% 46%;
-  --accent-foreground: 40 30% 97%;
+  --accent: 217 91% 60%;
+  --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 72% 45%;
-  --destructive-foreground: 40 30% 97%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: 'Cormorant Garamond', serif;
@@ -92,35 +96,35 @@
 }
 
 .dark {
-  --background: 195 30% 9%;
-  --foreground: 40 30% 96%;
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
 
-  --border: 195 20% 20%;
-  --input: 195 20% 20%;
-  --ring: 22 68% 52%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 48%;
 
-  --card: 195 28% 12%;
-  --card-foreground: 40 30% 96%;
-  --card-border: 195 20% 18%;
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 98%;
+  --card-border: 217.2 32.6% 17.5%;
 
-  --popover: 195 28% 12%;
-  --popover-foreground: 40 30% 96%;
-  --popover-border: 195 20% 20%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+  --popover-border: 217.2 32.6% 17.5%;
 
-  --primary: 40 30% 96%;
-  --primary-foreground: 195 30% 9%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
 
-  --secondary: 195 20% 18%;
-  --secondary-foreground: 40 30% 96%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
 
-  --muted: 195 20% 18%;
-  --muted-foreground: 40 12% 65%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
 
-  --accent: 22 68% 52%;
-  --accent-foreground: 195 30% 9%;
+  --accent: 217 91% 60%;
+  --accent-foreground: 222.2 47.4% 11.2%;
 
-  --destructive: 0 62% 40%;
-  --destructive-foreground: 40 30% 96%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
 }
 
 @layer base {
