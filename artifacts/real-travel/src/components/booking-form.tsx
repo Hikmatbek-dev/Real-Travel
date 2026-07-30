@@ -32,6 +32,11 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
 
   const [dates, setDates] = useState<Availability[] | null>(null);
   const [dateId, setDateId] = useState("");
+  const [customDate, setCustomDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().slice(0, 10);
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [provider, setProvider] = useState<ProviderId>("payme");
@@ -93,6 +98,9 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
     setIsSubmitting(true);
 
     const orderId = `o${Date.now()}`;
+    const finalNotes = dateId
+      ? form.notes
+      : `[Jo'nash sanasi: ${customDate}] ${form.notes}`.trim();
 
     try {
       await saveOrders([
@@ -110,7 +118,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
           date: new Date().toISOString(),
           status: "New",
           totalAmount: fullTotal,
-          notes: form.notes
+          notes: finalNotes
         },
         ...orders
       ]);
@@ -146,14 +154,6 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
     );
   }
 
-  if (dates !== null && dates.length === 0) {
-    return (
-      <div className="rounded-2xl border border-border bg-muted/30 p-6 text-sm text-muted-foreground">
-        {t.booking.noDates}
-      </div>
-    );
-  }
-
   const soldOut = seatsLeft !== null && seatsLeft < travelers.length;
 
   return (
@@ -169,7 +169,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
           <div className="flex h-10 items-center rounded-lg border border-input px-3 text-sm text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           </div>
-        ) : (
+        ) : dates.length > 0 ? (
           <select
             id="departure"
             required
@@ -189,6 +189,16 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
               </option>
             ))}
           </select>
+        ) : (
+          <Input
+            id="departure"
+            type="date"
+            required
+            min={new Date().toISOString().slice(0, 10)}
+            value={customDate}
+            onChange={(e) => setCustomDate(e.target.value)}
+            className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm"
+          />
         )}
       </div>
 
@@ -331,7 +341,7 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
         ) : null}
       </div>
 
-      <Button type="submit" className="h-12 w-full" disabled={isSubmitting || soldOut || !dateId}>
+      <Button type="submit" className="h-12 w-full" disabled={isSubmitting || soldOut || (dates !== null && dates.length > 0 && !dateId)}>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t.booking.processing}

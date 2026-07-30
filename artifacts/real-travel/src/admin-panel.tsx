@@ -346,8 +346,17 @@ export function AdminPanel() {
         await saveTours(tours.map((tour) => (tour.id === editingTour.id ? { ...tour, ...tourForm } as SharedTour : tour)));
         toast({ title: "Tour updated", description: "Public catalog has been updated in Supabase global database." });
       } else {
-        await saveTours([{ ...(tourForm as SharedTour), id: `t${Date.now()}` }, ...tours]);
-        toast({ title: "Tour added", description: "New tour is now live in the global database." });
+        const newTourId = `t${Date.now()}`;
+        await saveTours([{ ...(tourForm as SharedTour), id: newTourId }, ...tours]);
+        const d1 = new Date(); d1.setDate(d1.getDate() + 10);
+        const d2 = new Date(); d2.setDate(d2.getDate() + 25);
+        const d3 = new Date(); d3.setDate(d3.getDate() + 40);
+        await saveTourDates(newTourId, [
+          { id: `d_${Date.now()}_1`, tourId: newTourId, departureDate: d1.toISOString().slice(0, 10), seatsTotal: 15 },
+          { id: `d_${Date.now()}_2`, tourId: newTourId, departureDate: d2.toISOString().slice(0, 10), seatsTotal: 15 },
+          { id: `d_${Date.now()}_3`, tourId: newTourId, departureDate: d3.toISOString().slice(0, 10), seatsTotal: 15 }
+        ]);
+        toast({ title: "Tour added", description: "New tour is now live in the global database with departure dates." });
       }
 
       setIsTourModalOpen(false);
