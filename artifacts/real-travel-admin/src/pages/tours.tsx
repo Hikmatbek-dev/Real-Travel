@@ -71,34 +71,42 @@ export default function Tours() {
     }
   };
 
-  const handleSaveTour = () => {
+  const handleSaveTour = async () => {
     if (!formData.name || !formData.price || !formData.location || !formData.duration) {
       toast({ title: "Validation Error", description: "Please fill all required fields.", variant: "destructive" });
       return;
     }
 
-    if (editingTour) {
-      const updatedTours = tours.map(t => 
-        t.id === editingTour.id ? { ...t, ...formData } as Tour : t
-      );
-      saveTours(updatedTours);
-      toast({ title: "Tour updated", description: "The tour has been successfully updated." });
-    } else {
-      const newTour: Tour = {
-        ...(formData as Tour),
-        id: `t${Date.now()}` // simple unique id
-      };
-      saveTours([newTour, ...tours]);
-      toast({ title: "Tour added", description: "The new tour has been successfully created." });
+    try {
+      if (editingTour) {
+        const updatedTours = tours.map(t => 
+          t.id === editingTour.id ? { ...t, ...formData } as Tour : t
+        );
+        await saveTours(updatedTours);
+        toast({ title: "Tour updated", description: "The tour has been successfully updated in Supabase global database." });
+      } else {
+        const newTour: Tour = {
+          ...(formData as Tour),
+          id: `t${Date.now()}`
+        };
+        await saveTours([newTour, ...tours]);
+        toast({ title: "Tour added", description: "The new tour has been created in global database and is live for customers." });
+      }
+      setIsTourModalOpen(false);
+    } catch (err: any) {
+      toast({ title: "Save Failed", description: err?.message || "Failed to save tour to Supabase database.", variant: "destructive" });
     }
-    setIsTourModalOpen(false);
   };
 
-  const handleDeleteTour = () => {
+  const handleDeleteTour = async () => {
     if (tourToDelete) {
-      const updatedTours = tours.filter(t => t.id !== tourToDelete);
-      saveTours(updatedTours);
-      toast({ title: "Tour deleted", description: "The tour has been permanently removed." });
+      try {
+        const updatedTours = tours.filter(t => t.id !== tourToDelete);
+        await saveTours(updatedTours);
+        toast({ title: "Tour deleted", description: "The tour has been permanently removed from Supabase." });
+      } catch (err: any) {
+        toast({ title: "Delete Failed", description: err?.message || "Failed to delete tour from Supabase.", variant: "destructive" });
+      }
     }
     setIsDeleteAlertOpen(false);
     setTourToDelete(null);

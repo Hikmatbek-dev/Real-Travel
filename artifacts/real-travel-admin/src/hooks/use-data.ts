@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export type Tour = {
   id: string;
@@ -8,6 +9,8 @@ export type Tour = {
   duration: number;
   description: string;
   image: string;
+  region?: string;
+  priceUzs?: number;
 };
 
 export type OrderStatus = "New" | "Confirmed" | "Cancelled";
@@ -26,58 +29,91 @@ export type Order = {
   notes: string;
 };
 
-const INITIAL_TOURS: Tour[] = [
-  { id: "t1", name: "Aegean Escape", price: 3200, location: "Santorini, Greece", duration: 7, description: "Experience the magic of Santorini with luxury accommodations and private boat tours.", image: "/tours/santorini.png" },
-  { id: "t2", name: "Autumn in Kyoto", price: 4500, location: "Kyoto, Japan", duration: 10, description: "A deeply cultural journey through ancient temples and maple-lined streets.", image: "/tours/kyoto.png" },
-  { id: "t3", name: "Patagonia Expedition", price: 5800, location: "Patagonia, Chile", duration: 14, description: "An adventurous expedition into the heart of Patagonia's glaciers and peaks.", image: "/tours/patagonia.png" },
-  { id: "t4", name: "Moroccan Colors", price: 2900, location: "Marrakech, Morocco", duration: 6, description: "Immerse yourself in the vibrant souks, luxury riads, and desert landscapes.", image: "/tours/marrakech.png" },
-  { id: "t5", name: "Rocky Mountain High", price: 3400, location: "Banff, Canada", duration: 5, description: "Pristine alpine lakes, luxury lodges, and dramatic mountain scenery.", image: "/tours/banff.png" },
-  { id: "t6", name: "Amalfi Coast Drive", price: 4100, location: "Amalfi Coast, Italy", duration: 8, description: "Breathtaking coastal views, private cooking classes, and seaside villas.", image: "/tours/amalfi.png" },
-];
+type TourRow = {
+  id: string;
+  slug?: string;
+  name: string;
+  location: string;
+  region?: string;
+  price: number;
+  price_uzs?: number;
+  duration: number;
+  description: string;
+  image: string;
+};
 
-const INITIAL_ORDERS: Order[] = [
-  { id: "o1", orderNumber: "RT-1042", customerName: "Sarah Jenkins", email: "sarah.jenkins@example.com", phone: "+1 (555) 123-4567", travelers: 2, tourId: "t1", date: new Date(Date.now() - 2 * 86400000).toISOString(), status: "New", totalAmount: 6400, notes: "Interested in sea-view upgrade." },
-  { id: "o2", orderNumber: "RT-1043", customerName: "Michael Chen", email: "michael.chen@example.com", phone: "+1 (555) 987-6543", travelers: 1, tourId: "t2", date: new Date(Date.now() - 5 * 86400000).toISOString(), status: "Confirmed", totalAmount: 4500, notes: "Prefers vegetarian meals." },
-  { id: "o3", orderNumber: "RT-1044", customerName: "Emma Thompson", email: "emma.t@example.com", phone: "+44 7700 900077", travelers: 2, tourId: "t6", date: new Date(Date.now() - 1 * 86400000).toISOString(), status: "New", totalAmount: 8200, notes: "" },
-  { id: "o4", orderNumber: "RT-1045", customerName: "David Rodriguez", email: "david.r@example.com", phone: "+1 (555) 222-3333", travelers: 3, tourId: "t3", date: new Date(Date.now() - 10 * 86400000).toISOString(), status: "Confirmed", totalAmount: 17400, notes: "Need 3 single beds if possible." },
-  { id: "o5", orderNumber: "RT-1046", customerName: "Elena Rossi", email: "elena.rossi@example.com", phone: "+39 312 345 6789", travelers: 2, tourId: "t4", date: new Date(Date.now() - 3 * 86400000).toISOString(), status: "Cancelled", totalAmount: 5800, notes: "Visa timing issue." },
-  { id: "o6", orderNumber: "RT-1047", customerName: "James Wilson", email: "james.w@example.com", phone: "+1 (555) 444-5555", travelers: 2, tourId: "t5", date: new Date(Date.now() - 15 * 86400000).toISOString(), status: "Confirmed", totalAmount: 6800, notes: "" },
-  { id: "o7", orderNumber: "RT-1048", customerName: "Olivia Davis", email: "olivia.d@example.com", phone: "+1 (555) 666-7777", travelers: 4, tourId: "t1", date: new Date().toISOString(), status: "New", totalAmount: 12800, notes: "Family trip, 2 rooms." },
-];
+type OrderRow = {
+  id: string;
+  order_number: string;
+  customer_name: string;
+  email: string;
+  phone: string;
+  travelers: number;
+  tour_id: string | null;
+  date: string;
+  status: string;
+  total_amount: number;
+  notes: string | null;
+};
 
-function normalizeTour(tour: Partial<Tour>): Tour {
+function rowToTour(row: TourRow): Tour {
   return {
-    id: tour.id || `t${Date.now()}`,
-    name: tour.name || "",
-    price: Number(tour.price) || 0,
-    location: tour.location || "",
-    duration: Number(tour.duration) || 1,
-    description: tour.description || "",
-    image: tour.image || ""
+    id: row.id,
+    name: row.name || "",
+    location: row.location || "",
+    price: Number(row.price) || 0,
+    priceUzs: Number(row.price_uzs) || 0,
+    duration: Number(row.duration) || 1,
+    description: row.description || "",
+    image: row.image || "",
+    region: row.region || "europe"
   };
 }
 
-function buildOrderNumber(index: number) {
-  return `RT-${1042 + index}`;
+function tourToRow(tour: Tour): TourRow {
+  return {
+    id: tour.id,
+    slug: tour.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || tour.id,
+    name: tour.name,
+    location: tour.location,
+    region: tour.region || "europe",
+    price: tour.price,
+    price_uzs: tour.priceUzs || 0,
+    duration: tour.duration,
+    description: tour.description,
+    image: tour.image
+  };
 }
 
-function normalizeOrder(order: Partial<Order>, tours: Tour[], index: number): Order {
-  const tour = tours.find((item) => item.id === order.tourId);
-  const travelers = Number(order.travelers) || 1;
-  const totalAmount = Number(order.totalAmount) || (tour ? tour.price * travelers : 0);
-
+function rowToOrder(row: OrderRow): Order {
   return {
-    id: order.id || `o${Date.now()}${index}`,
-    orderNumber: order.orderNumber || buildOrderNumber(index),
-    customerName: order.customerName || "",
-    email: order.email || "",
-    phone: order.phone || "",
-    travelers,
-    tourId: order.tourId || tours[0]?.id || "",
-    date: order.date || new Date().toISOString(),
-    status: (order.status as OrderStatus) || "New",
-    totalAmount,
-    notes: order.notes || ""
+    id: row.id,
+    orderNumber: row.order_number || "",
+    customerName: row.customer_name || "",
+    email: row.email || "",
+    phone: row.phone || "",
+    travelers: Number(row.travelers) || 1,
+    tourId: row.tour_id || "",
+    date: row.date || new Date().toISOString(),
+    status: (row.status as OrderStatus) || "New",
+    totalAmount: Number(row.total_amount) || 0,
+    notes: row.notes || ""
+  };
+}
+
+function orderToRow(order: Order): OrderRow {
+  return {
+    id: order.id,
+    order_number: order.orderNumber || "",
+    customer_name: order.customerName,
+    email: order.email,
+    phone: order.phone,
+    travelers: order.travelers,
+    tour_id: order.tourId || null,
+    date: order.date,
+    status: order.status,
+    total_amount: order.totalAmount,
+    notes: order.notes
   };
 }
 
@@ -87,34 +123,80 @@ export function useData() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const storedTours = localStorage.getItem("rt_admin_tours");
-    const storedOrders = localStorage.getItem("rt_admin_orders");
+    let active = true;
 
-    const nextTours = storedTours
-      ? JSON.parse(storedTours).map((tour: Partial<Tour>) => normalizeTour(tour))
-      : INITIAL_TOURS;
+    const loadData = async () => {
+      try {
+        const [toursRes, ordersRes] = await Promise.all([
+          supabase.from("tours").select("*").order("created_at", { ascending: true }),
+          supabase.from("orders").select("*").order("date", { ascending: false })
+        ]);
 
-    const nextOrders = storedOrders
-      ? JSON.parse(storedOrders).map((order: Partial<Order>, index: number) => normalizeOrder(order, nextTours, index))
-      : INITIAL_ORDERS;
+        if (!active) return;
 
-    setTours(nextTours);
-    setOrders(nextOrders);
-    localStorage.setItem("rt_admin_tours", JSON.stringify(nextTours));
-    localStorage.setItem("rt_admin_orders", JSON.stringify(nextOrders));
-    setIsLoaded(true);
+        if (toursRes.data) {
+          setTours((toursRes.data as TourRow[]).map(rowToTour));
+        }
+        if (ordersRes.data) {
+          setOrders((ordersRes.data as OrderRow[]).map(rowToOrder));
+        }
+      } catch (e) {
+        console.error("Failed to load global Supabase data", e);
+      } finally {
+        if (active) setIsLoaded(true);
+      }
+    };
+
+    loadData();
+
+    const channel = supabase
+      .channel("rt-admin-data")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tours" }, loadData)
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, loadData)
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
-  const saveTours = (newTours: Tour[]) => {
-    const normalizedTours = newTours.map((tour) => normalizeTour(tour));
-    setTours(normalizedTours);
-    localStorage.setItem("rt_admin_tours", JSON.stringify(normalizedTours));
+  const saveTours = async (newTours: Tour[]) => {
+    setTours(newTours); // optimistic update
+
+    const keepIds = newTours.map((tour) => tour.id);
+    const { data: existing } = await supabase.from("tours").select("id");
+    const toDelete = ((existing as { id: string }[] | null) ?? [])
+      .map((row) => row.id)
+      .filter((id) => !keepIds.includes(id));
+
+    if (toDelete.length) {
+      const { error } = await supabase.from("tours").delete().in("id", toDelete);
+      if (error) throw new Error(`Supabase delete error: ${error.message}`);
+    }
+    if (newTours.length) {
+      const { error } = await supabase.from("tours").upsert(newTours.map(tourToRow));
+      if (error) throw new Error(`Supabase upsert error: ${error.message}`);
+    }
   };
 
-  const saveOrders = (newOrders: Order[]) => {
-    const normalizedOrders = newOrders.map((order, index) => normalizeOrder(order, tours, index));
-    setOrders(normalizedOrders);
-    localStorage.setItem("rt_admin_orders", JSON.stringify(normalizedOrders));
+  const saveOrders = async (newOrders: Order[]) => {
+    setOrders(newOrders); // optimistic update
+
+    const keepIds = newOrders.map((order) => order.id);
+    const { data: existing } = await supabase.from("orders").select("id");
+    const toDelete = ((existing as { id: string }[] | null) ?? [])
+      .map((row) => row.id)
+      .filter((id) => !keepIds.includes(id));
+
+    if (toDelete.length) {
+      const { error } = await supabase.from("orders").delete().in("id", toDelete);
+      if (error) throw new Error(`Supabase delete error: ${error.message}`);
+    }
+    if (newOrders.length) {
+      const { error } = await supabase.from("orders").upsert(newOrders.map(orderToRow));
+      if (error) throw new Error(`Supabase upsert error: ${error.message}`);
+    }
   };
 
   return {

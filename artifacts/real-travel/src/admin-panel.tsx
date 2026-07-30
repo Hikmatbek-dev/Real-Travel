@@ -335,30 +335,38 @@ export function AdminPanel() {
     setIsTourModalOpen(true);
   };
 
-  const saveTour = () => {
+  const saveTour = async () => {
     if (!tourForm.name || !tourForm.location || !tourForm.region || !tourForm.price || !tourForm.duration) {
       toast({ title: "Validation error", description: "Please fill required tour fields.", variant: "destructive" });
       return;
     }
 
-    if (editingTour) {
-      saveTours(tours.map((tour) => (tour.id === editingTour.id ? { ...tour, ...tourForm } as SharedTour : tour)));
-      toast({ title: "Tour updated", description: "Public catalog has been updated too." });
-    } else {
-      saveTours([{ ...(tourForm as SharedTour), id: `t${Date.now()}` }, ...tours]);
-      toast({ title: "Tour added", description: "New tour is now visible in the user section." });
-    }
+    try {
+      if (editingTour) {
+        await saveTours(tours.map((tour) => (tour.id === editingTour.id ? { ...tour, ...tourForm } as SharedTour : tour)));
+        toast({ title: "Tour updated", description: "Public catalog has been updated in Supabase global database." });
+      } else {
+        await saveTours([{ ...(tourForm as SharedTour), id: `t${Date.now()}` }, ...tours]);
+        toast({ title: "Tour added", description: "New tour is now live in the global database." });
+      }
 
-    setIsTourModalOpen(false);
+      setIsTourModalOpen(false);
+    } catch (err: any) {
+      toast({ title: "Save failed", description: err?.message || "Could not save tour to Supabase.", variant: "destructive" });
+    }
   };
 
-  const deleteTour = () => {
+  const deleteTour = async () => {
     if (!tourToDelete) return;
-    saveTours(tours.filter((tour) => tour.id !== tourToDelete));
-    saveOrders(orders.filter((order) => order.tourId !== tourToDelete));
-    setTourToDelete(null);
-    setIsDeleteAlertOpen(false);
-    toast({ title: "Tour deleted", description: "Tour and related pending references were removed." });
+    try {
+      await saveTours(tours.filter((tour) => tour.id !== tourToDelete));
+      await saveOrders(orders.filter((order) => order.tourId !== tourToDelete));
+      setTourToDelete(null);
+      setIsDeleteAlertOpen(false);
+      toast({ title: "Tour deleted", description: "Tour removed from global database." });
+    } catch (err: any) {
+      toast({ title: "Delete failed", description: err?.message || "Could not delete tour from Supabase.", variant: "destructive" });
+    }
   };
 
   const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
