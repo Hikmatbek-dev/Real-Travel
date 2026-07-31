@@ -138,7 +138,7 @@ export function HomePage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   {/* Category 1 */}
                   <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Plyaj" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <img src="/images/cat-beach.jpg" alt="Plyaj" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
                       <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
                           <span className="text-4xl mb-2">🏝</span>
@@ -147,7 +147,7 @@ export function HomePage() {
                   </a>
                   {/* Category 2 */}
                   <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                      <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tog'" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <img src="/images/cat-mountain.jpg" alt="Tog'" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
                       <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
                           <span className="text-4xl mb-2">🏔</span>
@@ -156,7 +156,7 @@ export function HomePage() {
                   </a>
                   {/* Category 3 */}
                   <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                      <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekskursiya" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <img src="/images/cat-excursion.jpg" alt="Ekskursiya" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
                       <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
                           <span className="text-4xl mb-2">🏛</span>
@@ -165,7 +165,7 @@ export function HomePage() {
                   </a>
                   {/* Category 4 */}
                   <a href="#tours" className="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                      <img src="https://images.unsplash.com/photo-1533240332313-0db49b459ad6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekstremal" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <img src="/images/cat-extreme.jpg" alt="Ekstremal" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
                       <div className="relative z-10 text-white font-bold text-xl flex flex-col items-center">
                           <span className="text-4xl mb-2">🎒</span>
