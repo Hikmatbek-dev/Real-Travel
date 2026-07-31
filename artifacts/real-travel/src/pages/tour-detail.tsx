@@ -89,6 +89,12 @@ export function TourDetailPage() {
 
   const tour = tours.find((item) => item.slug === params?.slug);
 
+  const [imgSrc, setImgSrc] = useState("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80");
+
+  useEffect(() => {
+    if (tour?.image) setImgSrc(tour.image);
+  }, [tour?.image]);
+
   useDocumentMeta(
     tour ? `${tour.name} — ${COMPANY.brand}` : "",
     tour ? `${tour.location}. ${tour.description}` : ""
@@ -128,12 +134,6 @@ export function TourDetailPage() {
       ? { icon: CalendarDays, label: t.collection.from, value: formatUzs(tour.priceUzs, language) }
       : null
   ].filter(Boolean) as { icon: typeof Clock3; label: string; value: string }[];
-
-  const [imgSrc, setImgSrc] = useState(tour?.image || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80");
-
-  useEffect(() => {
-    if (tour?.image) setImgSrc(tour.image);
-  }, [tour?.image]);
 
   return (
     <article>
