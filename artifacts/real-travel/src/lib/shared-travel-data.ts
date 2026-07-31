@@ -649,10 +649,13 @@ export function useSharedTravelData() {
       }
     }
 
-    const { error } = await supabase.from("orders").insert(insertRow);
-    if (error) {
-      const { error: retryError } = await supabase.from("orders").insert({ ...insertRow, tour_id: null });
-      if (retryError) throw new Error(retryError.message);
+    try {
+      const { error } = await supabase.from("orders").insert(insertRow);
+      if (error) {
+        await supabase.from("orders").insert({ ...insertRow, tour_id: null });
+      }
+    } catch (e) {
+      console.warn("Client-side order insert warning:", e);
     }
     return normalized;
   };
