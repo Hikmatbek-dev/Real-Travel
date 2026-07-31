@@ -2,8 +2,6 @@ import {
   PAYMENT_PROVIDERS,
   STATE_PENDING,
   STATE_SUCCESS,
-  isMockMode,
-  notifyTelegram,
   paylovRequest,
   sbSelect,
   sbUpdate,
@@ -150,15 +148,6 @@ export default async function handler(req: any, res: any) {
         deposit_percent: isDeposit ? percent : null,
       });
 
-    // --- Mock mode: skip Paylov, send the customer to the simulated page ---
-    if (isMockMode()) {
-      await settle(`mock-${order.id}`);
-      return res.status(200).json({
-        checkout_url: `${siteUrl}/payment/mock?order=${encodeURIComponent(order.id)}`,
-        mock: true,
-      });
-    }
-
     // --- Create the checkout at Paylov ---
     let result;
     try {
@@ -173,21 +162,10 @@ export default async function handler(req: any, res: any) {
     }
 
     if (!result.ok || !result.data?.checkout_url) {
-      const errReason = !result.ok ? result.error : "Paylov checkout_url mavjud emas";
-      await notifyTelegram(
-        `⚠️ <b>Yangi buyurtma (To'lov shlyuzi profilaktikasi)</b>\n` +
-        `Buyurtma №: <b>${order.order_number || order.id}</b>\n` +
-        `Sayohat: <b>${tour.name}</b>\n` +
-        `Summa: <b>${(Number(chargeUzs)).toLocaleString("ru-RU")} so'm</b>\n` +
-        `Sabab: <i>${errReason}</i>\n` +
-        `Iltimos, mijoz bilan bog'lanib to'lovni va bandlovni tasdiqlang.`
-      );
-
-      await settle(`offline-${order.id}`);
-
-      return res.status(200).json({
-        checkout_url: `${siteUrl}/payment/return?order=${encodeURIComponent(order.id)}&offline=1`,
-        offline: true,
+      const errReason = !result.ok ? result.error : "Paylov checkout_url qaytarmadi";
+      return res.status(400).json({
+        error: `Paylov to'lov tizimi xatosi: ${errReason}`,
+        detail: !result.ok ? result.error : undefined,
       });
     }
 
