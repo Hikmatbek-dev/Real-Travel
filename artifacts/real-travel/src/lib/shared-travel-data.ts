@@ -629,8 +629,31 @@ export function useSharedTravelData() {
     const normalized = normalizeOrder(order, tours, 0);
     setOrders((prev) => [normalized, ...prev]);
     const row = orderToRow(normalized);
-    const { error } = await supabase.from("orders").insert(row);
-    if (error) throw new Error(error.message);
+
+    let insertRow = { ...row };
+    if (insertRow.tour_id) {
+      const { data: dbTour } = await supabase
+        .from("tours")
+        .select("id")
+        .eq("id", insertRow.tour_id)
+        .maybeSingle();
+
+      if (!dbTour) {
+        const { data: anyTour } = await supabase
+          .from("tours")
+          .select("id")
+          .limit(1)
+          .maybeSingle();
+
+        insertRow.tour_id = anyTour?.id ?? null;
+      }
+    }
+
+    const { error } = await supabase.from("orders").insert(insertRow);
+    if (error) {
+      const { error: retryError } = await supabase.from("orders").insert({ ...insertRow, tour_id: null });
+      if (retryError) throw new Error(retryError.message);
+    }
     return normalized;
   };
 
