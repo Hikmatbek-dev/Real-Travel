@@ -78,10 +78,6 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
     );
   };
 
-  const updateTraveler = (index: number, patch: Partial<TravelerInfo>) => {
-    setTravelers((prev) => prev.map((item, i) => (i === index ? { ...item, ...patch } : item)));
-  };
-
   const dateLabel = useMemo(
     () =>
       new Intl.DateTimeFormat(language === "ru" ? "ru-RU" : language === "en" ? "en-GB" : "uz-UZ", {
@@ -205,38 +201,40 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
         )}
       </div>
 
-      {/* Contact */}
-      <div className="space-y-2">
-        <Label htmlFor="name">{t.booking.fullName}</Label>
-        <Input
-          id="name"
-          required
-          value={form.customerName}
-          onChange={(e) => setForm({ ...form, customerName: e.target.value })}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="phone">{t.booking.phone}</Label>
-        <div className="flex items-center rounded-lg border border-input bg-background">
-          <span className="border-r border-input px-3 text-sm text-muted-foreground">+998</span>
+      {/* Contact & Travelers */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="name">{t.booking.fullName}</Label>
           <Input
-            id="phone"
-            type="tel"
-            inputMode="numeric"
+            id="name"
             required
-            minLength={9}
-            maxLength={9}
-            pattern="[0-9]{9}"
-            placeholder="901234567"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 9) })}
-            className="border-0 shadow-none focus-visible:ring-0"
+            placeholder="Ismingiz va familiyangiz"
+            value={form.customerName}
+            onChange={(e) => setForm({ ...form, customerName: e.target.value })}
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone">{t.booking.phone}</Label>
+          <div className="flex items-center rounded-lg border border-input bg-background">
+            <span className="border-r border-input px-3 text-sm text-muted-foreground">+998</span>
+            <Input
+              id="phone"
+              type="tel"
+              inputMode="numeric"
+              required
+              minLength={9}
+              maxLength={9}
+              pattern="[0-9]{9}"
+              placeholder="901234567"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "").slice(0, 9) })}
+              className="border-0 shadow-none focus-visible:ring-0"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Travelers */}
       <div className="space-y-2">
         <Label htmlFor="travelerCount">{t.booking.travelers}</Label>
         <Input
@@ -246,41 +244,6 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
           max={30}
           value={travelers.length}
           onChange={(e) => setTravelerCount(Number(e.target.value) || 1)}
-        />
-      </div>
-
-      <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
-        <div className="text-sm font-medium text-primary">{t.booking.travelerDetails}</div>
-        <p className="text-xs text-muted-foreground">{t.booking.travelerNameHint}</p>
-        {travelers.map((traveler, index) => (
-          <div key={index} className="grid gap-2 sm:grid-cols-2">
-            <Input
-              required
-              aria-label={`${t.booking.traveler} ${index + 1} — ${t.booking.travelerName}`}
-              placeholder={`${t.booking.traveler} ${index + 1} — ${t.booking.travelerName}`}
-              value={traveler.fullName}
-              onChange={(e) => updateTraveler(index, { fullName: e.target.value })}
-            />
-            <Input
-              required
-              type="date"
-              aria-label={t.booking.birthDate}
-              max={new Date().toISOString().slice(0, 10)}
-              value={traveler.birthDate}
-              onChange={(e) => updateTraveler(index, { birthDate: e.target.value })}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="notes">{t.booking.note}</Label>
-        <Textarea
-          id="notes"
-          rows={2}
-          placeholder={t.booking.notePlaceholder}
-          value={form.notes}
-          onChange={(e) => setForm({ ...form, notes: e.target.value })}
         />
       </div>
 
