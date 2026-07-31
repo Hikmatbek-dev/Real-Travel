@@ -468,11 +468,15 @@ export function useSharedTravelData() {
 
       if (!active) return;
 
-      const dbTours = ((toursRes.data as TourRow[] | null) ?? []).map(rowToTour);
-      const dbDates = ((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate);
+      const rawTours = ((toursRes.data as TourRow[] | null) ?? []).map(rowToTour);
+      const validDbTours = rawTours.filter((t) => t.priceUzs > 50000);
+      const finalTours = validDbTours.length >= 5 ? validDbTours : DEFAULT_TOURS;
 
-      setTours(dbTours.length > 0 ? dbTours : DEFAULT_TOURS);
-      setTourDates(dbDates.length > 0 ? dbDates : DEFAULT_TOUR_DATES);
+      const rawDates = ((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate);
+      const finalDates = rawDates.length >= 5 ? rawDates : DEFAULT_TOUR_DATES;
+
+      setTours(finalTours);
+      setTourDates(finalDates);
       setOrders(((ordersRes.data as OrderRow[] | null) ?? []).map(rowToOrder));
       setReviews(((reviewsRes.data as ReviewRow[] | null) ?? []).map(rowToReview));
 
