@@ -25,10 +25,10 @@ export function TourCard({
   featured?: boolean;
 }) {
   const { t, language } = useLanguage();
-  const [imgSrc, setImgSrc] = useState(tour.image || "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024");
+  const [imgSrc, setImgSrc] = useState(tour.image || "https://wsrv.nl/?url=https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024");
 
   useEffect(() => {
-    setImgSrc(tour.image || "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024");
+    setImgSrc(tour.image || "https://wsrv.nl/?url=https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024");
   }, [tour.image]);
 
   const dateLabel = new Intl.DateTimeFormat(
@@ -51,7 +51,7 @@ export function TourCard({
           <img
             src={imgSrc}
             alt={tour.name}
-            onError={() => setImgSrc("https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024")}
+            onError={() => setImgSrc("https://wsrv.nl/?url=https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024")}
             loading={index > 2 ? "lazy" : undefined}
             className="h-full w-full transform bg-muted object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           />
