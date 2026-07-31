@@ -89,7 +89,7 @@ export function TourDetailPage() {
 
   const tour = tours.find((item) => item.slug === params?.slug);
 
-  const [imgSrc, setImgSrc] = useState("https://wsrv.nl/?url=https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024");
+  const [imgSrc, setImgSrc] = useState("/images/tour-galata.jpg");
 
   useEffect(() => {
     if (tour?.image) setImgSrc(tour.image);
@@ -141,7 +141,7 @@ export function TourDetailPage() {
       <header className="relative h-[70vh] min-h-[460px] overflow-hidden">
         <img
           src={imgSrc}
-          onError={() => setImgSrc("https://wsrv.nl/?url=https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024")}
+          onError={() => setImgSrc("/images/tour-galata.jpg")}
           alt={tour.name}
           className="absolute inset-0 h-full w-full object-cover"
         />

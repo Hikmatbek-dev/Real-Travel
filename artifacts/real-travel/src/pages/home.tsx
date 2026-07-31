@@ -81,7 +81,7 @@ export function HomePage() {
       {/* ---------------------------------------------------------------- hero */}
       <section id="hero" className="relative flex min-h-[85vh] flex-col justify-center overflow-hidden pb-10 pt-20 font-sans">
         <div className="absolute inset-0 z-0">
-          <img src="https://www.tourismupdate.com/files/styles/article_large/public/article/headline/2025-04/globaltravelandtourism.jpeg?itok=93g_aXH0" alt="Sayohat manzarasi" className="w-full h-full object-cover" />
+          <img src="/images/hero-bg.jpg" alt="Sayohat manzarasi" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-[#1E3A8A]/60" />
         </div>
 
