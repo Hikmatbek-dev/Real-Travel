@@ -1,18 +1,15 @@
-import { Search } from "lucide-react";
+import { Search, MapPin, Calendar, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n";
-import type { RegionKey } from "@/lib/shared-travel-data";
+import type { SharedTour } from "@/lib/shared-travel-data";
 
 export type HeroQuery = {
-  region: "all" | RegionKey;
-  /** "YYYY-MM", or "" for any month. */
+  tourId: string;
   month: string;
   travelers: number;
 };
 
-const REGIONS: ("all" | RegionKey)[] = ["all", "europe", "asia", "americas", "africa"];
-
-/** Next 12 months, so the picker never offers a departure window in the past. */
+/** Next 12 months for departure windows */
 function upcomingMonths(): string[] {
   const now = new Date();
   return Array.from({ length: 12 }, (_, i) => {
@@ -21,18 +18,16 @@ function upcomingMonths(): string[] {
   });
 }
 
-/**
- * Docked into the hero: turns the opening screen from a poster into the
- * primary way to start a search, which is how every booking site works.
- */
 export function HeroSearch({
   value,
   onChange,
-  onSubmit
+  onSubmit,
+  tours = []
 }: {
   value: HeroQuery;
   onChange: (next: HeroQuery) => void;
   onSubmit: () => void;
+  tours?: SharedTour[];
 }) {
   const { t, language } = useLanguage();
 
@@ -41,10 +36,10 @@ export function HeroSearch({
     { month: "long", year: "numeric" }
   );
 
-  const field = "flex-1 min-w-0 px-5 py-3 sm:py-4 rounded-xl transition-colors hover:bg-white/5";
-  const label = "block text-[11px] font-bold uppercase tracking-widest text-white/70 mb-1";
+  const field = "flex-1 min-w-0 px-4 py-3 sm:py-3.5 rounded-2xl transition-all hover:bg-white/10 flex flex-col justify-center";
+  const label = "flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-amber-300 drop-shadow mb-1";
   const control =
-    "w-full border-0 bg-transparent p-0 text-base font-semibold text-white outline-none focus:ring-0 [&>option]:text-gray-900";
+    "w-full border-0 bg-transparent p-0 text-sm sm:text-base font-bold text-white outline-none focus:ring-0 [&>option]:text-slate-900 [&>option]:bg-white cursor-pointer";
 
   return (
     <form
@@ -52,21 +47,24 @@ export function HeroSearch({
         event.preventDefault();
         onSubmit();
       }}
-      className="mx-auto flex w-full max-w-5xl flex-col gap-2 rounded-[2rem] bg-white/10 p-3 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-md border border-white/20 sm:flex-row sm:items-center sm:gap-1 sm:p-2"
+      className="mx-auto flex w-full max-w-5xl flex-col gap-2 rounded-[2.5rem] bg-slate-950/70 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl border border-white/20 sm:flex-row sm:items-center sm:gap-2 sm:p-2.5"
     >
+      {/* Tour Selector (Qayerga / Available tours) */}
       <div className={field}>
-        <label htmlFor="heroRegion" className={label}>
+        <label htmlFor="heroTour" className={label}>
+          <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
           {t.hero.searchWhere}
         </label>
         <select
-          id="heroRegion"
+          id="heroTour"
           className={control}
-          value={value.region}
-          onChange={(e) => onChange({ ...value, region: e.target.value as HeroQuery["region"] })}
+          value={value.tourId}
+          onChange={(e) => onChange({ ...value, tourId: e.target.value })}
         >
-          {REGIONS.map((region) => (
-            <option key={region} value={region}>
-              {region === "all" ? t.hero.anyDestination : t.regions[region]}
+          <option value="all">🌟 Barcha mavjud tur paketlar</option>
+          {tours.map((tour) => (
+            <option key={tour.id} value={tour.id}>
+              ✈️ {tour.name} ({tour.duration} kun)
             </option>
           ))}
         </select>
@@ -74,8 +72,10 @@ export function HeroSearch({
 
       <div className="hidden w-px shrink-0 self-stretch bg-white/20 sm:block my-2" />
 
+      {/* Departure Month (Qachon) */}
       <div className={field}>
         <label htmlFor="heroMonth" className={label}>
+          <Calendar className="h-3.5 w-3.5 text-amber-400 shrink-0" />
           {t.hero.searchWhen}
         </label>
         <select
@@ -84,10 +84,10 @@ export function HeroSearch({
           value={value.month}
           onChange={(e) => onChange({ ...value, month: e.target.value })}
         >
-          <option value="">{t.hero.anyMonth}</option>
+          <option value="">🗓 Doimiy bor (Istalgan vaqt)</option>
           {upcomingMonths().map((month) => (
             <option key={month} value={month}>
-              {monthLabel.format(new Date(`${month}-01T00:00:00`))}
+              📅 {monthLabel.format(new Date(`${month}-01T00:00:00`))}
             </option>
           ))}
         </select>
@@ -95,8 +95,10 @@ export function HeroSearch({
 
       <div className="hidden w-px shrink-0 self-stretch bg-white/20 sm:block my-2" />
 
-      <div className={`${field} sm:max-w-[9rem]`}>
+      {/* Travelers (Necha kishi) */}
+      <div className={`${field} sm:max-w-[9.5rem]`}>
         <label htmlFor="heroTravelers" className={label}>
+          <Users className="h-3.5 w-3.5 text-amber-400 shrink-0" />
           {t.hero.searchWho}
         </label>
         <input
@@ -110,8 +112,11 @@ export function HeroSearch({
         />
       </div>
 
-      <Button type="submit" className="h-14 shrink-0 rounded-[1.5rem] bg-accent px-8 text-accent-foreground hover:bg-accent/90 font-bold tracking-wide text-base shadow-lg transition-transform hover:-translate-y-0.5 sm:ml-2">
-        <Search className="mr-2 h-5 w-5" />
+      <Button
+        type="submit"
+        className="h-14 shrink-0 rounded-[1.8rem] bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black tracking-wider text-base shadow-xl transition-all duration-300 hover:scale-105 sm:ml-2 border border-amber-300/40"
+      >
+        <Search className="mr-2 h-5 w-5 stroke-[2.5]" />
         {t.hero.searchButton}
       </Button>
     </form>

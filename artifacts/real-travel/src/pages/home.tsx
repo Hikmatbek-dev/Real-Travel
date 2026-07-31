@@ -25,7 +25,7 @@ export function HomePage() {
   const { t, language } = useLanguage();
   const { tours, reviews, isLoaded } = useSharedTravelData();
 
-  const [query, setQuery] = useState<HeroQuery>({ region: "all", month: "", travelers: 2 });
+  const [query, setQuery] = useState<HeroQuery>({ tourId: "all", month: "", travelers: 2 });
   const [search, setSearch] = useState("");
   const [maxPrice, setMaxPrice] = useState(0);
   const [availability, setAvailability] = useState<AvailabilityRow[]>([]);
@@ -62,18 +62,12 @@ export function HomePage() {
     () =>
       tours.filter((tour) => {
         const haystack = `${tour.name} ${tour.location} ${tour.description}`.toLowerCase();
-        if (!haystack.includes(search.toLowerCase())) return false;
-        if (query.region !== "all" && tour.region !== query.region) return false;
+        if (search && !haystack.includes(search.toLowerCase())) return false;
+        if (query.tourId && query.tourId !== "all" && tour.id !== query.tourId) return false;
         if (maxPrice > 0 && tour.priceUzs > maxPrice) return false;
-        if (query.month) {
-          const hasMonth = availability.some(
-            (row) => row.tourId === tour.id && row.departureDate.slice(0, 7) === query.month
-          );
-          if (!hasMonth) return false;
-        }
         return true;
       }),
-    [availability, maxPrice, query.month, query.region, search, tours]
+    [maxPrice, query.tourId, search, tours]
   );
 
   return (
@@ -82,20 +76,20 @@ export function HomePage() {
       <section id="hero" className="relative flex min-h-[85vh] flex-col justify-center overflow-hidden pb-10 pt-20 font-sans">
         <div className="absolute inset-0 z-0">
           <img src="/images/hero-bg.jpg" alt="Sayohat manzarasi" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-[#1E3A8A]/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-900/75 to-slate-950/85" />
         </div>
 
         <div className="container relative mx-auto px-6 md:px-12 z-10 text-center">
-          <div className="mb-12 mx-auto max-w-4xl">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 drop-shadow-lg">
-                Dunyoni Biz Bilan <span className="text-[#00E5FF]">KASHF ETING!</span>
+          <div className="mb-10 mx-auto max-w-4xl">
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                Dunyoni Biz Bilan <span className="text-amber-400">KASHF ETING!</span>
             </h1>
-            <p className="mt-4 text-xl md:text-2xl text-gray-200 mb-12 font-light">
-                Eng unutilmas lahzalar sizni kutmoqda.
+            <p className="mt-4 text-xl md:text-2xl text-slate-200 mb-8 font-semibold drop-shadow-md">
+                Eng unutilmas lahzalar va lyuks ta'til paketlari sizni kutmoqda.
             </p>
           </div>
 
-          <HeroSearch value={query} onChange={setQuery} onSubmit={scrollToTours} />
+          <HeroSearch value={query} onChange={setQuery} onSubmit={scrollToTours} tours={tours} />
         </div>
       </section>
 

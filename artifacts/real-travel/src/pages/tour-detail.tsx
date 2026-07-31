@@ -89,10 +89,11 @@ export function TourDetailPage() {
 
   const tour = tours.find((item) => item.slug === params?.slug);
 
-  const [imgSrc, setImgSrc] = useState("/images/tour-galata.jpg");
+  const [imgSrc, setImgSrc] = useState(tour?.image || "/images/tour-turkey.jpg");
 
   useEffect(() => {
     if (tour?.image) setImgSrc(tour.image);
+    else setImgSrc("/images/tour-turkey.jpg");
   }, [tour?.image]);
 
   useDocumentMeta(

@@ -326,12 +326,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 4500000,
     duration: 5,
     description: "Istanbulning tarixiy obidalari hamda Antaliyaning eng sara 5 yulduzli kurortlarida unutilmas hordiq chiqarish imkoniyati.",
-    image: "/images/tour-galata.jpg",
+    image: "/images/tour-turkey.jpg",
     highlights: ["5★ Mehmonxonada yashash (All Inclusive)", "Istanbul bo'ylab ekskursiya va Boshpor bo'g'ozi krossoveri", "Antaliya sohillari va sharsharalar"],
     included: ["Aviachiptalar (Toshkent-Istanbul-Antaliya)", "5★ Mehmonxona va ovqatlanish", "Transfer xizmatlari", "Tibbiy sug'urta"],
     excluded: ["Shaxsiy xarajatlar", "Qo'shimcha ekskursiyalar"],
     gallery: [
-      "/images/tour-galata.jpg"
+      "/images/tour-turkey.jpg"
     ],
     itinerary: [
       { day: 1, title: "Istanbulga yetib kelish", text: "Aeroportda kutib olish, mehmonxonaga joylashish va tungi Istanbul sayri." },
@@ -350,12 +350,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 5800000,
     duration: 6,
     description: "Qizil dengizning marjon qoyalari, dayving hamda Qohiraning qadimiy Piramidalariga sehrli sayohat.",
-    image: "/images/tour-galata.jpg",
+    image: "/images/tour-egypt.jpg",
     highlights: ["Qizil dengizda dayving va snorkeling", "Giza Piramidalari va Sfinks sayri", "Sahro safarisi hamda Badaviy kechasi"],
     included: ["To'g'ridan-to'g'ri aviachipta", "All Inclusive Mehmonxona", "Transfer va gid xizmati"],
     excluded: ["Viza yig'imi", "Shaxsiy xarajatlar"],
     gallery: [
-      "/images/tour-galata.jpg"
+      "/images/tour-egypt.jpg"
     ],
     itinerary: [
       { day: 1, title: "Sharm el-Sheyxga kelish", text: "Aeroportda kutib olish va lyuks mehmonxonaga joylashish." },
@@ -374,12 +374,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 5500000,
     duration: 5,
     description: "Burj Xalifa, Kelajak Muzeyi va Abu Dabi Shayx Zayd Masjidi — zamonaviy mo'jizalar markaziga sayohat.",
-    image: "/images/tour-galata.jpg",
+    image: "/images/tour-dubai.jpg",
     highlights: ["Burj Xalifa kuzatuv maydonchasi", "Kelajak Muzeyi (Museum of the Future)", "Shayx Zayd Oq Masjidi (Abu Dabi)"],
     included: ["Aviachiptalar", "4★ Mehmonxona va nonushta", "Ekskursiya va transferlar"],
     excluded: ["Tushlik va kechki ovqat", "Shaxsiy shopping"],
     gallery: [
-      "/images/tour-galata.jpg"
+      "/images/tour-dubai.jpg"
     ],
     itinerary: [
       { day: 1, title: "Dubayga parvoz", text: "Aeroportdan kutib olish va mehmonxonaga joylashish." },
@@ -397,12 +397,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 3800000,
     duration: 5,
     description: "Kavkaz bag'ridagi qadimiy Tbilisi, Kazbegi tog'lari va Qora dengiz bo'yidagi Batumi shahrida mehmondo'stlik.",
-    image: "/images/tour-galata.jpg",
+    image: "/images/tour-georgia.jpg",
     highlights: ["Tbilisi qadimgi shahar va Narikala qal'asi", "Kazbegi tog'lariga kanat yo'li sayri", "Batumi dengiz bo'yi bulvari"],
     included: ["To'g'ridan-to'g'ri parvoz", "Mehmonxona va nonushtalar", "Gid xizmati va barcha transferlar"],
     excluded: ["Tushlik va milliy taomlar restorani"],
     gallery: [
-      "/images/tour-galata.jpg"
+      "/images/tour-georgia.jpg"
     ],
     itinerary: [
       { day: 1, title: "Tbilisiga xush kelibsiz", text: "Aeroportda kutib olish, milliy taomlar bilan kutib olish." },
@@ -420,12 +420,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 5900000,
     duration: 7,
     description: "Phi Phi tropik orollari, zangori laguna, fil va bumeranglar bog'ida ekzotik ta'til.",
-    image: "/images/tour-galata.jpg",
+    image: "/images/tour-thailand.jpg",
     highlights: ["Phi Phi va Maya Bay orollariga speedboat sayri", "Patong va Karon tropik plyajlari", "Katta Budda ibodatxonasi"],
     included: ["Aviachiptalar", "4★ Tropik Mehmonxona", "Nonushta va orollar bo'ylab transferlar"],
     excluded: ["Milliy park kirish badallari", "Shaxsiy xarajatlar"],
     gallery: [
-      "/images/tour-galata.jpg"
+      "/images/tour-thailand.jpg"
     ],
     itinerary: [
       { day: 1, title: "Phuketga yetib kelish", text: "Aeroportdan transfer va plyaj boyidagi mehmonxonaga joylashuv." },
