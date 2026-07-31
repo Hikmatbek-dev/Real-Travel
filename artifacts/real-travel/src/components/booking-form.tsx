@@ -141,9 +141,13 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
       window.location.href = result.checkout_url;
     } catch (err) {
       const raw = err instanceof Error ? err.message : "";
-      // The database rejects a burst of bookings from one phone; show the
-      // customer what to do rather than the constraint name.
-      setError(raw.includes("too_many_orders") ? t.booking.tooManyOrders : raw || t.booking.payError);
+      if (raw.includes("too_many_orders")) {
+        setError(t.booking.tooManyOrders);
+      } else if (raw.includes("Paylov") || raw.includes("fetch failed") || raw.includes("unreachable")) {
+        setError(t.booking.payError);
+      } else {
+        setError(raw || t.booking.payError);
+      }
       setIsSubmitting(false);
     }
   };

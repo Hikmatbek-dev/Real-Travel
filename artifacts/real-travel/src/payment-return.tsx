@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type Status = "checking" | "paid" | "cancelled" | "pending" | "error";
+type Status = "checking" | "paid" | "cancelled" | "pending" | "offline" | "error";
 
 const TEXT = {
   uz: {
@@ -13,6 +13,8 @@ const TEXT = {
     cancelledText: "Buyurtma to'lanmadi. Qayta urinib ko'rishingiz mumkin.",
     pending: "To'lov hali tasdiqlanmadi",
     pendingText: "To'lov qayta ishlanmoqda. Bir necha daqiqadan so'ng tekshiring.",
+    offline: "Buyurtmangiz qabul qilindi!",
+    offlineText: "Ma'lumotlaringiz muvaffaqiyatli saqlandi. To'lov tizimida texnik profilaktika ketayotgani sababli menejerimiz tez orada siz bilan bog'lanib, bandlov va to'lovni tasdiqlaydi.",
     error: "Buyurtma topilmadi",
     order: "Buyurtma raqami",
     home: "Bosh sahifaga qaytish"
@@ -25,9 +27,24 @@ export function PaymentReturn() {
   const [orderNumber, setOrderNumber] = useState("");
 
   useEffect(() => {
-    const orderId = new URLSearchParams(window.location.search).get("order");
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("order");
+    const isOffline = params.get("offline") === "1";
+
     if (!orderId) {
       setStatus("error");
+      return;
+    }
+
+    if (isOffline) {
+      setStatus("offline");
+      // Fetch order number if available
+      fetch(`/api/order-status?order=${encodeURIComponent(orderId)}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.orderNumber) setOrderNumber(data.orderNumber);
+        })
+        .catch(() => {});
       return;
     }
 
@@ -73,9 +90,10 @@ export function PaymentReturn() {
 
   const icon = {
     checking: <Loader2 className="h-14 w-14 animate-spin text-primary" />,
-    paid: <CheckCircle2 className="h-14 w-14 text-accent" />,
+    paid: <CheckCircle2 className="h-14 w-14 text-emerald-600" />,
     cancelled: <XCircle className="h-14 w-14 text-destructive" />,
     pending: <Loader2 className="h-14 w-14 text-muted-foreground" />,
+    offline: <CheckCircle2 className="h-14 w-14 text-primary" />,
     error: <XCircle className="h-14 w-14 text-destructive" />
   }[status];
 
@@ -84,6 +102,7 @@ export function PaymentReturn() {
     paid: t.paid,
     cancelled: t.cancelled,
     pending: t.pending,
+    offline: t.offline,
     error: t.error
   }[status];
 
@@ -92,6 +111,7 @@ export function PaymentReturn() {
     paid: t.paidText,
     cancelled: t.cancelledText,
     pending: t.pendingText,
+    offline: t.offlineText,
     error: ""
   }[status];
 
