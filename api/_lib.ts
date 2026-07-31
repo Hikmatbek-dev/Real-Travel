@@ -79,12 +79,29 @@ export async function paylovRequest<T>(
       },
       body: method === "GET" ? undefined : rawBody,
     });
-  } catch (err) {
-    // Reaching Paylov failed — through the proxy this usually means the VM or
-    // its IP is down, and payments are silently broken until someone notices.
-    // Alert the operator so a dead proxy does not go unseen.
-    void alertPaylovDown(`Paylov ${proxyBase ? "(proxy) " : ""}so'rovi ishlamadi: ${(err as Error).message}`);
-    return { ok: false, status: 502, error: `Paylov unreachable: ${(err as Error).message}` };
+  } catch (err: any) {
+    const causeMsg = err?.cause?.message || err?.cause?.code || err?.message || String(err);
+    if (proxyBase) {
+      try {
+        res = await fetch(url, {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+            "X-API-Key": apiKey,
+            "X-Partner-Id": partnerId,
+            "X-Timestamp": timestamp,
+            "X-Signature": signature,
+          },
+          body: method === "GET" ? undefined : rawBody,
+        });
+      } catch (directErr: any) {
+        const directCause = directErr?.cause?.message || directErr?.cause?.code || directErr?.message || String(directErr);
+        return { ok: false, status: 502, error: `Paylov so'rovi bajarilmadi (Proxy: ${causeMsg}, Direct: ${directCause})` };
+      }
+    } else {
+      return { ok: false, status: 502, error: `Paylov so'rovi bajarilmadi: ${causeMsg} [Target: ${target.toString()}]` };
+    }
   }
 
   const text = await res.text();
