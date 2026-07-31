@@ -326,13 +326,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 4500000,
     duration: 5,
     description: "Istanbulning tarixiy obidalari hamda Antaliyaning eng sara 5 yulduzli kurortlarida unutilmas hordiq chiqarish imkoniyati.",
-    image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80",
+    image: "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024",
     highlights: ["5★ Mehmonxonada yashash (All Inclusive)", "Istanbul bo'ylab ekskursiya va Boshpor bo'g'ozi krossoveri", "Antaliya sohillari va sharsharalar"],
     included: ["Aviachiptalar (Toshkent-Istanbul-Antaliya)", "5★ Mehmonxona va ovqatlanish", "Transfer xizmatlari", "Tibbiy sug'urta"],
     excluded: ["Shaxsiy xarajatlar", "Qo'shimcha ekskursiyalar"],
     gallery: [
-      "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=1200&q=80"
+      "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024"
     ],
     itinerary: [
       { day: 1, title: "Istanbulga yetib kelish", text: "Aeroportda kutib olish, mehmonxonaga joylashish va tungi Istanbul sayri." },
@@ -351,13 +350,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 5800000,
     duration: 6,
     description: "Qizil dengizning marjon qoyalari, dayving hamda Qohiraning qadimiy Piramidalariga sehrli sayohat.",
-    image: "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80",
+    image: "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024",
     highlights: ["Qizil dengizda dayving va snorkeling", "Giza Piramidalari va Sfinks sayri", "Sahro safarisi hamda Badaviy kechasi"],
     included: ["To'g'ridan-to'g'ri aviachipta", "All Inclusive Mehmonxona", "Transfer va gid xizmati"],
     excluded: ["Viza yig'imi", "Shaxsiy xarajatlar"],
     gallery: [
-      "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=1200&q=80"
+      "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024"
     ],
     itinerary: [
       { day: 1, title: "Sharm el-Sheyxga kelish", text: "Aeroportda kutib olish va lyuks mehmonxonaga joylashish." },
@@ -376,12 +374,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 5500000,
     duration: 5,
     description: "Burj Xalifa, Kelajak Muzeyi va Abu Dabi Shayx Zayd Masjidi — zamonaviy mo'jizalar markaziga sayohat.",
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
+    image: "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024",
     highlights: ["Burj Xalifa kuzatuv maydonchasi", "Kelajak Muzeyi (Museum of the Future)", "Shayx Zayd Oq Masjidi (Abu Dabi)"],
     included: ["Aviachiptalar", "4★ Mehmonxona va nonushta", "Ekskursiya va transferlar"],
     excluded: ["Tushlik va kechki ovqat", "Shaxsiy shopping"],
     gallery: [
-      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80"
+      "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024"
     ],
     itinerary: [
       { day: 1, title: "Dubayga parvoz", text: "Aeroportdan kutib olish va mehmonxonaga joylashish." },
@@ -399,12 +397,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 3800000,
     duration: 5,
     description: "Kavkaz bag'ridagi qadimiy Tbilisi, Kazbegi tog'lari va Qora dengiz bo'yidagi Batumi shahrida mehmondo'stlik.",
-    image: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=1200&q=80",
+    image: "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024",
     highlights: ["Tbilisi qadimgi shahar va Narikala qal'asi", "Kazbegi tog'lariga kanat yo'li sayri", "Batumi dengiz bo'yi bulvari"],
     included: ["To'g'ridan-to'g'ri parvoz", "Mehmonxona va nonushtalar", "Gid xizmati va barcha transferlar"],
     excluded: ["Tushlik va milliy taomlar restorani"],
     gallery: [
-      "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=1200&q=80"
+      "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024"
     ],
     itinerary: [
       { day: 1, title: "Tbilisiga xush kelibsiz", text: "Aeroportda kutib olish, milliy taomlar bilan kutib olish." },
@@ -422,12 +420,12 @@ export const DEFAULT_TOURS: SharedTour[] = [
     priceUzs: 5900000,
     duration: 7,
     description: "Phi Phi tropik orollari, zangori laguna, fil va bumeranglar bog'ida ekzotik ta'til.",
-    image: "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80",
+    image: "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024",
     highlights: ["Phi Phi va Maya Bay orollariga speedboat sayri", "Patong va Karon tropik plyajlari", "Katta Budda ibodatxonasi"],
     included: ["Aviachiptalar", "4★ Tropik Mehmonxona", "Nonushta va orollar bo'ylab transferlar"],
     excluded: ["Milliy park kirish badallari", "Shaxsiy xarajatlar"],
     gallery: [
-      "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80"
+      "https://www.royalcaribbean.com/media-assets/pmc/content/dam/excalibur/digital-stock/royalty-free/shutterstock/2023/01/stock-photo-galata-tower-and-the-street-in-the-old-town-of-istanbul-turkey-554343394.jpg?w=1024"
     ],
     itinerary: [
       { day: 1, title: "Phuketga yetib kelish", text: "Aeroportdan transfer va plyaj boyidagi mehmonxonaga joylashuv." },
