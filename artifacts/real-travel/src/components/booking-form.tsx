@@ -136,8 +136,6 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
       const raw = err instanceof Error ? err.message : "";
       if (raw.includes("too_many_orders")) {
         setError(t.booking.tooManyOrders);
-      } else if (raw.includes("Paylov") || raw.includes("fetch failed") || raw.includes("unreachable")) {
-        setError(t.booking.payError);
       } else {
         setError(raw || t.booking.payError);
       }

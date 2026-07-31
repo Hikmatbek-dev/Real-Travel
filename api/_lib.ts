@@ -45,10 +45,7 @@ export async function paylovRequest<T>(
   path: string,
   body?: unknown,
 ): Promise<PaylovResult<T>> {
-  const apiKey = process.env.PAYLOV_API_KEY;
-  if (!apiKey) {
-    return { ok: false, status: 500, error: "PAYLOV_API_KEY is not configured" };
-  }
+  const apiKey = process.env.PAYLOV_API_KEY || "iyh5kKZtO2TZkwCLaK5MDFP_I416BTpBLyQa8ikDQhilBjS4T0u9e0ul3R4iSOJx";
   const apiSecret = process.env.PAYLOV_API_SECRET || apiKey;
   const partnerId = process.env.PAYLOV_PARTNER_ID || "91";
 
