@@ -3,6 +3,7 @@ import {
   STATE_PENDING,
   STATE_SUCCESS,
   isMockMode,
+  notifyTelegram,
   paylovRequest,
   sbSelect,
   sbUpdate,
@@ -152,22 +153,38 @@ export default async function handler(req: any, res: any) {
     }
 
     // --- Create the checkout at Paylov ---
-    const result = await paylovRequest<CheckoutResponse>("POST", "/integrations/checkout", {
-      external_id: order.id,
-      amount: Number(amountTiyin),
-      payment_provider: provider,
-      return_url: `${siteUrl}/payment/return?order=${encodeURIComponent(order.id)}`,
-    });
+    let result;
+    try {
+      result = await paylovRequest<CheckoutResponse>("POST", "/integrations/checkout", {
+        external_id: order.id,
+        amount: Number(amountTiyin),
+        payment_provider: provider,
+        return_url: `${siteUrl}/payment/return?order=${encodeURIComponent(order.id)}`,
+      });
+    } catch (e) {
+      result = { ok: false as const, status: 502, error: (e as Error).message };
+    }
 
-    if (!result.ok) {
-      return res.status(502).json({ error: `Paylov backend xatosi: ${result.error}`, detail: result.error });
+    if (!result.ok || !result.data?.checkout_url) {
+      const errReason = !result.ok ? result.error : "Paylov checkout_url mavjud emas";
+      await notifyTelegram(
+        `⚠️ <b>Yangi buyurtma (To'lov shlyuzi profilaktikasi)</b>\n` +
+        `Buyurtma №: <b>${order.order_number || order.id}</b>\n` +
+        `Sayohat: <b>${tour.name}</b>\n` +
+        `Summa: <b>${(Number(chargeUzs)).toLocaleString("ru-RU")} so'm</b>\n` +
+        `Sabab: <i>${errReason}</i>\n` +
+        `Iltimos, mijoz bilan bog'lanib to'lovni va bandlovni tasdiqlang.`
+      );
+
+      await settle(`offline-${order.id}`);
+
+      return res.status(200).json({
+        checkout_url: `${siteUrl}/payment/return?order=${encodeURIComponent(order.id)}&offline=1`,
+        offline: true,
+      });
     }
 
     const { checkout_url, order_id: paylovOrderId } = result.data;
-    if (!checkout_url) {
-      return res.status(502).json({ error: "Paylov did not return a checkout_url", detail: result.data });
-    }
-
     await settle(String(paylovOrderId));
 
     return res.status(200).json({ checkout_url });

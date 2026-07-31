@@ -28,7 +28,7 @@ const emptyTraveler = (): TravelerInfo => ({ fullName: "", birthDate: "" });
 
 export function BookingForm({ tour }: { tour: SharedTour }) {
   const { t, language } = useLanguage();
-  const { orders, saveOrders, depositPercent } = useSharedTravelData();
+  const { createOrder, depositPercent } = useSharedTravelData();
 
   const [dates, setDates] = useState<Availability[] | null>(null);
   const [dateId, setDateId] = useState("");
@@ -103,25 +103,22 @@ export function BookingForm({ tour }: { tour: SharedTour }) {
       : `[Jo'nash sanasi: ${customDate}] ${form.notes}`.trim();
 
     try {
-      await saveOrders([
-        {
-          id: orderId,
-          orderNumber: "", // assigned by the database sequence
-          customerName: form.customerName,
-          email: "",
-          phone: `+998 ${form.phone}`,
-          travelers: travelers.length,
-          tourId: tour.id,
-          tourDateId: dateId || null,
-          paymentMode: mode,
-          travelersInfo: travelers,
-          date: new Date().toISOString(),
-          status: "New",
-          totalAmount: fullTotal,
-          notes: finalNotes
-        },
-        ...orders
-      ]);
+      await createOrder({
+        id: orderId,
+        orderNumber: "", // assigned by the database sequence
+        customerName: form.customerName,
+        email: "",
+        phone: `+998 ${form.phone}`,
+        travelers: travelers.length,
+        tourId: tour.id,
+        tourDateId: dateId || null,
+        paymentMode: mode,
+        travelersInfo: travelers,
+        date: new Date().toISOString(),
+        status: "New",
+        totalAmount: fullTotal,
+        notes: finalNotes
+      });
 
       // The server recomputes price, deposit share and seat availability, so
       // the figures shown here are display-only.

@@ -315,9 +315,140 @@ function orderToRow(order: SharedOrder): Record<string, unknown> {
  * `tours` / `orders` tables; writes upsert the provided array and delete any
  * rows no longer present. A realtime subscription keeps every open tab in sync.
  */
+export const DEFAULT_TOURS: SharedTour[] = [
+  {
+    id: "t_turkey_2026",
+    slug: "turkiya-antaliya-istanbul",
+    name: "Turkiya: Antaliya & Istanbul",
+    location: "Antaliya, Istanbul (Turkiya)",
+    region: "europe",
+    price: 360,
+    priceUzs: 4500000,
+    duration: 5,
+    description: "Istanbulning tarixiy obidalari hamda Antaliyaning eng sara 5 yulduzli kurortlarida unutilmas hordiq chiqarish imkoniyati.",
+    image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["5★ Mehmonxonada yashash (All Inclusive)", "Istanbul bo'ylab ekskursiya va Boshpor bo'g'ozi krossoveri", "Antaliya sohillari va sharsharalar"],
+    included: ["Aviachiptalar (Toshkent-Istanbul-Antaliya)", "5★ Mehmonxona va ovqatlanish", "Transfer xizmatlari", "Tibbiy sug'urta"],
+    excluded: ["Shaxsiy xarajatlar", "Qo'shimcha ekskursiyalar"],
+    gallery: [
+      "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=1200&q=80"
+    ],
+    itinerary: [
+      { day: 1, title: "Istanbulga yetib kelish", text: "Aeroportda kutib olish, mehmonxonaga joylashish va tungi Istanbul sayri." },
+      { day: 2, title: "Tarixiy Obidalar", text: "Sultonahmet, Moviy Masjid va Boshpor bo'ylab katerda sayohat." },
+      { day: 3, title: "Antaliyaga uchish", text: "Antaliya kurortiga joylashish va dengiz bo'yida dam olish." }
+    ],
+    groupSize: 15
+  },
+  {
+    id: "t_egypt_2026",
+    slug: "misr-sharm-el-sheyx",
+    name: "Misr: Sharm el-Sheyx & Piramidalar",
+    location: "Sharm el-Sheyx, Qohira (Misr)",
+    region: "africa",
+    price: 460,
+    priceUzs: 5800000,
+    duration: 6,
+    description: "Qizil dengizning marjon qoyalari, dayving hamda Qohiraning qadimiy Piramidalariga sehrli sayohat.",
+    image: "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Qizil dengizda dayving va snorkeling", "Giza Piramidalari va Sfinks sayri", "Sahro safarisi hamda Badaviy kechasi"],
+    included: ["To'g'ridan-to'g'ri aviachipta", "All Inclusive Mehmonxona", "Transfer va gid xizmati"],
+    excluded: ["Viza yig'imi", "Shaxsiy xarajatlar"],
+    gallery: [
+      "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=1200&q=80"
+    ],
+    itinerary: [
+      { day: 1, title: "Sharm el-Sheyxga kelish", text: "Aeroportda kutib olish va lyuks mehmonxonaga joylashish." },
+      { day: 2, title: "Dengiz sayri", text: "Katerda Ras Muhammad milliy parkiga sayohat va snorkeling." },
+      { day: 3, title: "Sahro Safarisi", text: "Kvadrotsikllarda sahro bo'ylab poyga va badaviylar shousi." }
+    ],
+    groupSize: 20
+  },
+  {
+    id: "t_dubai_2026",
+    slug: "dubay-sehrli-shahar",
+    name: "BAA: Dubay & Abu Dabi Premium",
+    location: "Dubay, Abu Dabi (BAA)",
+    region: "asia",
+    price: 440,
+    priceUzs: 5500000,
+    duration: 5,
+    description: "Burj Xalifa, Kelajak Muzeyi va Abu Dabi Shayx Zayd Masjidi — zamonaviy mo'jizalar markaziga sayohat.",
+    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Burj Xalifa kuzatuv maydonchasi", "Kelajak Muzeyi (Museum of the Future)", "Shayx Zayd Oq Masjidi (Abu Dabi)"],
+    included: ["Aviachiptalar", "4★ Mehmonxona va nonushta", "Ekskursiya va transferlar"],
+    excluded: ["Tushlik va kechki ovqat", "Shaxsiy shopping"],
+    gallery: [
+      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80"
+    ],
+    itinerary: [
+      { day: 1, title: "Dubayga parvoz", text: "Aeroportdan kutib olish va mehmonxonaga joylashish." },
+      { day: 2, title: "Zamonaviy Dubay", text: "Burj Xalifa, Dubai Mall va musiqali favvoralar shousi." }
+    ],
+    groupSize: 12
+  },
+  {
+    id: "t_georgia_2026",
+    slug: "gruziya-tbilisi-batumi",
+    name: "Gruziya: Tbilisi & Batumi Kavkaz Turi",
+    location: "Tbilisi, Batumi (Gruziya)",
+    region: "europe",
+    price: 300,
+    priceUzs: 3800000,
+    duration: 5,
+    description: "Kavkaz bag'ridagi qadimiy Tbilisi, Kazbegi tog'lari va Qora dengiz bo'yidagi Batumi shahrida mehmondo'stlik.",
+    image: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Tbilisi qadimgi shahar va Narikala qal'asi", "Kazbegi tog'lariga kanat yo'li sayri", "Batumi dengiz bo'yi bulvari"],
+    included: ["To'g'ridan-to'g'ri parvoz", "Mehmonxona va nonushtalar", "Gid xizmati va barcha transferlar"],
+    excluded: ["Tushlik va milliy taomlar restorani"],
+    gallery: [
+      "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=1200&q=80"
+    ],
+    itinerary: [
+      { day: 1, title: "Tbilisiga xush kelibsiz", text: "Aeroportda kutib olish, milliy taomlar bilan kutib olish." },
+      { day: 2, title: "Kazbegi Turi", text: "Kavkaz tog'lari bag'ridagi Gergeti cherkoviga sayohat." }
+    ],
+    groupSize: 18
+  },
+  {
+    id: "t_phuket_2026",
+    slug: "tailand-phuket-orollari",
+    name: "Tailand: Phuket Orollari & Tropik Janna",
+    location: "Phuket, Phi Phi Orollari (Tailand)",
+    region: "asia",
+    price: 470,
+    priceUzs: 5900000,
+    duration: 7,
+    description: "Phi Phi tropik orollari, zangori laguna, fil va bumeranglar bog'ida ekzotik ta'til.",
+    image: "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Phi Phi va Maya Bay orollariga speedboat sayri", "Patong va Karon tropik plyajlari", "Katta Budda ibodatxonasi"],
+    included: ["Aviachiptalar", "4★ Tropik Mehmonxona", "Nonushta va orollar bo'ylab transferlar"],
+    excluded: ["Milliy park kirish badallari", "Shaxsiy xarajatlar"],
+    gallery: [
+      "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=1200&q=80"
+    ],
+    itinerary: [
+      { day: 1, title: "Phuketga yetib kelish", text: "Aeroportdan transfer va plyaj boyidagi mehmonxonaga joylashuv." },
+      { day: 2, title: "Phi Phi Orollari", text: "Tezkor katerda orollarga ekskursiya va firuza suvda suzish." }
+    ],
+    groupSize: 15
+  }
+];
+
+export const DEFAULT_TOUR_DATES: TourDate[] = [
+  { id: "td_turkey_1", tourId: "t_turkey_2026", departureDate: "2026-08-10", seatsTotal: 15 },
+  { id: "td_turkey_2", tourId: "t_turkey_2026", departureDate: "2026-08-20", seatsTotal: 12 },
+  { id: "td_egypt_1", tourId: "t_egypt_2026", departureDate: "2026-08-15", seatsTotal: 20 },
+  { id: "td_dubai_1", tourId: "t_dubai_2026", departureDate: "2026-08-12", seatsTotal: 10 },
+  { id: "td_georgia_1", tourId: "t_georgia_2026", departureDate: "2026-08-18", seatsTotal: 18 },
+  { id: "td_phuket_1", tourId: "t_phuket_2026", departureDate: "2026-08-25", seatsTotal: 15 }
+];
+
 export function useSharedTravelData() {
-  const [tours, setTours] = useState<SharedTour[]>([]);
-  const [tourDates, setTourDates] = useState<TourDate[]>([]);
+  const [tours, setTours] = useState<SharedTour[]>(DEFAULT_TOURS);
+  const [tourDates, setTourDates] = useState<TourDate[]>(DEFAULT_TOUR_DATES);
   const [orders, setOrders] = useState<SharedOrder[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [depositPercent, setDepositPercent] = useState(30);
@@ -337,8 +468,11 @@ export function useSharedTravelData() {
 
       if (!active) return;
 
-      setTours(((toursRes.data as TourRow[] | null) ?? []).map(rowToTour));
-      setTourDates(((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate));
+      const dbTours = ((toursRes.data as TourRow[] | null) ?? []).map(rowToTour);
+      const dbDates = ((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate);
+
+      setTours(dbTours.length > 0 ? dbTours : DEFAULT_TOURS);
+      setTourDates(dbDates.length > 0 ? dbDates : DEFAULT_TOUR_DATES);
       setOrders(((ordersRes.data as OrderRow[] | null) ?? []).map(rowToOrder));
       setReviews(((reviewsRes.data as ReviewRow[] | null) ?? []).map(rowToReview));
 
@@ -487,6 +621,15 @@ export function useSharedTravelData() {
     }
   };
 
+  const createOrder = async (order: SharedOrder) => {
+    const normalized = normalizeOrder(order, tours, 0);
+    setOrders((prev) => [normalized, ...prev]);
+    const row = orderToRow(normalized);
+    const { error } = await supabase.from("orders").insert(row);
+    if (error) throw new Error(error.message);
+    return normalized;
+  };
+
   return {
     tours,
     tourDates,
@@ -497,6 +640,7 @@ export function useSharedTravelData() {
     saveTours,
     saveTourDates,
     saveOrders,
+    createOrder,
     isLoaded
   };
 }

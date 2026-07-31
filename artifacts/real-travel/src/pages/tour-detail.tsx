@@ -129,11 +129,22 @@ export function TourDetailPage() {
       : null
   ].filter(Boolean) as { icon: typeof Clock3; label: string; value: string }[];
 
+  const [imgSrc, setImgSrc] = useState(tour?.image || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80");
+
+  useEffect(() => {
+    if (tour?.image) setImgSrc(tour.image);
+  }, [tour?.image]);
+
   return (
     <article>
       {/* ------------------------------------------------------------- hero */}
       <header className="relative h-[70vh] min-h-[460px] overflow-hidden">
-        <img src={tour.image} alt={tour.name} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={imgSrc}
+          onError={() => setImgSrc("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80")}
+          alt={tour.name}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/45 to-primary/15" />
 
         <div className="container relative mx-auto flex h-full max-w-5xl flex-col justify-end px-6 pb-14 text-primary-foreground md:px-12">

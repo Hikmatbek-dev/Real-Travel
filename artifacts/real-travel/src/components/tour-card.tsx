@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowUpRight, CalendarDays, Clock3, MapPin, Users } from "lucide-react";
@@ -24,6 +25,11 @@ export function TourCard({
   featured?: boolean;
 }) {
   const { t, language } = useLanguage();
+  const [imgSrc, setImgSrc] = useState(tour.image || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80");
+
+  useEffect(() => {
+    setImgSrc(tour.image || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80");
+  }, [tour.image]);
 
   const dateLabel = new Intl.DateTimeFormat(
     language === "ru" ? "ru-RU" : language === "en" ? "en-GB" : "uz-UZ",
@@ -43,8 +49,9 @@ export function TourCard({
       >
         <div className={`relative overflow-hidden ${featured ? "h-80 md:h-[26rem]" : "h-72"}`}>
           <img
-            src={tour.image}
+            src={imgSrc}
             alt={tour.name}
+            onError={() => setImgSrc("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80")}
             loading={index > 2 ? "lazy" : undefined}
             className="h-full w-full transform bg-muted object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           />
