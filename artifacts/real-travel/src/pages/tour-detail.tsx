@@ -1,54 +1,50 @@
 import { useState } from "react";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { Check, X, MapPin, Calendar, Users, ChevronDown, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
+import { useSharedTravelData } from "@/lib/shared-travel-data";
 
 export function TourDetailPage() {
   const [, params] = useRoute("/tour/:id");
+  const [, setLocation] = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  
+  const { tours } = useSharedTravelData();
+  const dbTour = tours.find(t => t.slug === params?.id);
 
-  // Mock tour data based on id
+  if (!dbTour) {
+    return (
+      <div className="bg-white min-h-screen flex flex-col items-center justify-center font-sans">
+        <h1 className="text-3xl font-light text-slate-900 mb-4">Tur topilmadi</h1>
+        <Button onClick={() => setLocation("/tours")} className="bg-[#2298F0] hover:bg-[#1a85d6] text-white">Barcha turlarga qaytish</Button>
+      </div>
+    );
+  }
+
+  // Transform dbTour to match the expected format
   const tour = {
-    id: params?.id || "demo",
-    title: "Maldiv Orollari VIP",
-    subtitle: "Ocean Pool Villa va to'liq pansion",
-    price: "$2,400",
-    duration: "7 Kun, 6 Kecha",
-    heroImage: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1920&q=80",
-    description: "Hind okeanining qalbida joylashgan bu jannatmakon orollarda haqiqiy sokinlik va lyuks hayotni his qiling. Suv ustidagi villalar, oppoq qumli plyajlar va rang-barang marjon riflari sizni kutmoqda.",
-    included: [
-      "5 yulduzli lyuks mehmonxona",
-      "Kuniga 3 mahal premium taomlanish",
-      "Gidrotayyoragar va speedboat transfer",
-      "Viza rasmiylashtirish ko'magi",
-      "Sayohat sug'urtasi"
-    ],
-    notIncluded: [
-      "Shaxsiy xarajatlar",
-      "Qo'shimcha ekskursiyalar",
-      "Minibar ichimliklari"
-    ],
-    timeline: [
-      { day: 1, title: "Malega yetib borish", desc: "Xalqaro aeroportda kutib olish va tezkor qayiq orqali orol-mehmonxonaga transfer. Xonaga joylashish va hordiq." },
-      { day: 2, title: "Okean bilan tanishuv", desc: "Ertalabki nonushta va marjon riflarida dayving (snorkeling). Tushdan so'ng plyajda dam olish." },
-      { day: 3, title: "Spa va Relaks", desc: "Dengiz manzarasi ostida maxsus spa muolajalari. Kechqurun romantik kechki ovqat." },
-      { day: 4, title: "Erkin kun", desc: "O'z hohishingizga ko'ra vaqt o'tkazish, turli suv sportlari va kema sayohati." },
-      { day: 5, title: "Mahalliy orollarga sayohat", desc: "Maldiv xalqining madaniyati va turmush tarzi bilan tanishish uchun mahalliy orolga sayohat." },
-      { day: 6, title: "Kechki kruiz", desc: "Quyosh botishini tomosha qilish uchun maxsus yaxtada kruiz sayohati." },
-      { day: 7, title: "Uyg'a qaytish", desc: "Nonushta va aeroportga transfer. Xayrlashuv." }
-    ],
-    gallery: [
+    id: dbTour.id,
+    title: dbTour.name,
+    subtitle: dbTour.location,
+    price: dbTour.priceUzs ? `${Number(dbTour.priceUzs).toLocaleString("uz-UZ")} so'm` : `$${dbTour.price.toLocaleString()}`,
+    duration: `${dbTour.duration} Kun`,
+    heroImage: dbTour.image || "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1920&q=80",
+    description: dbTour.description,
+    included: dbTour.included?.length > 0 ? dbTour.included : ["Xizmatlar tez orada qo'shiladi"],
+    notIncluded: dbTour.excluded?.length > 0 ? dbTour.excluded : ["Xizmatlar tez orada qo'shiladi"],
+    timeline: dbTour.itinerary?.length > 0 ? dbTour.itinerary : [{ day: 1, title: "Sayohat boshlanishi", text: "Tez orada batafsil ma'lumot joylanadi." }],
+    gallery: dbTour.gallery?.length > 0 ? dbTour.gallery : [
       "https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?w=800&q=80",
       "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=800&q=80",
       "https://images.unsplash.com/photo-1527528669527-df1e7d0db87b?w=800&q=80",
       "https://images.unsplash.com/photo-1522008629172-0c1737e56eb6?w=800&q=80"
     ],
     faqs: [
-      { q: "Viza olish kerakmi?", a: "O'zbekiston fuqarolari uchun Maldiv orollariga vizasiz kirish (arrival visa) tizimi mavjud." },
-      { q: "Ob-havo qanday bo'ladi?", a: "Yil davomida tropik iqlim, o'rtacha harorat +28°C dan +30°C gacha bo'ladi." },
-      { q: "Bolalar bilan borish qulaymi?", a: "Ha, mehmonxonamizda bolalar uchun maxsus klub va ko'ngilochar dasturlar mavjud." }
+      { q: "Viza olish kerakmi?", a: "Ba'zi davlatlar uchun viza talab qilinishi mumkin. Menejerlarimiz batafsil ma'lumot berishadi." },
+      { q: "Bolalar bilan borish qulaymi?", a: "Ha, ko'pchilik turlarimiz oilaviy hordiq uchun moslashtirilgan." },
+      { q: "To'lov qanday amalga oshiriladi?", a: "To'lov ofisimizda shartnoma asosida naqd yoki pul o'tkazish yo'li bilan amalga oshiriladi." }
     ]
   };
 
@@ -120,7 +116,7 @@ export function TourDetailPage() {
                 </div>
                 <div className="pb-8 pt-2">
                   <h3 className="text-xl font-medium text-slate-900 mb-3">{item.title}</h3>
-                  <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+                  <p className="text-slate-600 leading-relaxed">{item.text || item.desc}</p>
                 </div>
               </div>
             ))}

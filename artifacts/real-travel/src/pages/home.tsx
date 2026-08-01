@@ -39,8 +39,8 @@ const HONEYMOON_TOURS = [
 const POPULAR_COUNTRIES = [
   { name: "Xitoy", image: "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=800&q=80" },
   { name: "Misr", image: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=800&q=80" },
-  { name: "Azerbaijan", image: "https://images.prismic.io/travelfika/aDaUeCdWJ-7kSmvH_Azerbaijan.jpg?auto=format,compress" },
-  { name: "Turkiya", image: "https://travelsystem.uz/wp-content/uploads/2021/06/stambul_mini-1.jpg" },
+  { name: "Azerbaijan", image: "https://images.unsplash.com/photo-1587315573456-6f81e605d336?auto=format&fit=crop&w=800&q=80" },
+  { name: "Turkiya", image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" },
   { name: "Indoneziya", image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80" },
   { name: "BAA", image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" },
 ];
@@ -73,10 +73,10 @@ export function HomePage() {
   
   // Gallery images with fallbacks
   const galleryImages = [
-    homeGallery[0] || tours[0]?.image || "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80",
-    homeGallery[1] || tours[1]?.image || "https://images.unsplash.com/photo-1511225070737-5af5ac9a690d?auto=format&fit=crop&w=800&q=80",
-    homeGallery[2] || tours[2]?.image || "https://images.unsplash.com/photo-1473116763249-2faaef81cc88?auto=format&fit=crop&w=800&q=80",
-    homeGallery[3] || tours[3]?.image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+    homeGallery[0] || (tours[0]?.image || "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80"),
+    homeGallery[1] || (tours[1]?.image || "https://images.unsplash.com/photo-1511225070737-5af5ac9a690d?auto=format&fit=crop&w=800&q=80"),
+    homeGallery[2] || (tours[2]?.image || "https://images.unsplash.com/photo-1473116763249-2faaef81cc88?auto=format&fit=crop&w=800&q=80"),
+    homeGallery[3] || (tours[3]?.image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80")
   ];
 
   const handleSearch = (e: React.FormEvent) => {
@@ -156,7 +156,7 @@ export function HomePage() {
               className="group flex flex-col bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-slate-100 cursor-pointer"
             >
               <div className="relative h-72 w-full overflow-hidden">
-                <img src={tour.image} alt={tour.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <img src={tour.image || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80"} alt={tour.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold text-slate-900 shadow-sm">
                   {tour.location}

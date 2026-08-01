@@ -10,6 +10,8 @@ export function ToursPage() {
   const [, setLocation] = useLocation();
   const [search, setSearch] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("Barchasi");
+  const [selectedSeason, setSelectedSeason] = useState("Barchasi");
+  const seasons = ["Barchasi", "Bahor", "Yoz", "Kuz", "Qish"];
   
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedTourName, setSelectedTourName] = useState<string | undefined>();
@@ -19,9 +21,10 @@ export function ToursPage() {
     return tours.filter((tour) => {
       if (search && !tour.name.toLowerCase().includes(search.toLowerCase()) && !tour.location.toLowerCase().includes(search.toLowerCase())) return false;
       if (selectedCountry !== "Barchasi" && tour.location !== selectedCountry) return false;
+      if (selectedSeason !== "Barchasi" && tour.season !== undefined && tour.season !== selectedSeason.toLowerCase()) return false;
       return true;
     });
-  }, [search, selectedCountry, tours]);
+  }, [search, selectedCountry, selectedSeason, tours]);
 
   const handleBook = (tourName: string) => {
     setSelectedTourName(tourName);
