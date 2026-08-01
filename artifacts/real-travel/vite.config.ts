@@ -60,6 +60,13 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    proxy: {
+      "/api/payx": {
+        target: "https://backend.payx.uz",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/payx/, ""),
+      },
+    },
   },
   preview: {
     port,

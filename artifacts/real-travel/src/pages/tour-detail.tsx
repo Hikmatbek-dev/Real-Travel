@@ -1,275 +1,185 @@
-import { useEffect, useState } from "react";
-import { Link, useRoute } from "wouter";
-import { ArrowLeft, CalendarDays, Check, Clock3, Loader2, MapPin, Users, X } from "lucide-react";
+import { useState } from "react";
+import { useRoute } from "wouter";
+import { Check, X, MapPin, Calendar, Users, ChevronDown, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BookingForm } from "@/components/booking-form";
-import { BookingBar } from "@/components/booking-bar";
-import { useLanguage } from "@/i18n";
-import { formatUzs } from "@/lib/format";
-import { COMPANY } from "@/lib/company";
-import { useSharedTravelData, type SharedTour } from "@/lib/shared-travel-data";
-
-/** Keeps the tab title and share preview in step with the tour being viewed. */
-function useDocumentMeta(title: string, description: string) {
-  useEffect(() => {
-    if (!title) return;
-    const previousTitle = document.title;
-    document.title = title;
-
-    const meta = document.querySelector('meta[name="description"]');
-    const previousDescription = meta?.getAttribute("content") ?? "";
-    meta?.setAttribute("content", description);
-
-    return () => {
-      document.title = previousTitle;
-      meta?.setAttribute("content", previousDescription);
-    };
-  }, [title, description]);
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="border-t border-border pt-10">
-      <h2 className="mb-6 font-serif text-3xl text-primary">{title}</h2>
-      {children}
-    </section>
-  );
-}
-
-function Gallery({ tour }: { tour: SharedTour }) {
-  const [active, setActive] = useState<string | null>(null);
-  const images = tour.gallery.filter(Boolean);
-  if (!images.length) return null;
-
-  return (
-    <>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-        {images.map((src, i) => (
-          <button
-            key={`${src}-${i}`}
-            type="button"
-            onClick={() => setActive(src)}
-            className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted"
-          >
-            <img
-              src={src}
-              alt=""
-              loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </button>
-        ))}
-      </div>
-
-      {active ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-primary/90 p-6"
-          onClick={() => setActive(null)}
-        >
-          <img src={active} alt="" className="max-h-[85vh] max-w-full rounded-2xl object-contain" />
-          <button
-            type="button"
-            aria-label="Close"
-            className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-card/20 text-primary-foreground"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-      ) : null}
-    </>
-  );
-}
+import { BookingModal } from "@/components/booking-modal";
 
 export function TourDetailPage() {
-  const [, params] = useRoute("/tours/:slug");
-  const { t, language } = useLanguage();
-  const { tours, isLoaded } = useSharedTravelData();
+  const [, params] = useRoute("/tour/:id");
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const tour = tours.find((item) => item.slug === params?.slug);
-
-  const [imgSrc, setImgSrc] = useState(tour?.image || "/images/tour-turkey.jpg");
-
-  useEffect(() => {
-    if (tour?.image) setImgSrc(tour.image);
-    else setImgSrc("/images/tour-turkey.jpg");
-  }, [tour?.image]);
-
-  useDocumentMeta(
-    tour ? `${tour.name} — ${COMPANY.brand}` : "",
-    tour ? `${tour.location}. ${tour.description}` : ""
-  );
-
-  useEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, [params?.slug]);
-
-  if (!isLoaded) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!tour) {
-    return (
-      <div className="container mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-6 text-center">
-        <h1 className="mb-4 font-serif text-4xl text-primary">{t.tour.notFound}</h1>
-        <p className="mb-8 font-light text-muted-foreground">{t.tour.notFoundText}</p>
-        <Link href="/">
-          <Button className="rounded-full px-6">{t.tour.back}</Button>
-        </Link>
-      </div>
-    );
-  }
-
-  const facts = [
-    { icon: Clock3, label: t.tour.duration, value: `${tour.duration} ${t.collection.days}` },
-    { icon: MapPin, label: t.collection.regionLabel, value: t.regions[tour.region] },
-    tour.groupSize > 0
-      ? { icon: Users, label: t.tour.groupSize, value: `${tour.groupSize} ${t.tour.people}` }
-      : null,
-    tour.priceUzs > 0
-      ? { icon: CalendarDays, label: t.collection.from, value: formatUzs(tour.priceUzs, language) }
-      : null
-  ].filter(Boolean) as { icon: typeof Clock3; label: string; value: string }[];
+  // Mock tour data based on id
+  const tour = {
+    id: params?.id || "demo",
+    title: "Maldiv Orollari VIP",
+    subtitle: "Ocean Pool Villa va to'liq pansion",
+    price: "$2,400",
+    duration: "7 Kun, 6 Kecha",
+    heroImage: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1920&q=80",
+    description: "Hind okeanining qalbida joylashgan bu jannatmakon orollarda haqiqiy sokinlik va lyuks hayotni his qiling. Suv ustidagi villalar, oppoq qumli plyajlar va rang-barang marjon riflari sizni kutmoqda.",
+    included: [
+      "5 yulduzli lyuks mehmonxona",
+      "Kuniga 3 mahal premium taomlanish",
+      "Gidrotayyoragar va speedboat transfer",
+      "Viza rasmiylashtirish ko'magi",
+      "Sayohat sug'urtasi"
+    ],
+    notIncluded: [
+      "Shaxsiy xarajatlar",
+      "Qo'shimcha ekskursiyalar",
+      "Minibar ichimliklari"
+    ],
+    timeline: [
+      { day: 1, title: "Malega yetib borish", desc: "Xalqaro aeroportda kutib olish va tezkor qayiq orqali orol-mehmonxonaga transfer. Xonaga joylashish va hordiq." },
+      { day: 2, title: "Okean bilan tanishuv", desc: "Ertalabki nonushta va marjon riflarida dayving (snorkeling). Tushdan so'ng plyajda dam olish." },
+      { day: 3, title: "Spa va Relaks", desc: "Dengiz manzarasi ostida maxsus spa muolajalari. Kechqurun romantik kechki ovqat." },
+      { day: 4, title: "Erkin kun", desc: "O'z hohishingizga ko'ra vaqt o'tkazish, turli suv sportlari va kema sayohati." },
+      { day: 5, title: "Mahalliy orollarga sayohat", desc: "Maldiv xalqining madaniyati va turmush tarzi bilan tanishish uchun mahalliy orolga sayohat." },
+      { day: 6, title: "Kechki kruiz", desc: "Quyosh botishini tomosha qilish uchun maxsus yaxtada kruiz sayohati." },
+      { day: 7, title: "Uyg'a qaytish", desc: "Nonushta va aeroportga transfer. Xayrlashuv." }
+    ],
+    gallery: [
+      "https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?w=800&q=80",
+      "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=800&q=80",
+      "https://images.unsplash.com/photo-1527528669527-df1e7d0db87b?w=800&q=80",
+      "https://images.unsplash.com/photo-1522008629172-0c1737e56eb6?w=800&q=80"
+    ],
+    faqs: [
+      { q: "Viza olish kerakmi?", a: "O'zbekiston fuqarolari uchun Maldiv orollariga vizasiz kirish (arrival visa) tizimi mavjud." },
+      { q: "Ob-havo qanday bo'ladi?", a: "Yil davomida tropik iqlim, o'rtacha harorat +28°C dan +30°C gacha bo'ladi." },
+      { q: "Bolalar bilan borish qulaymi?", a: "Ha, mehmonxonamizda bolalar uchun maxsus klub va ko'ngilochar dasturlar mavjud." }
+    ]
+  };
 
   return (
-    <article>
-      {/* ------------------------------------------------------------- hero */}
-      <header className="relative h-[70vh] min-h-[460px] overflow-hidden">
-        <img
-          src={imgSrc}
-          onError={() => setImgSrc("/images/tour-galata.jpg")}
-          alt={tour.name}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/45 to-primary/15" />
+    <div className="bg-white min-h-screen font-sans pb-32">
+      {/* HERO IMAGE */}
+      <div className="relative h-[60vh] md:h-[70vh] w-full">
+        <img src={tour.heroImage} alt={tour.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-slate-900/10 to-transparent" />
+      </div>
 
-        <div className="container relative mx-auto flex h-full max-w-5xl flex-col justify-end px-6 pb-14 text-primary-foreground md:px-12">
-          <Link
-            href="/"
-            className="mb-8 inline-flex w-fit items-center gap-2 text-xs uppercase tracking-[0.2em] text-primary-foreground/80 transition-colors hover:text-primary-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {t.tour.back}
-          </Link>
-
-          <p className="mb-4 text-xs uppercase tracking-[0.35em] text-accent">{tour.location}</p>
-          <h1 className="max-w-3xl font-serif text-5xl leading-[1.05] md:text-7xl">{tour.name}</h1>
+      <div className="max-w-[1000px] mx-auto px-6 md:px-12 -mt-32 relative z-10">
+        {/* HEADER CARD */}
+        <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl mb-16 border border-slate-50">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-8">
+            <div>
+              <div className="text-sky-500 font-semibold tracking-widest text-xs uppercase mb-3">{tour.subtitle}</div>
+              <h1 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight">{tour.title}</h1>
+            </div>
+            <div className="text-left md:text-right">
+              <div className="text-3xl md:text-4xl font-medium text-slate-900 mb-2">{tour.price}</div>
+              <div className="text-sm text-slate-500 flex items-center md:justify-end gap-1.5"><Calendar className="w-4 h-4" /> {tour.duration}</div>
+            </div>
+          </div>
+          <p className="text-lg text-slate-600 leading-relaxed font-light">{tour.description}</p>
         </div>
-      </header>
 
-      {/* ------------------------------------------------------- quick facts */}
-      <div className="border-b border-border bg-card">
-        <div className="container mx-auto max-w-5xl px-6 md:px-12">
-          <dl className="grid grid-cols-2 divide-border md:grid-cols-4 md:divide-x">
-            {facts.map((fact) => (
-              <div key={fact.label} className="flex items-center gap-3 px-1 py-6 md:justify-center md:px-4">
-                <fact.icon className="h-5 w-5 shrink-0 text-accent" />
-                <div className="min-w-0">
-                  <dt className="text-[11px] uppercase tracking-wider text-muted-foreground">{fact.label}</dt>
-                  <dd className="truncate font-medium text-primary">{fact.value}</dd>
+        {/* DETAILS GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-24">
+          <div>
+            <h2 className="text-2xl font-light text-slate-900 mb-8 tracking-tight">Kiritilgan xizmatlar</h2>
+            <ul className="space-y-4">
+              {tour.included.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-4">
+                  <div className="w-6 h-6 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-4 h-4" />
+                  </div>
+                  <span className="text-slate-600 leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2 className="text-2xl font-light text-slate-900 mb-8 tracking-tight">Kiritilmagan xizmatlar</h2>
+            <ul className="space-y-4">
+              {tour.notIncluded.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-4">
+                  <div className="w-6 h-6 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <X className="w-4 h-4" />
+                  </div>
+                  <span className="text-slate-600 leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* TIMELINE */}
+        <div className="mb-24">
+          <h2 className="text-3xl font-light text-slate-900 mb-12 tracking-tight">Sayohat dasturi</h2>
+          <div className="space-y-8">
+            {tour.timeline.map((item, idx) => (
+              <div key={idx} className="flex gap-6">
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full bg-sky-50 text-sky-500 flex items-center justify-center font-medium text-lg shrink-0">
+                    {item.day}
+                  </div>
+                  {idx !== tour.timeline.length - 1 && <div className="w-px h-full bg-slate-100 my-2" />}
+                </div>
+                <div className="pb-8 pt-2">
+                  <h3 className="text-xl font-medium text-slate-900 mb-3">{item.title}</h3>
+                  <p className="text-slate-600 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
-          </dl>
-        </div>
-      </div>
-
-      <div className="container mx-auto max-w-5xl px-6 pb-32 pt-14 md:px-12 lg:pb-20">
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1.25fr_0.75fr]">
-          <div className="space-y-12">
-            <p className="text-lg font-light leading-relaxed text-foreground/80">{tour.description}</p>
-
-            {tour.highlights.length ? (
-              <Section title={t.tour.highlights}>
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  {tour.highlights.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-muted-foreground">
-                      <Check className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Section>
-            ) : null}
-
-            {tour.itinerary.length ? (
-              <Section title={t.tour.itinerary}>
-                <ol className="space-y-0">
-                  {tour.itinerary.map((day, i) => (
-                    <li key={`${day.day}-${i}`} className="relative flex gap-5 pb-8 last:pb-0">
-                      {/* Timeline rail — the line stops at the last day. */}
-                      <div className="flex flex-col items-center">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                          {day.day}
-                        </span>
-                        {i < tour.itinerary.length - 1 ? <span className="mt-1 w-px flex-1 bg-border" /> : null}
-                      </div>
-                      <div className="pt-2">
-                        <h3 className="mb-1 font-medium text-primary">{day.title}</h3>
-                        <p className="font-light leading-relaxed text-muted-foreground">{day.text}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </Section>
-            ) : null}
-
-            {tour.included.length || tour.excluded.length ? (
-              <Section title={t.tour.included}>
-                <div className="grid gap-8 sm:grid-cols-2">
-                  {tour.included.length ? (
-                    <ul className="space-y-2.5">
-                      {tour.included.map((item) => (
-                        <li key={item} className="flex items-start gap-3 text-muted-foreground">
-                          <Check className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-
-                  {tour.excluded.length ? (
-                    <div>
-                      <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-                        {t.tour.excluded}
-                      </h3>
-                      <ul className="space-y-2.5">
-                        {tour.excluded.map((item) => (
-                          <li key={item} className="flex items-start gap-3 text-muted-foreground/80">
-                            <X className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/50" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </div>
-              </Section>
-            ) : null}
-
-            {tour.gallery.length ? (
-              <Section title={t.tour.gallery}>
-                <Gallery tour={tour} />
-              </Section>
-            ) : null}
           </div>
+        </div>
 
-          <aside className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <h2 className="mb-2 font-serif text-2xl text-primary">{t.booking.title}</h2>
-              <p className="mb-6 text-sm text-muted-foreground">{t.booking.text}</p>
-              <BookingForm tour={tour} />
-            </div>
-          </aside>
+        {/* PHOTO GALLERY */}
+        <div className="mb-24">
+          <h2 className="text-3xl font-light text-slate-900 mb-12 tracking-tight">Galereya</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tour.gallery.map((img, idx) => (
+              <div key={idx} className={`rounded-3xl overflow-hidden h-64 ${idx === 0 ? "md:col-span-2 md:h-96" : ""}`}>
+                <img src={img} alt={`Gallery ${idx}`} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div className="mb-24">
+          <h2 className="text-3xl font-light text-slate-900 mb-12 tracking-tight">Ko'p beriladigan savollar</h2>
+          <div className="space-y-6">
+            {tour.faqs.map((faq, idx) => (
+              <div key={idx} className="border-b border-slate-100 pb-6">
+                <button
+                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                  className="w-full flex items-center justify-between text-left text-lg font-medium text-slate-900"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform ${openFaq === idx ? "rotate-180" : ""}`} />
+                </button>
+                {openFaq === idx && (
+                  <div className="mt-4 text-slate-600 leading-relaxed animate-in fade-in">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <BookingBar tour={tour} />
-    </article>
+      {/* STICKY BOOKING BAR (BOTTOM) */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 p-4 md:p-6 z-40 transform transition-transform">
+        <div className="max-w-[1000px] mx-auto flex items-center justify-between">
+          <div className="hidden md:block">
+            <div className="text-sm text-slate-500 mb-1">{tour.title}</div>
+            <div className="text-2xl font-medium text-slate-900">{tour.price}</div>
+          </div>
+          <Button
+            onClick={() => setIsBookingOpen(true)}
+            className="w-full md:w-auto bg-amber-400 hover:bg-amber-500 text-slate-900 px-12 py-7 rounded-2xl text-base font-medium shadow-sm transition-all"
+          >
+            Turni band qilish
+          </Button>
+        </div>
+      </div>
+
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={tour.title} />
+    </div>
   );
 }

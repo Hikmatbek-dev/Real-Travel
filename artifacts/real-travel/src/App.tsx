@@ -1,47 +1,36 @@
-import { lazy, Suspense } from "react";
-import { Route, Router, Switch } from "wouter";
-import { Loader2 } from "lucide-react";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Route, Switch } from "wouter";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { HomePage } from "@/pages/home";
-import { OrderLookupPage } from "@/pages/order-lookup";
-import { LegalPage } from "@/pages/legal";
-import NotFound from "@/pages/not-found";
-import { LanguageContext, dictionaries, languageFromPath } from "@/i18n";
+import { ToursPage } from "@/pages/tours";
+import { TourDetailPage } from "@/pages/tour-detail";
+import { AboutPage } from "@/pages/about";
+import { ContactPage } from "@/pages/contact";
 
-// Split out of the initial bundle. The admin panel pulls in recharts and was
-// shipped to every public visitor; payment and tour-detail screens are only
-// reached on demand. Each becomes its own chunk, loaded when first visited.
-const AdminPanel = lazy(() => import("@/admin-panel").then((m) => ({ default: m.AdminPanel })));
-const TourDetailPage = lazy(() => import("@/pages/tour-detail").then((m) => ({ default: m.TourDetailPage })));
-const PaymentReturn = lazy(() => import("@/payment-return").then((m) => ({ default: m.PaymentReturn })));
-const PaymentMock = lazy(() => import("@/payment-mock").then((m) => ({ default: m.PaymentMock })));
+import { useState, useEffect } from "react";
+import { AdminPanel } from "@/admin-panel";
 
-function PageLoader() {
+export function PublicSite() {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <Loader2 className="h-6 w-6 animate-spin text-primary" />
-    </div>
-  );
-}
-
-/** Public pages share the header/footer chrome; payment and admin screens do not. */
-function PublicSite() {
-  return (
-    <div className="flex min-h-[100dvh] w-full flex-col bg-background font-sans">
+    <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans selection:bg-sky-500 selection:text-white">
       <SiteHeader />
-      <main className="flex-1">
-        <Suspense fallback={<PageLoader />}>
-          <Switch>
-            <Route path="/" component={HomePage} />
-            <Route path="/tours/:slug" component={TourDetailPage} />
-            <Route path="/order" component={OrderLookupPage} />
-            <Route path="/legal/:doc" component={LegalPage} />
-            <Route component={NotFound} />
-          </Switch>
-        </Suspense>
+      <main className="flex-grow">
+        <Switch>
+          <Route path="/" component={HomePage} />
+          <Route path="/tours" component={ToursPage} />
+          <Route path="/tour/:id" component={TourDetailPage} />
+          <Route path="/about" component={AboutPage} />
+          <Route path="/contact" component={ContactPage} />
+          <Route>
+            <div className="pt-40 pb-32 text-center flex flex-col items-center justify-center min-h-[60vh]">
+              <h1 className="text-5xl font-light text-slate-900 tracking-tight mb-4">Sahifa topilmadi</h1>
+              <p className="text-slate-500 mb-8 max-w-md">Kechirasiz, siz qidirayotgan sahifa mavjud emas yoki o'chirilgan.</p>
+              <a href="/" className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 rounded-2xl text-sm font-medium transition-colors">
+                Bosh sahifaga qaytish
+              </a>
+            </div>
+          </Route>
+        </Switch>
       </main>
       <SiteFooter />
     </div>
@@ -49,33 +38,17 @@ function PublicSite() {
 }
 
 export default function App() {
-  // The admin panel is a separate, single-language application.
-  if (window.location.pathname.startsWith("/admin")) {
-    return (
-      <Suspense fallback={<PageLoader />}>
-        <AdminPanel />
-      </Suspense>
-    );
+  const [pathname, setPathname] = useState(window.location.pathname);
+
+  useEffect(() => {
+    const onPopState = () => setPathname(window.location.pathname);
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  if (pathname.startsWith("/admin")) {
+    return <AdminPanel />;
   }
 
-  // Language is taken from the URL prefix (/ru, /en) so every page is
-  // shareable and indexable in the language it was written in.
-  const { language, base } = languageFromPath(window.location.pathname);
-
-  return (
-    <LanguageContext.Provider value={{ language, t: dictionaries[language] }}>
-      <Router base={base}>
-        <TooltipProvider>
-          <Suspense fallback={<PageLoader />}>
-            <Switch>
-              <Route path="/payment/return" component={PaymentReturn} />
-              <Route path="/payment/mock" component={PaymentMock} />
-              <Route component={PublicSite} />
-            </Switch>
-          </Suspense>
-          <Toaster />
-        </TooltipProvider>
-      </Router>
-    </LanguageContext.Provider>
-  );
+  return <PublicSite />;
 }

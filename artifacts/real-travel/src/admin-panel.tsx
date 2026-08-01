@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { format, subMonths } from "date-fns";
+import { Link } from "wouter";
 import {
   ArrowLeft,
   Calendar,
@@ -19,7 +20,8 @@ import {
   Star,
   TrendingUp,
   User,
-  Wallet
+  Wallet,
+  Image as ImageIcon
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from "recharts";
 import { Button } from "@/components/ui/button";
@@ -44,11 +46,12 @@ import { useAdminAuth } from "@/lib/use-admin-auth";
 import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
 import { TourContentEditor } from "@/components/admin/tour-content-editor";
 import { ReviewsManager } from "@/components/admin/reviews-manager";
+import { GalleryManager } from "@/components/admin/gallery-manager";
 import { uploadTourImage } from "@/lib/upload-image";
 import { supabase } from "@/lib/supabase";
 import { formatUzs } from "@/lib/format";
 
-type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders" | "/admin/reviews";
+type AdminRoute = "/admin" | "/admin/dashboard" | "/admin/tours" | "/admin/orders" | "/admin/reviews" | "/admin/gallery";
 type TourFormState = Partial<SharedTour>;
 type OrderFormState = {
   customerName: string;
@@ -73,6 +76,7 @@ function normalizeAdminRoute(pathname: string): AdminRoute {
   if (pathname.startsWith("/admin/tours")) return "/admin/tours";
   if (pathname.startsWith("/admin/orders")) return "/admin/orders";
   if (pathname.startsWith("/admin/reviews")) return "/admin/reviews";
+  if (pathname.startsWith("/admin/gallery")) return "/admin/gallery";
   return "/admin/dashboard";
 }
 
@@ -124,42 +128,58 @@ function LoginScreen({ onSignIn }: { onSignIn: (username: string, password: stri
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="flex flex-col items-center justify-center text-center space-y-2 mb-8">
-          <img src="/logo.jpg" alt="Real Travel" className="h-16 w-auto rounded-lg object-contain shadow-sm" />
-          <h1 className="text-3xl font-bold tracking-tight text-primary">Real Travel</h1>
-          <p className="text-muted-foreground">Admin Portal</p>
+    <div className="min-h-screen flex flex-col md:flex-row bg-white">
+      {/* Left side - Image */}
+      <div className="hidden md:block md:w-1/2 relative bg-slate-900">
+        <img 
+          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=80" 
+          alt="Admin Background" 
+          className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-12">
+          <img src="/logo.jpg" alt="Real Travel Logo" className="h-20 w-auto rounded-2xl shadow-2xl mb-8 border-4 border-white/20" />
+          <h2 className="text-4xl font-heading font-bold text-white mb-4">REAL TRAVEL</h2>
+          <p className="text-lg text-slate-300 font-light max-w-md">Premium lyuks turlarni boshqarish uchun admin panel. Xush kelibsiz!</p>
         </div>
+      </div>
 
-        <Card className="border-border shadow-sm">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl">Sign in</CardTitle>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              {error ? <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-md font-medium">{error}</div> : null}
+      {/* Right side - Form */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-12">
+        <div className="w-full max-w-sm space-y-8">
+          <div className="md:hidden flex flex-col items-center text-center space-y-4 mb-8">
+            <img src="/logo.jpg" alt="Real Travel" className="h-16 w-auto rounded-xl object-contain shadow-sm" />
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Real Travel</h1>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Tizimga kirish</h2>
+            <p className="text-sm text-slate-500 mb-8">Iltimos, o'z hisobingiz ma'lumotlarini kiriting.</p>
+            
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {error ? <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg font-medium border border-red-100">{error}</div> : null}
+              
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" className="h-11" />
+                <Label htmlFor="username" className="text-slate-700 font-medium">Foydalanuvchi nomi</Label>
+                <Input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" className="h-12 bg-slate-50 border-slate-200 rounded-xl focus-visible:ring-[#2298F0]" placeholder="admin" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" className="h-11" />
+                <Label htmlFor="password" className="text-slate-700 font-medium">Parol</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" className="h-12 bg-slate-50 border-slate-200 rounded-xl focus-visible:ring-[#2298F0]" placeholder="••••••••" />
               </div>
-              <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...</> : "Sign in"}
+              <Button type="submit" className="w-full h-12 bg-[#2298F0] hover:bg-[#2298F0]/90 text-white rounded-xl shadow-lg shadow-[#2298F0]/20 font-medium text-base mt-4" disabled={isLoading}>
+                {isLoading ? <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Kirilmoqda...</> : "Tizimga kirish"}
               </Button>
-            </CardContent>
-          </form>
-        </Card>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
 export function AdminPanel() {
-  const { tours, tourDates, orders, reviews, saveTours, saveTourDates, saveOrders, saveReviews, isLoaded } = useSharedTravelData();
+  const { tours, tourDates, orders, reviews, homeGallery, saveTours, saveTourDates, saveOrders, saveReviews, saveHomeGallery, isLoaded } = useSharedTravelData();
   const { user, displayName, loading: isAuthLoading, signIn, signOut } = useAdminAuth();
   const { toast } = useToast();
   const [route, setRoute] = useState<AdminRoute>(() => normalizeAdminRoute(window.location.pathname));
@@ -311,7 +331,8 @@ export function AdminPanel() {
     { href: "/admin/dashboard" as AdminRoute, label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/tours" as AdminRoute, label: "Tours", icon: Map },
     { href: "/admin/orders" as AdminRoute, label: "Orders", icon: ShoppingCart },
-    { href: "/admin/reviews" as AdminRoute, label: "Reviews", icon: Star }
+    { href: "/admin/reviews" as AdminRoute, label: "Reviews", icon: Star },
+    { href: "/admin/gallery" as AdminRoute, label: "Gallery", icon: ImageIcon }
   ];
 
   const openAddTour = () => {
@@ -432,12 +453,15 @@ export function AdminPanel() {
   };
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col bg-sidebar border-r border-sidebar-border">
-      <div className="flex h-16 shrink-0 items-center px-6">
-        <img src="/logo.jpg" alt="Real Travel" className="h-10 w-auto rounded-md object-contain" />
+    <div className="flex h-full flex-col bg-slate-900 border-r border-slate-800 text-white shadow-xl">
+      <div className="flex h-20 shrink-0 items-center px-6 border-b border-slate-800">
+        <Link href="/" className="flex items-center gap-3">
+          <img src="/logo.jpg" alt="Real Travel" className="h-10 w-auto rounded-xl object-contain shadow-sm bg-white p-1" />
+          <span className="font-heading text-lg font-bold tracking-tight text-white">REAL <span className="text-[#2298F0]">TRAVEL</span></span>
+        </Link>
       </div>
-      <div className="flex-1 overflow-y-auto py-4">
-        <nav className="grid gap-1 px-3">
+      <div className="flex-1 overflow-y-auto py-6">
+        <nav className="grid gap-2 px-4">
           {navItems.map((item) => {
             const active = route === item.href;
             return (
@@ -445,30 +469,32 @@ export function AdminPanel() {
                 key={item.href}
                 type="button"
                 onClick={() => navigate(item.href)}
-                className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                  active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  active 
+                    ? "bg-[#2298F0] text-white shadow-md shadow-[#2298F0]/20" 
+                    : "text-slate-400 hover:bg-slate-800 hover:text-white"
                 }`}
               >
-                <item.icon className={`h-4 w-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                <item.icon className={`h-5 w-5 ${active ? "text-white" : "text-slate-400"}`} />
                 {item.label}
               </button>
             );
           })}
         </nav>
       </div>
-      <div className="p-4 mt-auto border-t border-sidebar-border">
-        <div className="flex items-center gap-3 mb-4 px-2">
-          <Avatar className="h-9 w-9 border border-border">
-            <AvatarFallback className="bg-primary/10 text-primary font-medium">AD</AvatarFallback>
+      <div className="p-6 mt-auto border-t border-slate-800 bg-slate-900/50">
+        <div className="flex items-center gap-3 mb-6">
+          <Avatar className="h-10 w-10 border-2 border-[#2298F0]">
+            <AvatarFallback className="bg-[#2298F0] text-white font-bold">AD</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium leading-none">{displayName}</span>
-            <span className="text-xs text-muted-foreground mt-1">Admin</span>
+            <span className="text-sm font-bold text-white">{displayName}</span>
+            <span className="text-xs text-slate-400">Administrator</span>
           </div>
         </div>
-        <Button variant="outline" className="w-full justify-start text-muted-foreground" onClick={handleLogout}>
+        <Button variant="outline" className="w-full justify-start text-white border-slate-700 hover:bg-slate-800 hover:text-white rounded-xl h-11" onClick={handleLogout}>
           <LogOut className="h-4 w-4 mr-2" />
-          Sign out
+          Tizimdan chiqish
         </Button>
       </div>
     </div>
@@ -481,8 +507,8 @@ export function AdminPanel() {
           <SidebarContent />
         </div>
 
-        <div className="flex flex-col flex-1 md:pl-64">
-          <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-x-4 border-b border-border bg-background/95 backdrop-blur px-4 md:px-8">
+        <div className="flex flex-col flex-1 md:pl-64 bg-slate-50">
+          <header className="sticky top-0 z-20 flex h-20 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white/80 backdrop-blur-md px-4 md:px-8 shadow-sm">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
@@ -494,10 +520,10 @@ export function AdminPanel() {
               </SheetContent>
             </Sheet>
             <div className="flex flex-1 items-center justify-between">
-              <h1 className="text-lg font-semibold tracking-tight">{navItems.find((item) => item.href === route)?.label || "Dashboard"}</h1>
-              <Button variant="outline" size="sm" onClick={() => { window.history.pushState({}, "", "/"); window.dispatchEvent(new PopStateEvent("popstate")); }}>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-800">{navItems.find((item) => item.href === route)?.label || "Dashboard"}</h1>
+              <Button variant="outline" className="rounded-full border-slate-200 hover:bg-slate-100 hover:text-slate-900 transition-colors h-10 px-4" onClick={() => { window.history.pushState({}, "", "/"); window.dispatchEvent(new PopStateEvent("popstate")); }}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Bosh sahifa
+                Bosh sahifaga qaytish
               </Button>
             </div>
           </header>
@@ -505,69 +531,123 @@ export function AdminPanel() {
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
             <div className="mx-auto max-w-6xl">
               {route === "/admin/dashboard" ? (
-                <div className="space-y-6">
-                  <div className="grid gap-4 md:grid-cols-4">
-                    <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Tours</CardTitle><Map className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{tours.length}</div><p className="text-xs text-muted-foreground mt-1">Live catalog on 5173</p></CardContent></Card>
-                    <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Total Orders</CardTitle><ShoppingCart className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{orders.length}</div><p className="text-xs text-muted-foreground mt-1">Shared with user booking flow</p></CardContent></Card>
-                    <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Pending Approval</CardTitle><TrendingUp className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{pendingOrders}</div><p className="text-xs text-muted-foreground mt-1">Waiting for manager action</p></CardContent></Card>
-                    <Card><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Collected</CardTitle><Wallet className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold text-primary">{formatUzs(collected, "uz")}</div><p className="text-xs text-muted-foreground mt-1">Actually received</p></CardContent></Card>
+                <div className="space-y-8">
+                  <div className="grid gap-6 md:grid-cols-4">
+                    <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-white overflow-hidden relative">
+                      <div className="absolute top-0 right-0 p-4 opacity-5"><Map className="h-24 w-24" /></div>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10 relative">
+                        <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-wider">Jami Turlar</CardTitle>
+                        <div className="w-10 h-10 rounded-full bg-[#2298F0]/10 flex items-center justify-center"><Map className="h-5 w-5 text-[#2298F0]" /></div>
+                      </CardHeader>
+                      <CardContent className="z-10 relative">
+                        <div className="text-4xl font-black text-slate-800">{tours.length}</div>
+                        <p className="text-sm text-slate-500 mt-2 font-medium">Barcha aktiv turlar soni</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-white overflow-hidden relative">
+                      <div className="absolute top-0 right-0 p-4 opacity-5"><ShoppingCart className="h-24 w-24" /></div>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10 relative">
+                        <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-wider">Jami Buyurtmalar</CardTitle>
+                        <div className="w-10 h-10 rounded-full bg-[#F5B400]/10 flex items-center justify-center"><ShoppingCart className="h-5 w-5 text-[#F5B400]" /></div>
+                      </CardHeader>
+                      <CardContent className="z-10 relative">
+                        <div className="text-4xl font-black text-slate-800">{orders.length}</div>
+                        <p className="text-sm text-slate-500 mt-2 font-medium">Platformadan kelganlar</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-white overflow-hidden relative">
+                      <div className="absolute top-0 right-0 p-4 opacity-5"><TrendingUp className="h-24 w-24" /></div>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10 relative">
+                        <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-wider">Yangi So'rovlar</CardTitle>
+                        <div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center"><TrendingUp className="h-5 w-5 text-rose-500" /></div>
+                      </CardHeader>
+                      <CardContent className="z-10 relative">
+                        <div className="text-4xl font-black text-rose-500">{pendingOrders}</div>
+                        <p className="text-sm text-slate-500 mt-2 font-medium">Tasdiq kutmoqda</p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-none shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-[#2298F0] to-[#1E88E5] overflow-hidden relative text-white">
+                      <div className="absolute top-0 right-0 p-4 opacity-10"><Wallet className="h-24 w-24" /></div>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10 relative">
+                        <CardTitle className="text-sm font-bold text-white/80 uppercase tracking-wider">Tushum</CardTitle>
+                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"><Wallet className="h-5 w-5 text-white" /></div>
+                      </CardHeader>
+                      <CardContent className="z-10 relative">
+                        <div className="text-3xl sm:text-4xl font-black">{formatUzs(collected, "uz")}</div>
+                        <p className="text-sm text-white/80 mt-2 font-medium">Real tasdiqlangan summa</p>
+                      </CardContent>
+                    </Card>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-7">
-                    <Card className="md:col-span-4">
-                      <CardHeader><CardTitle>Confirmed Revenue by Month</CardTitle></CardHeader>
+                  <div className="grid gap-6 md:grid-cols-7">
+                    <Card className="md:col-span-4 border-none shadow-md bg-white">
+                      <CardHeader>
+                        <CardTitle className="text-lg font-bold text-slate-800">Tushumlar grafigi</CardTitle>
+                      </CardHeader>
                       <CardContent className="pl-2">
                         <div className="h-[300px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={revenueData} margin={{ top: 5, right: 10, left: 10, bottom: 0 }}>
-                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                              <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                              <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, "Revenue"]} />
-                              <Line type="monotone" dataKey="total" stroke="hsl(var(--primary))" strokeWidth={3} />
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                              <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                              <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                              <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, "Tushum"]} contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} />
+                              <Line type="monotone" dataKey="total" stroke="#2298F0" strokeWidth={4} dot={{ r: 4, fill: "#2298F0", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6, fill: "#F5B400", strokeWidth: 0 }} />
                             </LineChart>
                           </ResponsiveContainer>
                         </div>
                       </CardContent>
                     </Card>
-                    <Card className="md:col-span-3">
-                      <CardHeader><CardTitle>Order Status</CardTitle></CardHeader>
+                    <Card className="md:col-span-3 border-none shadow-md bg-white">
+                      <CardHeader>
+                        <CardTitle className="text-lg font-bold text-slate-800">Buyurtmalar holati</CardTitle>
+                      </CardHeader>
                       <CardContent className="flex flex-col items-center justify-center">
                         <div className="h-[200px] w-full">
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
-                              <Pie data={donutData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={2} dataKey="value" stroke="none">
-                                {donutData.map((entry, index) => <Cell key={index} fill={entry.color} />)}
+                              <Pie data={donutData.map(d => ({...d, color: d.name === 'New' ? '#3b82f6' : d.name === 'Confirmed' ? '#10b981' : '#f43f5e'}))} cx="50%" cy="50%" innerRadius={65} outerRadius={85} paddingAngle={5} dataKey="value" stroke="none">
+                                {donutData.map((entry, index) => <Cell key={index} fill={entry.name === 'New' ? '#3b82f6' : entry.name === 'Confirmed' ? '#10b981' : '#f43f5e'} />)}
                               </Pie>
-                              <Tooltip />
+                              <Tooltip contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }} />
                             </PieChart>
                           </ResponsiveContainer>
                         </div>
-                        <div className="flex justify-center gap-4 mt-4 w-full flex-wrap">
-                          {donutData.map((entry) => <div key={entry.name} className="flex items-center gap-1.5 text-sm"><div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} /><span className="text-muted-foreground">{entry.name} ({entry.value})</span></div>)}
+                        <div className="flex justify-center gap-4 mt-6 w-full flex-wrap">
+                          {donutData.map((entry) => (
+                            <div key={entry.name} className="flex items-center gap-2 text-sm font-medium">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.name === 'New' ? '#3b82f6' : entry.name === 'Confirmed' ? '#10b981' : '#f43f5e' }} />
+                              <span className="text-slate-600">{entry.name} ({entry.value})</span>
+                            </div>
+                          ))}
                         </div>
                       </CardContent>
                     </Card>
                   </div>
 
-                  <Card>
-                    <CardHeader><CardTitle>Recent Orders</CardTitle></CardHeader>
+                  <Card className="border-none shadow-md bg-white">
+                    <CardHeader>
+                      <CardTitle className="text-lg font-bold text-slate-800">So'nggi buyurtmalar</CardTitle>
+                    </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {recentOrders.map((order) => {
                           const tour = tours.find((item) => item.id === order.tourId);
                           return (
-                            <div key={order.id} className="flex items-center justify-between border-b border-border/50 pb-4 last:border-0 last:pb-0">
+                            <div key={order.id} className="flex items-center justify-between border-b border-slate-100 pb-4 last:border-0 last:pb-0">
                               <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-sm">{order.customerName}</span>
-                                  <span className="text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">{order.orderNumber}</span>
+                                  <span className="font-bold text-slate-800 text-sm">{order.customerName}</span>
+                                  <span className="text-xs text-slate-500 font-mono bg-slate-100 px-2 py-0.5 rounded-md">#{order.orderNumber}</span>
                                 </div>
-                                <span className="text-sm text-muted-foreground">{tour?.name || "Unknown Tour"}</span>
+                                <span className="text-sm text-slate-500 font-medium">{tour?.name || "Noma'lum Tur"}</span>
                               </div>
-                              <div className="flex items-center gap-3">
-                                <span className="hidden sm:inline text-sm font-medium text-primary">${order.totalAmount.toLocaleString()}</span>
-                                <Badge variant="outline" className={`${getStatusColor(order.status)} border rounded-full px-2.5 font-medium`}>{order.status}</Badge>
+                              <div className="flex items-center gap-4">
+                                <span className="hidden sm:inline text-sm font-bold text-[#2298F0]">${order.totalAmount.toLocaleString()}</span>
+                                <Badge variant="outline" className={`${getStatusColor(order.status)} border rounded-full px-3 py-1 font-semibold`}>{order.status}</Badge>
                               </div>
                             </div>
                           );
@@ -716,6 +796,10 @@ export function AdminPanel() {
 
               {route === "/admin/reviews" ? (
                 <ReviewsManager reviews={reviews} onSave={saveReviews} />
+              ) : null}
+
+              {route === "/admin/gallery" ? (
+                <GalleryManager gallery={homeGallery} onSave={saveHomeGallery} />
               ) : null}
             </div>
           </main>

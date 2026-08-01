@@ -1,90 +1,94 @@
 import { Link } from "wouter";
-import { Instagram, MapPinned, Phone } from "lucide-react";
-import { COMPANY, PHONE_HREF } from "@/lib/company";
-import { useLanguage } from "@/i18n";
+import { Instagram, MapPin, Phone, MessageCircle, Clock } from "lucide-react";
+import { COMPANY } from "@/lib/company";
 
 export function SiteFooter() {
-  const { t, language } = useLanguage();
-
   return (
-    <footer id="contact" className="border-t border-accent/20 bg-primary pb-12 pt-24 text-white">
-      <div className="container mx-auto px-6 md:px-12">
-        <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4 md:gap-8">
-          <div className="md:col-span-2">
-            <div className="mb-6 font-serif text-3xl">
-              REAL <span className="italic text-accent">Travel</span>
-            </div>
-            <p className="mb-4 max-w-sm font-light leading-relaxed text-white/60">{t.footer.text}</p>
-            <p className="mb-8 text-sm text-white/40">{COMPANY.legalName}</p>
-            <a
-              href={COMPANY.instagramUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 transition-colors hover:border-accent hover:bg-accent"
-            >
-              <Instagram className="h-4 w-4" />
-            </a>
+    <footer className="bg-white border-t border-slate-100 pt-24 pb-12 font-sans">
+      <div className="container mx-auto px-6 md:px-12 max-w-7xl">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+          
+          {/* BRANDING (Span 4) */}
+          <div className="md:col-span-4">
+            <Link href="/" className="flex items-center group mb-6 w-fit">
+              <img 
+                src="/logo.jpg" 
+                alt="Real Travel Logo" 
+                className="h-12 md:h-14 w-auto object-contain transition-transform duration-500 group-hover:scale-105 rounded-xl shadow-sm bg-white" 
+              />
+            </Link>
+            <p className="text-sm text-slate-500 max-w-xs leading-relaxed mb-8 font-light">
+              Biz dunyo bo'ylab eng yaxshi lyuks turlarni va unutilmas sayohatlarni taqdim etuvchi premium turistik agentlikmiz. Sayohatni biz bilan his qiling.
+            </p>
           </div>
 
-          <div>
-            <h4 className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.footer.contact}</h4>
-            <ul className="space-y-4 text-sm font-light text-white/80">
+          {/* MENUS (Span 4) */}
+          <div className="md:col-span-4 flex flex-col sm:flex-row gap-12 sm:gap-24">
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">Menyu</h4>
+              <ul className="space-y-4 text-sm font-medium text-slate-500">
+                <li><Link href="/" className="hover:text-[#2298F0] transition-colors">Bosh sahifa</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Turlarimiz</Link></li>
+                <li><Link href="/about" className="hover:text-[#2298F0] transition-colors">Biz haqimizda</Link></li>
+                <li><Link href="/contact" className="hover:text-[#2298F0] transition-colors">Aloqa</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">Turlar</h4>
+              <ul className="space-y-4 text-sm font-medium text-slate-500">
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Asal oyi</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Sarguzasht</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Oila</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Shaharlar</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* CONTACT INFO (Span 4) */}
+          <div className="md:col-span-4">
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">Aloqa Ma'lumotlari</h4>
+            <ul className="space-y-4 text-sm font-medium text-slate-500">
               <li>
-                <a href={PHONE_HREF} className="flex min-h-11 items-center transition-colors hover:text-accent">
-                  <Phone className="mr-3 h-4 w-4 text-accent" />
+                <a href={`tel:${COMPANY.phone.replace(/[^\d+]/g, "")}`} className="flex items-center gap-3 hover:text-[#2298F0] transition-colors group">
+                  <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-[#2298F0]/10 flex items-center justify-center transition-colors">
+                    <Phone className="w-4 h-4 text-[#2298F0]" />
+                  </div>
                   {COMPANY.phone}
                 </a>
               </li>
-              <li className="flex items-start">
-                <MapPinned className="mr-3 mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                {COMPANY.address[language]}
+              <li>
+                <div className="flex items-start gap-3 group">
+                  <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-[#2298F0]/10 flex items-center justify-center shrink-0 transition-colors">
+                    <MapPin className="w-4 h-4 text-[#2298F0]" />
+                  </div>
+                  <span className="leading-relaxed mt-1">{COMPANY.address.uz}</span>
+                </div>
               </li>
               <li>
-                <a
-                  href={COMPANY.instagramUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex min-h-11 items-center transition-colors hover:text-accent"
-                >
-                  <Instagram className="mr-3 h-4 w-4 text-accent" />@{COMPANY.instagram}
+                <div className="flex items-center gap-3 group">
+                  <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-[#2298F0]/10 flex items-center justify-center shrink-0 transition-colors">
+                    <Clock className="w-4 h-4 text-[#2298F0]" />
+                  </div>
+                  <span>Dush-Shan: 09:00 - 18:30</span>
+                </div>
+              </li>
+
+              <li>
+                <a href={COMPANY.instagramUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 hover:text-[#2298F0] transition-colors group">
+                  <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-[#2298F0]/10 flex items-center justify-center shrink-0 transition-colors">
+                    <Instagram className="w-4 h-4 text-[#2298F0]" />
+                  </div>
+                  @{COMPANY.instagram}
                 </a>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-white/50">{t.footer.legal}</h4>
-            <ul className="space-y-3 text-sm font-light text-white/80">
-              <li>
-                <Link href="/order" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
-                  {t.order.title}
-                </Link>
-              </li>
-              <li>
-                <Link href="/legal/oferta" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
-                  {t.footer.offer}
-                </Link>
-              </li>
-              <li>
-                <Link href="/legal/terms" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
-                  {t.footer.terms}
-                </Link>
-              </li>
-              <li>
-                <Link href="/legal/privacy" className="inline-flex min-h-11 items-center transition-colors hover:text-accent">
-                  {t.footer.privacy}
-                </Link>
-              </li>
-            </ul>
-          </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/10 pt-8 text-xs font-light tracking-wider text-white/40">
-          <p>&copy; {new Date().getFullYear()} {COMPANY.legalName}. {t.footer.copyright}</p>
-          <p className="mt-2 md:mt-0">
-            Design & Developed by <a href="https://t.me/Hikmatdeb" target="_blank" rel="noreferrer" className="text-white hover:text-accent transition-colors font-medium">Hikmatbek</a>.
-          </p>
+        {/* COPYRIGHT */}
+        <div className="pt-8 border-t border-slate-100 flex flex-col items-center justify-center text-xs text-slate-400 font-medium">
+          <p>© 2024 REAL TRAVEL. Barcha huquqlar himoyalangan.</p>
         </div>
       </div>
     </footer>

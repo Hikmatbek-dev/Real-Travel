@@ -1,701 +1,1376 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Turizm Agentligi | Dunyoni Biz Bilan Kashf Eting</title>
+    <title>Real Travel — Premium Sayohat Agentligi | OOO "REALGO TRAVEL"</title>
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Eng unutilmas sayohat lahzalarini biz bilan kashf eting. Plyaj, Umra, Tog' va Ekskursiya turlari eng yaxshi narxlarda.">
+    <meta name="description" content="Real Travel — Dunyoning eng so'lim va lyuks go'shalariga unutilmas sayohatlar. Maldiv orollari, Bali, Parij, Istanbul, Ziyorat va Plyaj turlari eng yaxshi narxlarda.">
+    <meta name="keywords" content="Real Travel, REALGO TRAVEL, Sayohat agentligi, Xonqa, Xorazm, Turlar, Viza, Aviachipta, Lyuks sayohat">
+    <meta property="og:title" content="Real Travel — Premium Sayohat Agentligi">
+    <meta property="og:description" content="Eng unutilmas sayohat lahzalarini biz bilan kashf eting.">
+    <meta property="og:image" content="/logo.jpg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS (CDN for Vanilla JS setup) -->
+    <!-- Leaflet CSS for Interactive Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
                     },
                     colors: {
-                        brand: {
-                            blue: '#1E3A8A', /* Royal Blue */
-                            light: '#3B82F6',
-                            neon: '#00E5FF', /* Neon Cyan for CTA */
-                            dark: '#0F172A',
-                            accent: '#F59E0B' /* Star Yellow */
+                        navy: {
+                            950: '#040814',
+                            900: '#070e20',
+                            850: '#0b1329',
+                            800: '#101c3d',
+                            700: '#1a2b56',
+                            600: '#253d77',
+                        },
+                        gold: {
+                            100: '#fffbeb',
+                            200: '#fef3c7',
+                            300: '#fde68a',
+                            400: '#fcd34d',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            accent: '#e5a93c',
+                            glow: '#ffbe42'
                         }
                     },
+                    boxShadow: {
+                        'gold-sm': '0 4px 20px -2px rgba(229, 169, 60, 0.25)',
+                        'gold-lg': '0 10px 35px -5px rgba(229, 169, 60, 0.35)',
+                        'gold-glow': '0 0 25px rgba(229, 169, 60, 0.5)',
+                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
+                    },
                     animation: {
-                        'marquee': 'marquee 25s linear infinite',
+                        'marquee': 'marquee 30s linear infinite',
+                        'pulse-glow': 'pulseGlow 2.5s infinite',
+                        'float': 'float 4s ease-in-out infinite',
                     },
                     keyframes: {
                         marquee: {
-                            '0%': { transform: 'translateX(100vw)' },
-                            '100%': { transform: 'translateX(-100%)' },
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(229, 169, 60, 0.4)' },
+                            '50%': { boxShadow: '0 0 35px rgba(229, 169, 60, 0.8)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
                         }
                     }
                 }
             }
         }
     </script>
-    
+
     <style>
-        /* Smooth scrolling and custom utilities */
+        /* Custom Design Tokens & Glassmorphism Aesthetics */
+        :root {
+            --bg-dark: #0b1329;
+            --bg-darker: #050a17;
+            --gold-accent: #e5a93c;
+            --gold-hover: #f59e0b;
+        }
+
         html {
             scroll-behavior: smooth;
+            background-color: #050a17;
+            color: #f8fafc;
         }
-        
-        .glassmorphism {
-            background: rgba(255, 255, 255, 0.1);
+
+        body {
+            background-color: #050a17;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism containers */
+        .glass-panel {
+            background: rgba(11, 19, 41, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(229, 169, 60, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(16, 28, 61, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .filter-glass {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        .glass-card:hover {
+            border-color: rgba(229, 169, 60, 0.4);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 20px rgba(229, 169, 60, 0.2);
         }
 
-        /* Custom Select styling */
-        select.custom-select {
+        .glass-input {
+            background: rgba(7, 14, 32, 0.85);
+            border: 1px solid rgba(229, 169, 60, 0.25);
+            color: #ffffff;
+        }
+
+        .glass-input:focus {
+            border-color: #e5a93c;
+            box-shadow: 0 0 12px rgba(229, 169, 60, 0.3);
+            outline: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050a17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a2b56;
+            border-radius: 4px;
+            border: 1px solid rgba(229, 169, 60, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e5a93c;
+        }
+
+        /* Gold Gradient Text */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fffbeb 0%, #fcd34d 30%, #e5a93c 70%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-gradient-btn {
+            background: linear-gradient(135deg, #e5a93c 0%, #f59e0b 50%, #d97706 100%);
+            color: #050a17;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .gold-gradient-btn:hover {
+            background: linear-gradient(135deg, #fcd34d 0%, #e5a93c 50%, #f59e0b 100%);
+            box-shadow: 0 0 25px rgba(229, 169, 60, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Page View Switcher */
+        .page-view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .page-view.active-page {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Custom Select arrow color */
+        select.glass-select {
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231E3A8A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e5a93c%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
             background-repeat: no-repeat;
             background-position: right 1rem center;
-            background-size: 0.65em auto;
+            background-size: 0.7em auto;
+        }
+
+        /* Leaflet map container fix */
+        #map {
+            height: 380px;
+            width: 100%;
+            border-radius: 1rem;
+            z-index: 10;
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-x-hidden">
+<body class="antialiased selection:bg-gold-accent selection:text-navy-950">
 
     <!-- 1. HEADER & NAVIGATION -->
-    <header class="fixed w-full top-0 z-50 transition-all duration-300" id="navbar">
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-4" id="mainHeader">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center cursor-pointer">
-                    <svg class="h-8 w-8 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
-                        <!-- Plane/Travel Icon SVG -->
-                        <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-                    </svg>
-                    <span class="ml-2 text-2xl font-bold text-brand-blue tracking-tight">Real Travel</span>
-                </div>
-
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex space-x-8 items-center">
-                    <div class="relative group">
-                        <button class="flex items-center text-gray-700 hover:text-brand-blue font-medium transition-colors">
-                            Turlar
-                            <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <!-- Dropdown -->
-                        <div class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="py-1">
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Yevropa turlari</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Osiyo turlari</a>
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Arab amirliklari</a>
-                            </div>
-                        </div>
+            <div class="glass-panel rounded-2xl px-5 py-3 flex items-center justify-between shadow-2xl border border-gold-accent/20">
+                
+                <!-- Logo & Branding -->
+                <a href="#home" onclick="navigateTo('home'); return false;" class="flex items-center space-x-3 group">
+                    <div class="relative w-10 h-10 rounded-xl overflow-hidden ring-2 ring-gold-accent/50 group-hover:ring-gold-accent transition-all duration-300 shadow-gold-sm">
+                        <img src="/logo.jpg" alt="Real Travel Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=100&q=80';">
                     </div>
-                    <a href="#" class="text-gray-700 hover:text-brand-blue font-medium transition-colors">Sayohat turlari</a>
-                    <a href="#" class="text-gray-700 hover:text-brand-blue font-medium transition-colors">Kompaniya</a>
-                    <a href="#" class="text-gray-700 hover:text-brand-blue font-medium transition-colors">Blog</a>
+                    <div class="flex flex-col">
+                        <span class="font-heading text-xl font-extrabold tracking-tight text-white group-hover:text-gold-accent transition-colors">
+                            REAL <span class="gold-gradient-text italic font-serif">Travel</span>
+                        </span>
+                        <span class="text-[9px] uppercase tracking-widest text-gold-accent/80 font-semibold">OOO "REALGO TRAVEL"</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Menu -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" onclick="navigateTo('home'); return false;" class="nav-link text-sm font-semibold uppercase tracking-wider text-slate-200 hover:text-gold-accent transition-colors relative py-1" data-page="home">
+                        <span class="lang-uz">Bosh sahifa</span>
+                        <span class="lang-ru hidden">Главная</span>
+                        <span class="lang-en hidden">Home</span>
+                    </a>
+                    <a href="#tours" onclick="navigateTo('tours'); return false;" class="nav-link text-sm font-semibold uppercase tracking-wider text-slate-200 hover:text-gold-accent transition-colors relative py-1" data-page="tours">
+                        <span class="lang-uz">Turlar & Katalog</span>
+                        <span class="lang-ru hidden">Туры и Каталог</span>
+                        <span class="lang-en hidden">Tours & Packages</span>
+                    </a>
+                    <a href="#about" onclick="navigateTo('about'); return false;" class="nav-link text-sm font-semibold uppercase tracking-wider text-slate-200 hover:text-gold-accent transition-colors relative py-1" data-page="about">
+                        <span class="lang-uz">Biz Haqimizda</span>
+                        <span class="lang-ru hidden">О нас</span>
+                        <span class="lang-en hidden">About Us</span>
+                    </a>
+                    <a href="#contact" onclick="navigateTo('contact'); return false;" class="nav-link text-sm font-semibold uppercase tracking-wider text-slate-200 hover:text-gold-accent transition-colors relative py-1" data-page="contact">
+                        <span class="lang-uz">Aloqa</span>
+                        <span class="lang-ru hidden">Контакты</span>
+                        <span class="lang-en hidden">Contact</span>
+                    </a>
                 </nav>
 
-                <!-- Right Actions -->
-                <div class="hidden md:flex items-center space-x-6">
-                    <div class="flex items-center space-x-2 text-brand-blue font-semibold">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                        <span>+998 (71) 123-45-67</span>
+                <!-- Header Actions: Phone & Language Switcher -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <!-- Phone Direct Call CTA -->
+                    <a href="tel:+998702277147" class="flex items-center space-x-2 px-4 py-2 rounded-xl bg-navy-900/80 border border-gold-accent/40 text-gold-accent hover:bg-gold-accent hover:text-navy-950 transition-all duration-300 font-bold text-xs shadow-gold-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        <span>+998 70 227 71 47</span>
+                    </a>
+
+                    <!-- Book Call Button -->
+                    <button onclick="openBookingModal('Umumiy Maslahat')" class="gold-gradient-btn px-5 py-2 rounded-xl text-xs uppercase tracking-wider shadow-gold-sm">
+                        <span class="lang-uz">BAND QILISH</span>
+                        <span class="lang-ru hidden">ЗАБРОНИРОВАТЬ</span>
+                        <span class="lang-en hidden">BOOK NOW</span>
+                    </button>
+
+                    <!-- Language Pills -->
+                    <div class="flex items-center bg-navy-900 rounded-xl p-1 border border-white/10 text-xs font-bold">
+                        <button onclick="setLanguage('uz')" class="lang-btn px-2.5 py-1 rounded-lg transition-all active-lang bg-gold-accent text-navy-950" id="lang-uz">UZ</button>
+                        <button onclick="setLanguage('ru')" class="lang-btn px-2.5 py-1 rounded-lg text-slate-300 hover:text-white transition-all" id="lang-ru">RU</button>
+                        <button onclick="setLanguage('en')" class="lang-btn px-2.5 py-1 rounded-lg text-slate-300 hover:text-white transition-all" id="lang-en">EN</button>
                     </div>
-                    <!-- Language Selector -->
-                    <select class="bg-transparent text-gray-700 font-medium focus:outline-none cursor-pointer">
-                        <option value="uz">UZ</option>
-                        <option value="ru">RU</option>
-                        <option value="en">EN</option>
-                    </select>
                 </div>
 
-                <!-- Mobile menu button -->
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-700 hover:text-brand-blue focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+                <!-- Mobile Hamburger Button -->
+                <button id="mobileMenuToggle" class="md:hidden text-gold-accent p-2 rounded-xl border border-gold-accent/30 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
             </div>
         </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg border-t">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Turlar</a>
-                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Sayohat turlari</a>
-                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Kompaniya</a>
-                <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-blue hover:bg-gray-50">Blog</a>
+
+        <!-- Mobile Navigation Menu Drawer -->
+        <div id="mobileDrawer" class="hidden md:hidden fixed inset-x-4 top-24 z-50 glass-panel rounded-2xl p-6 shadow-2xl border border-gold-accent/30 flex-col space-y-4 animate-fade-in">
+            <a href="#home" onclick="navigateTo('home'); closeMobileMenu(); return false;" class="text-base font-bold text-slate-100 hover:text-gold-accent py-2 border-b border-white/10">Bosh sahifa</a>
+            <a href="#tours" onclick="navigateTo('tours'); closeMobileMenu(); return false;" class="text-base font-bold text-slate-100 hover:text-gold-accent py-2 border-b border-white/10">Turlar & Katalog</a>
+            <a href="#about" onclick="navigateTo('about'); closeMobileMenu(); return false;" class="text-base font-bold text-slate-100 hover:text-gold-accent py-2 border-b border-white/10">Biz Haqimizda</a>
+            <a href="#contact" onclick="navigateTo('contact'); closeMobileMenu(); return false;" class="text-base font-bold text-slate-100 hover:text-gold-accent py-2 border-b border-white/10">Aloqa</a>
+            
+            <div class="pt-2 flex flex-col space-y-3">
+                <a href="tel:+998702277147" class="flex items-center justify-center space-x-2 py-3 rounded-xl bg-gold-accent text-navy-950 font-bold text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                    <span>+998 70 227 71 47</span>
+                </a>
+                <div class="flex justify-center space-x-2 pt-2">
+                    <button onclick="setLanguage('uz')" class="px-4 py-1.5 rounded-lg bg-gold-accent text-navy-950 font-bold text-xs">UZ</button>
+                    <button onclick="setLanguage('ru')" class="px-4 py-1.5 rounded-lg bg-navy-900 border border-white/20 text-white font-bold text-xs">RU</button>
+                    <button onclick="setLanguage('en')" class="px-4 py-1.5 rounded-lg bg-navy-900 border border-white/20 text-white font-bold text-xs">EN</button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- 2. HERO SECTION & SMART FILTER -->
-    <main>
-        <section class="relative h-[85vh] min-h-[600px] flex items-center justify-center pt-20">
-            <!-- Background Image/Video Overlay -->
+    <!-- ========================================================================= -->
+    <!-- PAGE 1: BOSH SAHIFA (HOME PAGE) -->
+    <!-- ========================================================================= -->
+    <main id="page-home" class="page-view active-page pt-28">
+        
+        <!-- LUXURY HERO SECTION WITH CINEMATIC VIDEO BACKDROP -->
+        <section class="relative min-h-[88vh] flex items-center justify-center overflow-hidden pb-16 pt-8">
+            <!-- Background Video/Image Backdrop -->
             <div class="absolute inset-0 z-0">
-                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Sayohat manzarasi" class="w-full h-full object-cover" />
-                <div class="absolute inset-0 bg-gradient-to-r from-brand-dark/80 to-brand-blue/60"></div>
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=85" alt="Maldives Ocean Villa" class="w-full h-full object-cover filter brightness-[0.65] contrast-[1.1]">
+                <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/60 to-navy-950/40"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-navy-950/50 to-navy-950"></div>
             </div>
 
-            <div class="relative z-10 text-center px-4 w-full max-w-7xl mx-auto">
-                <h1 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 drop-shadow-lg">
-                    Dunyoni Biz Bilan <span class="text-brand-neon">KASHF ETING!</span>
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
+                
+                <!-- Luxury Tagline Badge -->
+                <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full glass-panel border border-gold-accent/40 text-gold-accent text-xs uppercase tracking-[0.25em] font-extrabold mb-6 animate-float">
+                    <span class="w-2 h-2 rounded-full bg-gold-accent animate-ping"></span>
+                    <span class="lang-uz">EXCLUSIVITY & LUXURY TRAVEL</span>
+                    <span class="lang-ru hidden">ЭКСКЛЮЗИВНЫЕ ТУРЫ И ОТДЫХ</span>
+                    <span class="lang-en hidden">EXCLUSIVITY & LUXURY TRAVEL</span>
+                </div>
+
+                <!-- Hero Main Headline -->
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-heading font-black tracking-tight text-white mb-6 max-w-5xl leading-[1.1] drop-shadow-2xl">
+                    <span class="lang-uz">Dunyoni Biz Bilan <span class="gold-gradient-text font-serif italic">Kashf Eting</span></span>
+                    <span class="lang-ru hidden">Откройте Мир <span class="gold-gradient-text font-serif italic">Вместе C Нами</span></span>
+                    <span class="lang-en hidden">Discover Your <span class="gold-gradient-text font-serif italic">Extraordinary Escape</span></span>
                 </h1>
-                <p class="mt-4 text-xl md:text-2xl text-gray-200 mb-12 font-light">
-                    Eng unutilmas lahzalar sizni kutmoqda.
+
+                <!-- Subtitle Text -->
+                <p class="text-lg sm:text-2xl text-slate-300 max-w-3xl font-light mb-10 leading-relaxed drop-shadow">
+                    <span class="lang-uz">Unutilmas lahzalar, 5 yulduzli qulayliklar va dunyo bo'ylab eng yaxshi shartlar bilan orzuingizdagi ta'tilni rejalashtiring.</span>
+                    <span class="lang-ru hidden">Планируйте отдых мечты с 5-звездочным комфортом, персональным сервисом и премиальными турами.</span>
+                    <span class="lang-en hidden">Discover your extraordinary escape with us and enjoy timeless and iconic luxury moments on every journey.</span>
                 </p>
 
-                <!-- Smart Filter -->
-                <div class="filter-glass p-4 rounded-2xl mx-auto flex flex-col md:flex-row gap-4 max-w-5xl shadow-2xl animate-fade-in-up">
-                    <div class="flex-1">
-                        <div class="relative">
-                            <span class="absolute left-3 top-3.5 text-gray-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            </span>
-                            <select class="custom-select w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-10 focus:ring-2 focus:ring-brand-blue focus:border-transparent outline-none transition-all">
-                                <option value="" disabled selected>Qayerga?</option>
-                                <option value="dubai">Dubay, BAA</option>
-                                <option value="istanbul">Istanbul, Turkiya</option>
-                                <option value="egypt">Sharm el-Shayx, Misr</option>
-                            </select>
+                <!-- Cinematic Video Preview Button Bar -->
+                <div class="flex flex-col sm:flex-row items-center gap-6 mb-12">
+                    <!-- Watch Video Modal Trigger Button -->
+                    <button onclick="openVideoModal('https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1', 'Cinematic Real Travel Showcase')" class="flex items-center space-x-4 px-6 py-3.5 rounded-full glass-panel hover:bg-gold-accent/20 border border-gold-accent/40 text-white group transition-all duration-300 shadow-gold-sm hover:scale-105">
+                        <div class="w-10 h-10 rounded-full bg-gold-accent flex items-center justify-center text-navy-950 group-hover:scale-110 transition-transform shadow-gold-glow">
+                            <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </div>
-                    </div>
-                    
-                    <div class="flex-1">
-                        <div class="relative">
-                            <span class="absolute left-3 top-3.5 text-gray-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </span>
-                            <input type="date" class="w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-brand-blue outline-none transition-all" />
+                        <div class="text-left">
+                            <span class="block text-xs uppercase tracking-widest text-gold-accent font-bold">Cinematic Tour Video</span>
+                            <span class="text-xs text-slate-300">0:45 / 4:15 min HD</span>
                         </div>
-                    </div>
-
-                    <div class="flex-1">
-                        <div class="relative">
-                            <span class="absolute left-3 top-3.5 text-gray-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </span>
-                            <select class="custom-select w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-10 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
-                                <option value="" disabled selected>Tur turi</option>
-                                <option>Plyaj</option>
-                                <option>Tog'</option>
-                                <option>Umra</option>
-                                <option>Ekstremal</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="flex-1">
-                        <div class="relative">
-                            <span class="absolute left-3 top-3.5 text-gray-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            </span>
-                            <select class="custom-select w-full bg-gray-50 border-gray-200 text-gray-700 rounded-xl py-3 pl-10 pr-10 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
-                                <option value="" disabled selected>Narxi</option>
-                                <option>$500 gacha</option>
-                                <option>$500 - $1000</option>
-                                <option>$1000 dan yuqori</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button class="bg-brand-neon hover:bg-teal-300 text-brand-dark font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full md:w-auto flex-shrink-0">
-                        QIDIRISH
                     </button>
+
+                    <!-- Explore Journeys CTA Button -->
+                    <a href="#tours" onclick="navigateTo('tours'); return false;" class="gold-gradient-btn px-8 py-4 rounded-full text-sm font-extrabold uppercase tracking-wider shadow-gold-lg flex items-center space-x-2">
+                        <span>TURLARNI KO'RISH</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </a>
                 </div>
+
+                <!-- ADVANCED SEARCH FILTER BAR (FIGMA STYLE FLOATING BAR) -->
+                <div class="w-full max-w-5xl glass-panel p-4 sm:p-6 rounded-3xl shadow-2xl border border-gold-accent/30 relative">
+                    <form onsubmit="handleHeroSearch(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                        
+                        <!-- Destination Input -->
+                        <div class="text-left">
+                            <label class="block text-[11px] font-bold uppercase tracking-widest text-gold-accent mb-2">QAYERGA? / DESTINATION</label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-3 text-gold-accent">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                </span>
+                                <input type="text" id="heroDestination" placeholder="Maldiv, Bali, Dubay..." class="glass-input glass-select w-full pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Date Range Input -->
+                        <div class="text-left">
+                            <label class="block text-[11px] font-bold uppercase tracking-widest text-gold-accent mb-2">SANA / DATE RANGE</label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-3 text-gold-accent">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </span>
+                                <input type="date" id="heroDate" class="glass-input w-full pl-10 pr-3 py-2.5 rounded-xl text-sm focus:outline-none text-slate-200">
+                            </div>
+                        </div>
+
+                        <!-- Budget Select -->
+                        <div class="text-left">
+                            <label class="block text-[11px] font-bold uppercase tracking-widest text-gold-accent mb-2">BUDJET / BUDGET</label>
+                            <select id="heroBudget" class="glass-input glass-select w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none cursor-pointer">
+                                <option value="all" class="bg-navy-900 text-white">Barchasi / Any</option>
+                                <option value="500" class="bg-navy-900 text-white">$500 gacha</option>
+                                <option value="1500" class="bg-navy-900 text-white">$500 - $1,500 Luxe</option>
+                                <option value="5000" class="bg-navy-900 text-white">$1,500 - $5,000 VIP</option>
+                                <option value="10000" class="bg-navy-900 text-white">$5,000+ Ultra Luxury</option>
+                            </select>
+                        </div>
+
+                        <!-- Tour Type Select -->
+                        <div class="text-left">
+                            <label class="block text-[11px] font-bold uppercase tracking-widest text-gold-accent mb-2">TUR TURI / TYPE</label>
+                            <select id="heroType" class="glass-input glass-select w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none cursor-pointer">
+                                <option value="all" class="bg-navy-900 text-white">Barchasi / All Types</option>
+                                <option value="beach" class="bg-navy-900 text-white">Plyaj & Orollar</option>
+                                <option value="culture" class="bg-navy-900 text-white">Tarix & Madaniyat</option>
+                                <option value="mountain" class="bg-navy-900 text-white">Tog' & Chang'i</option>
+                                <option value="umrah" class="bg-navy-900 text-white">Ziyorat Turlari</option>
+                            </select>
+                        </div>
+
+                        <!-- Submit Filter Button -->
+                        <div>
+                            <button type="submit" class="gold-gradient-btn w-full py-3 rounded-xl text-xs uppercase tracking-wider font-extrabold flex items-center justify-center space-x-2 shadow-gold-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <span>QIDIRISH</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
             </div>
         </section>
 
-        <!-- 3. TICKER PANEL (Tezyurar takliflar) -->
-        <div class="bg-brand-blue text-white overflow-hidden py-3 shadow-inner relative flex items-center">
-            <div class="px-4 font-bold whitespace-nowrap bg-brand-blue z-10 flex items-center shadow-[10px_0_15px_-5px_rgba(30,58,138,1)]">
-                <span class="text-brand-neon mr-2">⚡️ Ayni muddao:</span>
-            </div>
-            <div class="overflow-hidden w-full relative">
-                <div class="whitespace-nowrap inline-block animate-marquee">
-                    <span class="mx-8">🔥 Misr - $399 (So'nggi 2 joy)</span>
-                    <span class="mx-8">🔥 Dubay - $450 (Chiptalar kiritilgan)</span>
-                    <span class="mx-8">🔥 Istanbul - $350 (Hafta oxiri uchun)</span>
-                    <span class="mx-8">🔥 Umra ziyorati - $1200 (Ramzon oyi)</span>
-                    <!-- Duplicate for infinite effect -->
-                    <span class="mx-8">🔥 Misr - $399 (So'nggi 2 joy)</span>
-                    <span class="mx-8">🔥 Dubay - $450 (Chiptalar kiritilgan)</span>
+        <!-- LIVE TICKER MARQUEE -->
+        <div class="bg-gradient-to-r from-navy-900 via-gold-accent/20 to-navy-900 border-y border-gold-accent/30 py-3 overflow-hidden">
+            <div class="flex items-center max-w-7xl mx-auto px-4">
+                <span class="px-3 py-1 rounded-md bg-gold-accent text-navy-950 text-xs font-black uppercase tracking-wider shrink-0 mr-4 shadow-gold-sm">⚡️ REYTING BALAND:</span>
+                <div class="overflow-hidden w-full relative">
+                    <div class="whitespace-nowrap inline-flex animate-marquee text-xs font-bold text-slate-200">
+                        <span class="mx-6">🔥 Maldiv Orollari VIP — $2,400 (Chipta kiritilgan)</span>
+                        <span class="mx-6">🔥 Bali Tropik Ekskursiya — $1,850 (Hot-Deal)</span>
+                        <span class="mx-6">🔥 Istanbul Mo'jizasi 7 kun — $450</span>
+                        <span class="mx-6">🔥 Shveysariya Alp Tog'lari — $3,200</span>
+                        <span class="mx-6">🔥 Dubay Penthouse & Safari — $1,200</span>
+                        <!-- Repeated for smooth infinite scroll -->
+                        <span class="mx-6">🔥 Maldiv Orollari VIP — $2,400 (Chipta kiritilgan)</span>
+                        <span class="mx-6">🔥 Bali Tropik Ekskursiya — $1,850 (Hot-Deal)</span>
+                        <span class="mx-6">🔥 Istanbul Mo'jizasi 7 kun — $450</span>
+                    </div>
                 </div>
-            </div>
-            <div class="px-4 font-bold bg-brand-blue z-10 right-0 shadow-[-10px_0_15px_-5px_rgba(30,58,138,1)]">
-                <a href="#" class="text-brand-neon hover:text-white transition-colors underline text-sm">Hammasi</a>
             </div>
         </div>
 
-        <!-- 4. CATEGORIES (Grid) -->
-        <section class="py-16 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2 uppercase tracking-wide">Kategoriyalar bo'yicha izlash</h2>
-                <div class="w-24 h-1 bg-brand-neon mx-auto mb-10 rounded-full"></div>
+        <!-- SECTION 1: TRENDING DESTINATIONS GRID (FIGMA STYLE WITH GOLD BADGES) -->
+        <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
+                <div>
+                    <span class="text-xs uppercase tracking-[0.3em] text-gold-accent font-extrabold block mb-2">MOST POPULAR LUXURY SPOTS</span>
+                    <h2 class="text-3xl sm:text-5xl font-heading font-extrabold text-white">
+                        Mashhur <span class="gold-gradient-text font-serif italic">Yo'nalishlar</span>
+                    </h2>
+                </div>
+                <p class="text-slate-400 max-w-md text-sm mt-4 md:mt-0">
+                    Mijozlarimiz tomonidan eng yuqori baholangan va har yili minglab unutilmas taassurotlar ulashuvchi lyuks turlar.
+                </p>
+            </div>
+
+            <!-- Grid of Cards matching image layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                    <!-- Category 1 -->
-                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Plyaj" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
-                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
-                            <span class="text-4xl mb-2">🏝</span>
-                            Plyaj
-                        </div>
-                    </a>
-                    <!-- Category 2 -->
-                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tog'" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
-                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
-                            <span class="text-4xl mb-2">🏔</span>
-                            Tog'
-                        </div>
-                    </a>
-                    <!-- Category 3 -->
-                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                        <img src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekskursiya" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
-                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
-                            <span class="text-4xl mb-2">🏛</span>
-                            Ekskursiya
-                        </div>
-                    </a>
-                    <!-- Category 4 -->
-                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                        <img src="https://images.unsplash.com/photo-1565552643954-1e548cf5f420?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Umra" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
-                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
-                            <span class="text-4xl mb-2">🕋</span>
-                            Umra
-                        </div>
-                    </a>
-                    <!-- Category 5 -->
-                    <a href="#" class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer aspect-square flex items-center justify-center">
-                        <img src="https://images.unsplash.com/photo-1533240332313-0db49b459ad6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Ekstremal" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300"></div>
-                        <div class="relative z-10 text-white font-bold text-xl flex flex-col items-center">
-                            <span class="text-4xl mb-2">🎒</span>
-                            Ekstremal
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. TOP TOUR PACKAGES -->
-        <section class="py-16 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-end mb-10">
-                    <div>
-                        <h2 class="text-3xl font-bold text-gray-900 uppercase tracking-wide">Top Sayohat Paketlari</h2>
-                        <div class="w-24 h-1 bg-brand-blue mt-2 rounded-full"></div>
+                <!-- Card 1: Santorini -->
+                <div class="glass-card rounded-3xl overflow-hidden relative group">
+                    <div class="absolute top-4 left-4 z-10 w-10 h-10 rounded-2xl bg-gold-accent text-navy-950 font-black text-lg flex items-center justify-center shadow-gold-sm">
+                        1
                     </div>
-                    <a href="#" class="text-brand-blue font-semibold hover:text-brand-light flex items-center hidden sm:flex">
-                        Barchasini ko'rish
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Package Card 1 -->
-                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-gray-100 flex flex-col">
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Istanbul" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-gray-800 shadow-sm">
-                                7 kun / 6 kecha
-                            </div>
-                        </div>
-                        <div class="p-6 flex-1 flex flex-col">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-2xl font-bold text-gray-900">Istanbul Mo'jizasi</h3>
-                                <div class="flex items-center text-brand-accent">
-                                    <span class="mr-1">⭐</span>
-                                    <span class="font-bold text-gray-800">4.9</span>
-                                    <span class="text-xs text-gray-500 ml-1">(120)</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-3 my-4 text-gray-400">
-                                <span title="Aviachipta">✈️</span>
-                                <span>+</span>
-                                <span title="Mehmonxona">🏨</span>
-                                <span>+</span>
-                                <span title="Sug'urta">🎫</span>
-                            </div>
-                            <p class="text-gray-500 text-sm mb-6 flex-1">Eng yaxshi mehmonxonalar, Bosphorus sayohati va tarixiy obidalar bo'ylab ekskursiya.</p>
-                            <div class="flex justify-between items-center mt-auto border-t border-gray-100 pt-4">
-                                <div>
-                                    <span class="text-xs text-gray-400 uppercase">Kishi boshiga</span>
-                                    <div class="text-2xl font-black text-brand-blue">$550</div>
-                                </div>
-                                <button class="bg-brand-blue hover:bg-brand-dark text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-md">
-                                    Band qilish
-                                </button>
-                            </div>
-                        </div>
+                    <div class="relative h-72 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800&q=80" alt="Santorini" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/20 to-transparent"></div>
                     </div>
-
-                    <!-- Package Card 2 -->
-                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-gray-100 flex flex-col relative">
-                        <div class="absolute top-4 left-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-r-lg z-10 uppercase tracking-wide">
-                            Qaynoq
-                        </div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Bali" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-gray-800 shadow-sm">
-                                10 kun / 9 kecha
+                    <div class="p-6 relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-2xl font-heading font-bold text-white group-hover:text-gold-accent transition-colors">Santorini, Gretsiya</h3>
+                            <div class="flex items-center space-x-1 text-gold-accent text-xs font-bold">
+                                <span>★ 5.0</span>
                             </div>
                         </div>
-                        <div class="p-6 flex-1 flex flex-col">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-2xl font-bold text-gray-900">Tropik Bali</h3>
-                                <div class="flex items-center text-brand-accent">
-                                    <span class="mr-1">⭐</span>
-                                    <span class="font-bold text-gray-800">5.0</span>
-                                    <span class="text-xs text-gray-500 ml-1">(85)</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-3 my-4 text-gray-400">
-                                <span title="Aviachipta">✈️</span>
-                                <span>+</span>
-                                <span title="Mehmonxona">🏨</span>
-                                <span>+</span>
-                                <span title="Sug'urta">🎫</span>
-                            </div>
-                            <p class="text-gray-500 text-sm mb-6 flex-1">Oq qumli sohillar, toza havo va unutilmas tabiat qo'ynidagi dam olish.</p>
-                            <div class="flex justify-between items-center mt-auto border-t border-gray-100 pt-4">
-                                <div>
-                                    <span class="text-xs text-gray-400 uppercase">Kishi boshiga</span>
-                                    <div class="text-2xl font-black text-brand-blue">$1200</div>
-                                </div>
-                                <button class="bg-brand-blue hover:bg-brand-dark text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-md">
-                                    Band qilish
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Package Card 3 -->
-                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 group overflow-hidden border border-gray-100 flex flex-col">
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1502602898657-3e90760b3838?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Parij" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-gray-800 shadow-sm">
-                                5 kun / 4 kecha
-                            </div>
-                        </div>
-                        <div class="p-6 flex-1 flex flex-col">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-2xl font-bold text-gray-900">Romantik Parij</h3>
-                                <div class="flex items-center text-brand-accent">
-                                    <span class="mr-1">⭐</span>
-                                    <span class="font-bold text-gray-800">4.8</span>
-                                    <span class="text-xs text-gray-500 ml-1">(94)</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-3 my-4 text-gray-400">
-                                <span title="Aviachipta">✈️</span>
-                                <span>+</span>
-                                <span title="Mehmonxona">🏨</span>
-                                <span>+</span>
-                                <span title="Sug'urta">🎫</span>
-                            </div>
-                            <p class="text-gray-500 text-sm mb-6 flex-1">Eiffel minorasi, Luvr va romantik ko'chalar - orzudagi sayohat.</p>
-                            <div class="flex justify-between items-center mt-auto border-t border-gray-100 pt-4">
-                                <div>
-                                    <span class="text-xs text-gray-400 uppercase">Kishi boshiga</span>
-                                    <div class="text-2xl font-black text-brand-blue">$890</div>
-                                </div>
-                                <button class="bg-brand-blue hover:bg-brand-dark text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-md">
-                                    Band qilish
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 6. VALUE PROPOSITION -->
-        <section class="py-20 bg-brand-blue text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Nega minglab mijozlar aynan bizni tanlashadi?</h2>
-                    <p class="text-blue-200 text-lg">Bizning ustuvorligimiz - sizning xavfsizligingiz va qulayligingiz.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    <!-- Value 1 -->
-                    <div class="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
-                        <div class="w-20 h-20 mx-auto bg-brand-neon/20 rounded-full flex items-center justify-center mb-6">
-                            <span class="text-4xl">🛡️</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">100% Sug'urta</h3>
-                        <p class="text-blue-100 text-sm leading-relaxed">Sayohat davomida kutilmagan xarajatlardan to'liq himoya qilamiz. Biz barcha rasmiyatchilikni o'z zimmamizga olamiz.</p>
-                    </div>
-                    
-                    <!-- Value 2 -->
-                    <div class="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
-                        <div class="w-20 h-20 mx-auto bg-brand-neon/20 rounded-full flex items-center justify-center mb-6">
-                            <span class="text-4xl">✈️</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">To'g'ridan-to'g'ri reyslar</h3>
-                        <p class="text-blue-100 text-sm leading-relaxed">Ortiqcha vaqt yo'qotmasdan, qulay va to'g'ridan-to'g'ri reyslar hamda lyuks mehmonxonalar kafolatlanadi.</p>
-                    </div>
-
-                    <!-- Value 3 -->
-                    <div class="text-center p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
-                        <div class="w-20 h-20 mx-auto bg-brand-neon/20 rounded-full flex items-center justify-center mb-6">
-                            <span class="text-4xl">💰</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3">Shaffof narxlar</h3>
-                        <p class="text-blue-100 text-sm leading-relaxed">Hech qanday yashirin to'lovlarsiz! Saytda va shartnomada ko'rsatilgan narx to'liq yakuniy hisoblanadi.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 7. SOCIAL PROOF (Testimonials) -->
-        <section class="py-20 bg-gray-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl font-bold text-gray-900 uppercase tracking-wide">Mijozlarimiz taassurotlari</h2>
-                    <div class="w-24 h-1 bg-brand-blue mx-auto mt-4 rounded-full"></div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Testimonial 1 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative">
-                        <div class="absolute -top-5 right-8 text-6xl text-gray-200">"</div>
-                        <div class="flex text-brand-accent mb-4 text-sm">
-                            ⭐⭐⭐⭐⭐
-                        </div>
-                        <p class="text-gray-600 mb-6 italic relative z-10">"Viza muammosiz bo'ldi, mehmonxona ajoyib! Umuman ortiqcha qiyinchiliksiz ajoyib dam oldik. Rahmat katta jamoaga!"</p>
-                        <div class="flex items-center">
-                            <img src="https://i.pravatar.cc/150?img=11" alt="Sardor" class="w-12 h-12 rounded-full mr-4 border-2 border-brand-blue/20">
+                        <p class="text-xs text-slate-400 mb-6">Cliffside Luxury Villa View & Sunset Cruise</p>
+                        <div class="flex items-center justify-between border-t border-white/10 pt-4">
                             <div>
-                                <h4 class="font-bold text-gray-900">Sardor</h4>
-                                <p class="text-xs text-gray-500">Toshkent</p>
+                                <span class="text-[10px] uppercase text-slate-400 font-bold block">Narxi / Price</span>
+                                <span class="text-xl font-black text-gold-accent">$4,500</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Testimonial 2 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative">
-                        <div class="absolute -top-5 right-8 text-6xl text-gray-200">"</div>
-                        <div class="flex text-brand-accent mb-4 text-sm">
-                            ⭐⭐⭐⭐⭐
-                        </div>
-                        <p class="text-gray-600 mb-6 italic relative z-10">"Tashkilotchilik yuqori darajada ekan, rahm! Tur davomida hamma narsa soatdek aniq ishladi, juda mamnunmiz."</p>
-                        <div class="flex items-center">
-                            <img src="https://i.pravatar.cc/150?img=5" alt="Laylo" class="w-12 h-12 rounded-full mr-4 border-2 border-brand-blue/20">
-                            <div>
-                                <h4 class="font-bold text-gray-900">Laylo</h4>
-                                <p class="text-xs text-gray-500">Samarqand</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Testimonial 3 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 relative">
-                        <div class="absolute -top-5 right-8 text-6xl text-gray-200">"</div>
-                        <div class="flex text-brand-accent mb-4 text-sm">
-                            ⭐⭐⭐⭐⭐
-                        </div>
-                        <p class="text-gray-600 mb-6 italic relative z-10">"Gidimiz juda bilimli edi, tarixiy joylar haqida qiziqarli ma'lumotlar berdi. Keyingi safar ham albatta shu agentlik bilan ketamiz."</p>
-                        <div class="flex items-center">
-                            <img src="https://i.pravatar.cc/150?img=68" alt="Bobur" class="w-12 h-12 rounded-full mr-4 border-2 border-brand-blue/20">
-                            <div>
-                                <h4 class="font-bold text-gray-900">Bobur</h4>
-                                <p class="text-xs text-gray-500">Farg'ona</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 8. LEAD MAGNET FORM (CTA) -->
-        <section class="py-20 relative">
-            <!-- Background Image -->
-            <div class="absolute inset-0 z-0">
-                <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Airplane CTA" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-brand-dark/80"></div>
-            </div>
-            
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="bg-brand-blue/90 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl border border-white/10 flex flex-col md:flex-row items-center gap-10">
-                    <div class="flex-1 text-center md:text-left">
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">Sayohat bo'yicha bepul ekspert maslahatini oling</h2>
-                        <p class="text-blue-100 text-lg">Mutaxassisimiz sizga 10 daqiqa ichida moliyaviy va istaklaringizga mos tur tanlab beradi.</p>
-                    </div>
-                    
-                    <div class="flex-1 w-full">
-                        <form class="space-y-4 bg-white p-6 rounded-2xl shadow-inner">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Ismingiz</label>
-                                <input type="text" id="name" placeholder="Masalan: Jamshid" class="w-full border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
-                            </div>
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefon raqamingiz</label>
-                                <input type="tel" id="phone" placeholder="+998 __ _______" class="w-full border-gray-200 bg-gray-50 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
-                            </div>
-                            <button type="button" class="w-full bg-brand-neon hover:bg-teal-300 text-brand-dark font-bold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-md mt-2 uppercase tracking-wide text-sm">
-                                Mijozlar menejeri bilan bog'lanish (Bepul)
+                            <button onclick="openBookingModal('Santorini Luxury Villa')" class="text-xs font-bold uppercase tracking-wider text-slate-200 group-hover:text-gold-accent flex items-center space-x-1 transition-colors">
+                                <span>Batafsil</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                             </button>
-                            <p class="text-xs text-gray-400 text-center mt-3">Ma'lumotlaringiz xavfsizligi kafolatlanadi.</p>
-                        </form>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Card 2: Kyoto -->
+                <div class="glass-card rounded-3xl overflow-hidden relative group">
+                    <div class="absolute top-4 left-4 z-10 w-10 h-10 rounded-2xl bg-gold-accent text-navy-950 font-black text-lg flex items-center justify-center shadow-gold-sm">
+                        2
+                    </div>
+                    <div class="relative h-72 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80" alt="Kyoto" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/20 to-transparent"></div>
+                    </div>
+                    <div class="p-6 relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-2xl font-heading font-bold text-white group-hover:text-gold-accent transition-colors">Kioto, Yaponiya</h3>
+                            <div class="flex items-center space-x-1 text-gold-accent text-xs font-bold">
+                                <span>★ 4.9</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-6">Cherry Blossom Blossom Private Cultural Tour</p>
+                        <div class="flex items-center justify-between border-t border-white/10 pt-4">
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-400 font-bold block">Narxi / Price</span>
+                                <span class="text-xl font-black text-gold-accent">$5,200</span>
+                            </div>
+                            <button onclick="openBookingModal('Kioto Japani Tour')" class="text-xs font-bold uppercase tracking-wider text-slate-200 group-hover:text-gold-accent flex items-center space-x-1 transition-colors">
+                                <span>Batafsil</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Swiss Alps -->
+                <div class="glass-card rounded-3xl overflow-hidden relative group">
+                    <div class="absolute top-4 left-4 z-10 w-10 h-10 rounded-2xl bg-gold-accent text-navy-950 font-black text-lg flex items-center justify-center shadow-gold-sm">
+                        3
+                    </div>
+                    <div class="relative h-72 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1502784444187-359ac186c5bb?w=800&q=80" alt="Swiss Alps" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/20 to-transparent"></div>
+                    </div>
+                    <div class="p-6 relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-2xl font-heading font-bold text-white group-hover:text-gold-accent transition-colors">Swiss Alps, Shveysariya</h3>
+                            <div class="flex items-center space-x-1 text-gold-accent text-xs font-bold">
+                                <span>★ 5.0</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-6">Ski Chalet Resort & Glacier Helicopter Flight</p>
+                        <div class="flex items-center justify-between border-t border-white/10 pt-4">
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-400 font-bold block">Narxi / Price</span>
+                                <span class="text-xl font-black text-gold-accent">$4,100</span>
+                            </div>
+                            <button onclick="openBookingModal('Swiss Alps Ski Tour')" class="text-xs font-bold uppercase tracking-wider text-slate-200 group-hover:text-gold-accent flex items-center space-x-1 transition-colors">
+                                <span>Batafsil</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <!-- BLOG / EXPERTISE PREVIEW -->
-        <section class="py-16 bg-white">
+        <!-- SECTION 2: CURATED EXPERIENCES & RECOMMENDED PACKAGES -->
+        <section class="py-20 bg-navy-900/50 border-y border-white/5">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 uppercase tracking-wide">Foydali Ma'lumotlar (Blog)</h2>
-                    <div class="w-24 h-1 bg-brand-blue mx-auto mt-4 rounded-full"></div>
+                <div class="text-center mb-16">
+                    <span class="text-xs uppercase tracking-[0.3em] text-gold-accent font-extrabold block mb-2">CURATED FOR YOU</span>
+                    <h2 class="text-3xl sm:text-5xl font-heading font-extrabold text-white">
+                        Maxsus Ta'til <span class="gold-gradient-text font-serif italic">Paketlari</span>
+                    </h2>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <a href="#" class="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-                        <div class="h-48 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Visa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                        <div class="p-5">
-                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-brand-blue transition-colors">Shengen vizasini olish sirlari 2026</h3>
-                            <p class="text-sm text-gray-500 mt-2">Yevropaga viza olish tartibi va kerakli hujjatlar to'liq ro'yxati.</p>
-                        </div>
-                    </a>
-                    
-                    <a href="#" class="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-                        <div class="h-48 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Dubai" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        </div>
-                        <div class="p-5">
-                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-brand-blue transition-colors">Dubayga borishda nimalarni bilish shart?</h3>
-                            <p class="text-sm text-gray-500 mt-2">Qonun-qoidalar, arzon xaridlar va eng zo'r joylar haqida.</p>
-                        </div>
-                    </a>
 
-                    <a href="#" class="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-                        <div class="h-48 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Baggage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Serengeti -->
+                    <div class="glass-card rounded-3xl p-5 group flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-56 rounded-2xl overflow-hidden mb-5">
+                                <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=80" alt="Serengeti" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <span class="absolute top-3 right-3 bg-navy-950/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-gold-accent border border-gold-accent/30">7 Kun / 6 Kecha</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Safari Adventure Serengeti</h3>
+                            <p class="text-xs text-slate-400 mb-4">Tanzaniya safari parki, besh yulduzli ekolodj va shaxsiy gid xizmati.</p>
                         </div>
-                        <div class="p-5">
-                            <h3 class="font-bold text-lg text-gray-900 group-hover:text-brand-blue transition-colors">Sayohat yukxaltasi sirlari</h3>
-                            <p class="text-sm text-gray-500 mt-2">Joyni tejash va faqat kerakli narsalarni olish bo'yicha layfxaklar.</p>
+                        <div class="flex items-center justify-between border-t border-white/10 pt-4 mt-4">
+                            <span class="text-xl font-black text-gold-accent">$7,800</span>
+                            <button onclick="openBookingModal('Safari Serengeti')" class="gold-gradient-btn px-4 py-2 rounded-xl text-xs uppercase font-extrabold">Band Qilish</button>
                         </div>
-                    </a>
+                    </div>
+
+                    <!-- Bora Bora -->
+                    <div class="glass-card rounded-3xl p-5 group flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-56 rounded-2xl overflow-hidden mb-5">
+                                <img src="https://images.unsplash.com/photo-1512100356356-de1b84283e18?w=800&q=80" alt="Bora Bora" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <span class="absolute top-3 right-3 bg-navy-950/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-gold-accent border border-gold-accent/30">10 Kun / 9 Kecha</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Tropical Retreat Bora Bora</h3>
+                            <p class="text-xs text-slate-400 mb-4">Okean ustidagi lyuks villa, suv osti daiving va shaxsiy yaxta xizmati.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-white/10 pt-4 mt-4">
+                            <span class="text-xl font-black text-gold-accent">$9,500</span>
+                            <button onclick="openBookingModal('Bora Bora Retreat')" class="gold-gradient-btn px-4 py-2 rounded-xl text-xs uppercase font-extrabold">Band Qilish</button>
+                        </div>
+                    </div>
+
+                    <!-- Cultural Kyoto -->
+                    <div class="glass-card rounded-3xl p-5 group flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-56 rounded-2xl overflow-hidden mb-5">
+                                <img src="https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=800&q=80" alt="Kyoto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <span class="absolute top-3 right-3 bg-navy-950/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-gold-accent border border-gold-accent/30">6 Kun / 5 Kecha</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Cultural Immersion Kyoto</h3>
+                            <p class="text-xs text-slate-400 mb-4">Tarixiy yapon ibodatxonalari, choy marosimlari va Michelin restorani.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-white/10 pt-4 mt-4">
+                            <span class="text-xl font-black text-gold-accent">$5,100</span>
+                            <button onclick="openBookingModal('Kyoto Cultural')" class="gold-gradient-btn px-4 py-2 rounded-xl text-xs uppercase font-extrabold">Band Qilish</button>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </section>
+
+        <!-- SECTION 3: VIDEO TESTIMONIALS (VOICES OF REAL TRAVEL) -->
+        <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-xs uppercase tracking-[0.3em] text-gold-accent font-extrabold block mb-2">REAL TRAVELERS REVIEWS</span>
+                <h2 class="text-3xl sm:text-5xl font-heading font-extrabold text-white">
+                    Voices of <span class="gold-gradient-text font-serif italic">Real Travel</span>
+                </h2>
+                <p class="text-slate-400 max-w-lg mx-auto text-sm mt-3">Mijozlarimizning samimiy fikrlari va video taassurotlari.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Video Review 1 -->
+                <div class="glass-card rounded-3xl p-6 relative group overflow-hidden">
+                    <div class="relative h-64 rounded-2xl overflow-hidden mb-4">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80" alt="Sarah & James Review" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <button onclick="openVideoModal('https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1', 'Unforgettable Experience — Sarah & James')" class="w-16 h-16 rounded-full bg-gold-accent text-navy-950 flex items-center justify-center shadow-gold-glow hover:scale-110 transition-transform">
+                                <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                        </div>
+                        <span class="absolute bottom-3 right-3 bg-navy-950/80 px-2.5 py-1 rounded-md text-[10px] font-bold text-slate-300">2:10</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80" alt="Avatar" class="w-12 h-12 rounded-full ring-2 ring-gold-accent object-cover">
+                        <div>
+                            <h4 class="font-bold text-white text-base">"Unforgettable Experience!"</h4>
+                            <p class="text-xs text-slate-400">Sarah & James, 34 • Maldiv Orollari Tur</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Review 2 -->
+                <div class="glass-card rounded-3xl p-6 relative group overflow-hidden">
+                    <div class="relative h-64 rounded-2xl overflow-hidden mb-4">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" alt="Emily Review" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <button onclick="openVideoModal('https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1', 'Perfect Planning — Emily')" class="w-16 h-16 rounded-full bg-gold-accent text-navy-950 flex items-center justify-center shadow-gold-glow hover:scale-110 transition-transform">
+                                <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                        </div>
+                        <span class="absolute bottom-3 right-3 bg-navy-950/80 px-2.5 py-1 rounded-md text-[10px] font-bold text-slate-300">1:30</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="Avatar" class="w-12 h-12 rounded-full ring-2 ring-gold-accent object-cover">
+                        <div>
+                            <h4 class="font-bold text-white text-base">"Perfect Planning & Service"</h4>
+                            <p class="text-xs text-slate-400">Emily G., 29 • Shveysariya Tog' Turi</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
     </main>
 
-    <!-- 9. FOOTER -->
-    <footer class="bg-brand-dark text-gray-300 border-t border-white/10 pt-16 pb-8">
+    <!-- ========================================================================= -->
+    <!-- PAGE 2: TURLAR VA KATALOG (TOURS PAGE) -->
+    <!-- ========================================================================= -->
+    <main id="page-tours" class="page-view pt-28 pb-24">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 border-b border-gray-800 pb-12">
-                <!-- Brand Info -->
-                <div class="col-span-1 md:col-span-1">
-                    <div class="flex items-center mb-6">
-                        <svg class="h-8 w-8 text-brand-neon" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-                        </svg>
-                        <span class="ml-2 text-2xl font-bold text-white tracking-tight">Real Travel</span>
+            
+            <!-- Page Header -->
+            <div class="text-center mb-16">
+                <span class="text-xs uppercase tracking-[0.3em] text-gold-accent font-extrabold block mb-2">EXPLORE OUR EXCLUSIVE CATALOG</span>
+                <h1 class="text-4xl sm:text-6xl font-heading font-extrabold text-white">
+                    Barcha Sayohat <span class="gold-gradient-text font-serif italic">Paketlari</span>
+                </h1>
+                <p class="text-slate-400 max-w-xl mx-auto text-sm mt-3">Qidiruv filtri yordamida o'zingizga mos eng mukammal turni tanlang va soniyalar ichida band qiling.</p>
+            </div>
+
+            <!-- Dynamic Search & Filter Controls Sidebar Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                
+                <!-- Filter Sidebar -->
+                <div class="lg:col-span-1 glass-panel rounded-3xl p-6 h-fit border border-gold-accent/25">
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center justify-between border-b border-white/10 pb-4">
+                        <span>Filtrlash</span>
+                        <button onclick="resetFilters()" class="text-xs text-gold-accent hover:underline font-normal">Tozalash</button>
+                    </h3>
+
+                    <!-- Keyword Search -->
+                    <div class="mb-6">
+                        <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-2">Qidirish</label>
+                        <input type="text" id="catalogSearch" placeholder="Shahar, davlat yoki tur nomi..." oninput="applyCatalogFilters()" class="glass-input w-full px-3.5 py-2.5 rounded-xl text-sm focus:outline-none">
                     </div>
-                    <p class="text-sm text-gray-400 leading-relaxed mb-6">Sizning ishonchli hamkoringiz. Dunyoning istalgan nuqtasiga premium darajadagi sayohatlarni tashkillashtiramiz.</p>
-                    <div class="flex space-x-4">
-                        <!-- Social Icons -->
-                        <a href="#" class="text-gray-400 hover:text-brand-neon transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
-                        <a href="#" class="text-gray-400 hover:text-brand-neon transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.686c.223-.195-.054-.31-.35-.11l-6.4 4.02-2.76-.86c-.6-.188-.61-.6.126-.89l10.814-4.17c.5-.19.95.12.828.91z"/></svg></a>
-                        <a href="#" class="text-gray-400 hover:text-brand-neon transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+
+                    <!-- Category Filter -->
+                    <div class="mb-6">
+                        <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-2">Kategoriya</label>
+                        <div class="space-y-2 text-xs text-slate-300 font-semibold">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="catFilter" value="all" checked onchange="applyCatalogFilters()" class="accent-gold-accent">
+                                <span>Barchasi</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="catFilter" value="beach" onchange="applyCatalogFilters()" class="accent-gold-accent">
+                                <span>Plyaj & Tropik Orollar</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="catFilter" value="culture" onchange="applyCatalogFilters()" class="accent-gold-accent">
+                                <span>Tarix & Ekskursiya</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="catFilter" value="mountain" onchange="applyCatalogFilters()" class="accent-gold-accent">
+                                <span>Tog' & Chang'i Kurorti</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="catFilter" value="umrah" onchange="applyCatalogFilters()" class="accent-gold-accent">
+                                <span>Ziyorat Turlari</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Max Price Slider -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-2 text-xs font-bold text-slate-300">
+                            <span>Maksimal Narx:</span>
+                            <span id="priceValueText" class="text-gold-accent font-black">$10,000</span>
+                        </div>
+                        <input type="range" id="priceRange" min="300" max="10000" step="100" value="10000" oninput="applyCatalogFilters()" class="w-full accent-gold-accent cursor-pointer">
                     </div>
                 </div>
 
-                <!-- Links -->
-                <div>
-                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Biz Haqimizda</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="hover:text-brand-neon transition-colors">Kompaniya haqida</a></li>
-                        <li><a href="#" class="hover:text-brand-neon transition-colors">Hamkorlar</a></li>
-                        <li><a href="#" class="hover:text-brand-neon transition-colors">Litsenziyalar va sertifikatlar</a></li>
-                        <li><a href="#" class="hover:text-brand-neon transition-colors">Mijozlar bilan ishlash</a></li>
-                        <li><a href="#" class="hover:text-brand-neon transition-colors">Ommaviy oferta</a></li>
-                    </ul>
+                <!-- Catalog Tour Grid -->
+                <div class="lg:col-span-3">
+                    <div id="toursContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Tour Cards render dynamically via JavaScript -->
+                    </div>
                 </div>
 
-                <!-- Contacts -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 3: BIZ HAQIMIZDA (ABOUT US PAGE) -->
+    <!-- ========================================================================= -->
+    <main id="page-about" class="page-view pt-28 pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Hero About Header -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
                 <div>
-                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Aloqa</h4>
-                    <ul class="space-y-4 text-sm">
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 mr-3 text-brand-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                            <span>+998 (71) 123-45-67<br><span class="text-xs text-gray-500">Du-Yak 09:00 - 20:00</span></span>
-                        </li>
-                        <li class="flex items-start">
-                            <svg class="w-5 h-5 mr-3 text-brand-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span>Toshkent sh, Yunusobod tumani,<br>Amir Temur shoh ko'chasi 14A</span>
-                        </li>
-                    </ul>
+                    <span class="text-xs uppercase tracking-[0.3em] text-gold-accent font-extrabold block mb-3">ABOUT REAL TRAVEL AGENCY</span>
+                    <h1 class="text-4xl sm:text-6xl font-heading font-extrabold text-white leading-tight mb-6">
+                        Sayohat San'atini <br>
+                        <span class="gold-gradient-text font-serif italic">Yaratamiz</span>
+                    </h1>
+                    <p class="text-slate-300 font-light text-base sm:text-lg leading-relaxed mb-6">
+                        <strong class="text-gold-accent font-bold">OOO "REALGO TRAVEL"</strong> — O'zbekistonda faoliyat yurituvchi premium turizm agentligi bo'lib, har bir mijozimizga shaxsiy yondashuv, 100% xavfsizlik va unutilmas taassurotlarni ta'minlaydi.
+                    </p>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-8">
+                        Biz shunchaki chipta sotmaymiz — biz sizning orzuingizdagi ta'tilni eng mayda detallarigacha mukammal darajada rejalashtiramiz.
+                    </p>
+                    
+                    <div class="flex items-center space-x-6">
+                        <a href="tel:+998702277147" class="gold-gradient-btn px-6 py-3.5 rounded-full text-xs font-extrabold uppercase tracking-wider shadow-gold-sm">
+                            Bog'lanish
+                        </a>
+                        <div class="text-xs text-slate-400">
+                            <span class="block font-bold text-white">Xorazm viloyati</span>
+                            <span>Xonqa tumani rasmiy ofisi</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Payments -->
-                <div>
-                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">To'lov Turlari</h4>
-                    <p class="text-sm text-gray-400 mb-4">Quyidagi to'lov tizimlari orqali xavfsiz to'lovlarni qabul qilamiz:</p>
-                    <div class="flex flex-wrap gap-2">
-                        <!-- Pseudo badges for payments -->
-                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">UZCARD</div>
-                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">HUMO</div>
-                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">VISA</div>
-                        <div class="bg-white/10 px-3 py-1.5 rounded text-xs font-bold text-white tracking-widest border border-white/20">PAYME</div>
+                <div class="relative h-[480px] rounded-3xl overflow-hidden glass-card p-3 border border-gold-accent/30 shadow-2xl">
+                    <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1000&q=80" alt="About Real Travel" class="w-full h-full object-cover rounded-2xl">
+                    <div class="absolute bottom-6 left-6 right-6 glass-panel p-4 rounded-2xl border border-gold-accent/40">
+                        <p class="text-xs text-gold-accent font-bold uppercase tracking-widest">OOO "REALGO TRAVEL"</p>
+                        <p class="text-sm font-serif italic text-white">"Sizning orzuyingizdagi dunyo — biz bilan bir qadam masofada."</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Statistics Counters Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24">
+                <div class="glass-card rounded-3xl p-8 text-center border border-gold-accent/20">
+                    <span class="text-4xl sm:text-5xl font-black gold-gradient-text block mb-2">12+</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-300 font-bold">Yillik Tajriba</span>
+                </div>
+                <div class="glass-card rounded-3xl p-8 text-center border border-gold-accent/20">
+                    <span class="text-4xl sm:text-5xl font-black gold-gradient-text block mb-2">15,000+</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-300 font-bold">Mamnun Mijozlar</span>
+                </div>
+                <div class="glass-card rounded-3xl p-8 text-center border border-gold-accent/20">
+                    <span class="text-4xl sm:text-5xl font-black gold-gradient-text block mb-2">60+</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-300 font-bold">Dunyo Mamlakatlari</span>
+                </div>
+                <div class="glass-card rounded-3xl p-8 text-center border border-gold-accent/20">
+                    <span class="text-4xl sm:text-5xl font-black gold-gradient-text block mb-2">99.8%</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-300 font-bold">Ijobiy Baho</span>
+                </div>
+            </div>
+
+            <!-- Team Members Grid -->
+            <div class="mb-16 text-center">
+                <span class="text-xs uppercase tracking-[0.3em] text-gold-accent font-extrabold block mb-2">EXPERT TRAVEL CONCIERGES</span>
+                <h2 class="text-3xl sm:text-4xl font-heading font-extrabold text-white">Bizning Professional Jamoamiz</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="glass-card rounded-3xl p-6 text-center">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80" alt="Team" class="w-32 h-32 rounded-full mx-auto object-cover mb-4 ring-2 ring-gold-accent">
+                    <h3 class="font-bold text-white text-lg">Hikmatbek</h3>
+                    <p class="text-xs text-gold-accent font-bold uppercase tracking-wider mb-2">Bosh Direktor & Asoschi</p>
+                    <p class="text-xs text-slate-400">12 yillik turizm tajribasi va VIP mijozlar bilan ishlash bo'yicha ekspert.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 text-center">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80" alt="Team" class="w-32 h-32 rounded-full mx-auto object-cover mb-4 ring-2 ring-gold-accent">
+                    <h3 class="font-bold text-white text-lg">Dilnoza Olimova</h3>
+                    <p class="text-xs text-gold-accent font-bold uppercase tracking-wider mb-2">Viza & Bron Koordinatori</p>
+                    <p class="text-xs text-slate-400">Shengen, BAA va Osiyo vizalarini tezkor rasmiylashtirish mutaxassisi.</p>
+                </div>
+                <div class="glass-card rounded-3xl p-6 text-center">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&q=80" alt="Team" class="w-32 h-32 rounded-full mx-auto object-cover mb-4 ring-2 ring-gold-accent">
+                    <h3 class="font-bold text-white text-lg">Jasur Rahimov</h3>
+                    <p class="text-xs text-gold-accent font-bold uppercase tracking-wider mb-2">Ekskursiya Gidi</p>
+                    <p class="text-xs text-slate-400">Tarixiy va tog' turlari bo'yicha ko'p yillik professional gid.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- PAGE 4: ALOQA (CONTACT PAGE WITH MAP) -->
+    <!-- ========================================================================= -->
+    <main id="page-contact" class="page-view pt-28 pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-                <p>&copy; 2026 Real Travel Agency. Barcha huquqlar himoyalangan.</p>
-                <p class="mt-2 md:mt-0">Design & Developed by <a href="https://t.me/Hikmatdev">HikmatbekDev</a>.</p>
+            <!-- Contact Header -->
+            <div class="text-center mb-16">
+                <span class="text-xs uppercase tracking-[0.3em] text-gold-accent font-extrabold block mb-2">GET IN TOUCH WITH US</span>
+                <h1 class="text-4xl sm:text-6xl font-heading font-extrabold text-white">
+                    Biz Bilan <span class="gold-gradient-text font-serif italic">Bog'laning</span>
+                </h1>
+                <p class="text-slate-400 max-w-lg mx-auto text-sm mt-3">Savollaringiz bormi? Mutaxassislarimiz 24/7 aloqada.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                
+                <!-- Phone Card -->
+                <div class="glass-card rounded-3xl p-6 flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gold-accent/20 text-gold-accent flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Telefon / Phone</h4>
+                        <a href="tel:+998702277147" class="text-xl font-bold text-white hover:text-gold-accent transition-colors block">+998 70 227 71 47</a>
+                        <p class="text-xs text-slate-400 mt-1">Dushanba - Yakshanba: 09:00 - 20:00</p>
+                    </div>
+                </div>
+
+                <!-- Instagram Card -->
+                <div class="glass-card rounded-3xl p-6 flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gold-accent/20 text-gold-accent flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Instagram</h4>
+                        <a href="https://www.instagram.com/realtravel.uz/" target="_blank" rel="noopener noreferrer" class="text-xl font-bold text-white hover:text-gold-accent transition-colors block">@realtravel.uz</a>
+                        <p class="text-xs text-slate-400 mt-1">Yangiliklar va jonli lavhalar</p>
+                    </div>
+                </div>
+
+                <!-- Address Card -->
+                <div class="glass-card rounded-3xl p-6 flex items-start space-x-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gold-accent/20 text-gold-accent flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-1">Manzil / Address</h4>
+                        <p class="text-base font-bold text-white">Xorazm viloyati, Xonqa tumani</p>
+                        <p class="text-xs text-slate-400 mt-1">OOO "REALGO TRAVEL"</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Contact Form & Interactive Map Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Contact Form -->
+                <div class="glass-panel rounded-3xl p-8 border border-gold-accent/30">
+                    <h3 class="text-2xl font-bold text-white mb-6">Murojaat Yuborish</h3>
+                    <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-2">Ismingiz</label>
+                            <input type="text" required placeholder="Masalan: Sardor Rahimov" class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-2">Telefon Raqamingiz</label>
+                            <input type="tel" required placeholder="+998 90 123 45 67" class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-2">Xabar Yoki Savolingiz</label>
+                            <textarea rows="4" placeholder="Sayohat yuzasidan savolingizni yozing..." class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="gold-gradient-btn w-full py-4 rounded-xl text-xs uppercase tracking-wider font-extrabold shadow-gold-sm">
+                            YUBORISH (BEPUL MASLAHAT)
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Interactive Leaflet Map Widget -->
+                <div class="glass-panel rounded-3xl p-4 border border-gold-accent/30 flex flex-col justify-between">
+                    <div class="mb-4 px-4 pt-2">
+                        <h3 class="text-xl font-bold text-white">Bizning Joylashuvimiz</h3>
+                        <p class="text-xs text-slate-400">Xorazm viloyati, Xonqa tumani rasmiy ofisi</p>
+                    </div>
+                    <div id="map" class="shadow-inner"></div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- SLEEK FOOTER (DARK BLUE + GOLD ACCENT) -->
+    <!-- ========================================================================= -->
+    <footer class="bg-navy-950 text-slate-300 border-t border-gold-accent/20 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16 border-b border-white/10 pb-12">
+                
+                <!-- Column 1: Brand Info -->
+                <div class="md:col-span-1">
+                    <a href="#home" onclick="navigateTo('home'); return false;" class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-gold-accent">
+                            <img src="/logo.jpg" alt="Logo" class="w-full h-full object-cover">
+                        </div>
+                        <span class="font-heading text-2xl font-extrabold text-white">REAL <span class="gold-gradient-text font-serif italic">Travel</span></span>
+                    </a>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                        Sizning ishonchli premium turizm hamkoringiz. OOO "REALGO TRAVEL" bilan dunyoni eng lyuks sharoitlarda kashf eting.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="https://www.instagram.com/realtravel.uz/" target="_blank" class="w-10 h-10 rounded-xl glass-panel text-gold-accent hover:bg-gold-accent hover:text-navy-950 flex items-center justify-center transition-all duration-300">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        </a>
+                        <a href="tel:+998702277147" class="w-10 h-10 rounded-xl glass-panel text-gold-accent hover:bg-gold-accent hover:text-navy-950 flex items-center justify-center transition-all duration-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-[0.2em] font-extrabold text-gold-accent mb-6">Navigatsiya</h4>
+                    <ul class="space-y-3 text-xs text-slate-300 font-semibold">
+                        <li><a href="#home" onclick="navigateTo('home'); return false;" class="hover:text-gold-accent transition-colors">Bosh sahifa</a></li>
+                        <li><a href="#tours" onclick="navigateTo('tours'); return false;" class="hover:text-gold-accent transition-colors">Turlar & Katalog</a></li>
+                        <li><a href="#about" onclick="navigateTo('about'); return false;" class="hover:text-gold-accent transition-colors">Biz Haqimizda</a></li>
+                        <li><a href="#contact" onclick="navigateTo('contact'); return false;" class="hover:text-gold-accent transition-colors">Aloqa</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact Info -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-[0.2em] font-extrabold text-gold-accent mb-6">Aloqa</h4>
+                    <ul class="space-y-3 text-xs text-slate-300">
+                        <li class="flex items-center space-x-2">
+                            <span class="text-gold-accent font-bold">Tel:</span>
+                            <a href="tel:+998702277147" class="hover:text-gold-accent transition-colors font-bold">+998 70 227 71 47</a>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <span class="text-gold-accent font-bold">Insta:</span>
+                            <a href="https://www.instagram.com/realtravel.uz/" target="_blank" class="hover:text-gold-accent transition-colors">@realtravel.uz</a>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <span class="text-gold-accent font-bold shrink-0">Manzil:</span>
+                            <span>Xorazm viloyati, Xonqa tumani</span>
+                        </li>
+                        <li class="text-slate-500 pt-1">OOO "REALGO TRAVEL"</li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Newsletter -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-[0.2em] font-extrabold text-gold-accent mb-6">Newsletter</h4>
+                    <p class="text-xs text-slate-400 mb-4">Eng qaynoq va chegirmali turlardan birinchilardan bo'lib xabardor bo'ling.</p>
+                    <form onsubmit="handleNewsletter(event)" class="space-y-2">
+                        <input type="email" required placeholder="Email manzilingiz..." class="glass-input w-full px-4 py-2.5 rounded-xl text-xs focus:outline-none">
+                        <button type="submit" class="gold-gradient-btn w-full py-2.5 rounded-xl text-xs uppercase font-extrabold">Obuna Bo'lish</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Footer Bottom Bar -->
+            <div class="flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 font-medium">
+                <p>&copy; 2026 OOO "REALGO TRAVEL". Barcha huquqlar himoyalangan.</p>
+                <p class="mt-2 sm:mt-0">Design & Developed by <a href="https://t.me/Hikmatdeb" target="_blank" class="text-gold-accent font-bold hover:underline">Hikmatbek</a>.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Interactive Scripts -->
+    <!-- ========================================================================= -->
+    <!-- MODALS: VIDEO MODAL & BOOKING MODAL -->
+    <!-- ========================================================================= -->
+
+    <!-- VIDEO PLAYER MODAL -->
+    <div id="videoModal" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="relative w-full max-w-4xl glass-panel rounded-3xl overflow-hidden border border-gold-accent/40 shadow-2xl">
+            <div class="flex items-center justify-between p-4 border-b border-white/10 bg-navy-950">
+                <h3 id="videoModalTitle" class="text-sm font-bold text-gold-accent uppercase tracking-wider">Cinematic Travel Preview</h3>
+                <button onclick="closeVideoModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="relative aspect-video w-full bg-black">
+                <iframe id="videoModalFrame" class="w-full h-full" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKING FORM MODAL -->
+    <div id="bookingModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8 border border-gold-accent/40 shadow-2xl animate-fade-in">
+            <button onclick="closeBookingModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <span class="text-[10px] uppercase tracking-[0.2em] text-gold-accent font-extrabold block mb-1">REAL TRAVEL RESERVATION</span>
+            <h3 id="bookingTourTitle" class="text-2xl font-bold text-white mb-6">Tur Band Qilish</h3>
+
+            <form onsubmit="handleModalBooking(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-1.5">Ism-Familiyangiz</label>
+                    <input type="text" required placeholder="Masalan: Sardor Alimov" class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-1.5">Telefon Raqam</label>
+                    <input type="tel" required placeholder="+998 90 123 45 67" class="glass-input w-full px-4 py-3 rounded-xl text-sm focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-slate-300 font-bold mb-1.5">Sayohatchilar Soni</label>
+                    <select class="glass-input glass-select w-full px-4 py-3 rounded-xl text-sm focus:outline-none">
+                        <option value="1" class="bg-navy-900">1 kishi</option>
+                        <option value="2" selected class="bg-navy-900">2 kishi (Juftlik)</option>
+                        <option value="3" class="bg-navy-900">3 kishi</option>
+                        <option value="4" class="bg-navy-900">Oila / Guruh (4+ kishi)</option>
+                    </select>
+                </div>
+                <button type="submit" class="gold-gradient-btn w-full py-3.5 rounded-xl text-xs uppercase font-extrabold tracking-wider shadow-gold-sm mt-4">
+                    TASTIQ LASH VA BAND QILISH
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-6 right-6 z-[120] hidden glass-panel px-6 py-4 rounded-2xl border border-gold-accent text-white shadow-2xl text-sm font-bold flex items-center space-x-3">
+        <span class="text-gold-accent text-lg">✓</span>
+        <span id="toastMessage">Xabar muvaffaqiyatli yuborildi!</span>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+    <!-- Application Script Logic -->
     <script>
-        // Simple JS for Mobile Menu Toggle and Navbar Scroll Effect
-        document.addEventListener('DOMContentLoaded', () => {
-            const btn = document.getElementById('mobile-menu-btn');
-            const menu = document.getElementById('mobile-menu');
-            const navbar = document.getElementById('navbar');
+        // Sample Catalog Data
+        const CATALOG_TOURS = [
+            {
+                id: "1",
+                name: "Maldiv Orollari Luxury Villa",
+                category: "beach",
+                location: "Maldiv Respublikasi",
+                price: 2400,
+                rating: "5.0",
+                duration: "7 Kun / 6 Kecha",
+                image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&q=80",
+                desc: "Okean ustidagi lyuks villa, all-inclusive 5 yulduzli xizmat va shaxsiy gid."
+            },
+            {
+                id: "2",
+                name: "Bali Tropik Mo'jizasi",
+                category: "beach",
+                location: "Indoneziya",
+                price: 1850,
+                rating: "4.9",
+                duration: "10 Kun / 9 Kecha",
+                image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&q=80",
+                desc: "Ubud va Seminyak sohillari, sharsharalar va tropik dam olish maskanlari."
+            },
+            {
+                id: "3",
+                name: "Istanbul & Kapadokiya Tarixiy Turi",
+                category: "culture",
+                location: "Turkiya",
+                price: 750,
+                rating: "4.8",
+                duration: "6 Kun / 5 Kecha",
+                image: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=800&q=80",
+                desc: "Boshporus bo'ylab sayohat, havo sharlarida uchish va qadimiy obidalar."
+            },
+            {
+                id: "4",
+                name: "Swiss Alps Ski & Resort",
+                category: "mountain",
+                location: "Shveysariya",
+                price: 4100,
+                rating: "5.0",
+                duration: "8 Kun / 7 Kecha",
+                image: "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?w=800&q=80",
+                desc: "Alp tog'laridagi chang'i kurorti va premium shart-sharoitlar."
+            },
+            {
+                id: "5",
+                name: "Umra Ziyorat Lux Paket",
+                category: "umrah",
+                location: "Makka va Madina",
+                price: 1350,
+                rating: "5.0",
+                duration: "14 Kun / 13 Kecha",
+                image: "https://images.unsplash.com/photo-1565552643954-1e548cf5f420?w=800&q=80",
+                desc: "Harami Sharifga yaqin 5 yulduzli mehmonxonalar, tajribali ellikboshi va qulay transport."
+            },
+            {
+                id: "6",
+                name: "Dubay Penthouse & Safari",
+                category: "beach",
+                location: "BAA",
+                price: 1200,
+                rating: "4.9",
+                duration: "5 Kun / 4 Kecha",
+                image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80",
+                desc: "Burj Khalifa atrofi, sahro safari va yaxtada tushlik."
+            }
+        ];
 
-            btn.addEventListener('click', () => {
-                menu.classList.toggle('hidden');
-            });
+        // Global State & Navigation
+        let activePage = "home";
 
-            window.addEventListener('scroll', () => {
-                if(window.scrollY > 10) {
-                    navbar.classList.add('bg-white/95', 'backdrop-blur-sm', 'shadow-md');
-                    navbar.classList.remove('bg-transparent', 'text-white');
+        function navigateTo(pageId) {
+            activePage = pageId;
+            document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active-page'));
+            
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.add('active-page');
+            }
+
+            // Update navbar highlights
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('text-gold-accent');
                 } else {
-                    navbar.classList.remove('bg-white/95', 'backdrop-blur-sm', 'shadow-md');
+                    link.classList.remove('text-gold-accent');
                 }
             });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Initialize map if navigating to contact page
+            if (pageId === 'contact') {
+                setTimeout(initMap, 200);
+            }
+        }
+
+        // Mobile drawer toggle
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', () => {
+            const drawer = document.getElementById('mobileDrawer');
+            drawer.classList.toggle('hidden');
+        });
+
+        function closeMobileMenu() {
+            document.getElementById('mobileDrawer')?.classList.add('hidden');
+        }
+
+        // Render Catalog Tours
+        function renderCatalogTours(tours) {
+            const container = document.getElementById('toursContainer');
+            if (!container) return;
+
+            if (tours.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 glass-panel p-12 rounded-3xl text-center">
+                        <p class="text-slate-400 text-sm">Afsuski, kiritilgan parametrlar bo'yicha tur topilmadi.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tours.map(tour => `
+                <div class="glass-card rounded-3xl overflow-hidden group flex flex-col justify-between">
+                    <div>
+                        <div class="relative h-60 overflow-hidden">
+                            <img src="${tour.image}" alt="${tour.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <span class="absolute top-3 right-3 bg-navy-950/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-gold-accent border border-gold-accent/30">${tour.duration}</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-white group-hover:text-gold-accent transition-colors">${tour.name}</h3>
+                                <span class="text-xs font-bold text-gold-accent">★ ${tour.rating}</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-4">${tour.desc}</p>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-6 pt-2 flex items-center justify-between border-t border-white/10">
+                        <div>
+                            <span class="text-[10px] uppercase text-slate-400 font-bold block">Narxi</span>
+                            <span class="text-xl font-black text-gold-accent">$${tour.price.toLocaleString()}</span>
+                        </div>
+                        <button onclick="openBookingModal('${tour.name}')" class="gold-gradient-btn px-4 py-2 rounded-xl text-xs uppercase font-extrabold">Band Qilish</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function applyCatalogFilters() {
+            const searchVal = document.getElementById('catalogSearch')?.value.toLowerCase() || '';
+            const catVal = document.querySelector('input[name="catFilter"]:checked')?.value || 'all';
+            const priceVal = parseInt(document.getElementById('priceRange')?.value || '10000');
+
+            document.getElementById('priceValueText').textContent = `$${priceVal.toLocaleString()}`;
+
+            const filtered = CATALOG_TOURS.filter(tour => {
+                const matchesSearch = tour.name.toLowerCase().includes(searchVal) || tour.location.toLowerCase().includes(searchVal);
+                const matchesCat = catVal === 'all' || tour.category === catVal;
+                const matchesPrice = tour.price <= priceVal;
+                return matchesSearch && matchesCat && matchesPrice;
+            });
+
+            renderCatalogTours(filtered);
+        }
+
+        function resetFilters() {
+            if (document.getElementById('catalogSearch')) document.getElementById('catalogSearch').value = '';
+            const allRadio = document.querySelector('input[name="catFilter"][value="all"]');
+            if (allRadio) allRadio.checked = true;
+            if (document.getElementById('priceRange')) document.getElementById('priceRange').value = 10000;
+            applyCatalogFilters();
+        }
+
+        // Hero Search handler
+        function handleHeroSearch(e) {
+            e.preventDefault();
+            navigateTo('tours');
+            const dest = document.getElementById('heroDestination')?.value || '';
+            if (dest && document.getElementById('catalogSearch')) {
+                document.getElementById('catalogSearch').value = dest;
+                applyCatalogFilters();
+            }
+        }
+
+        // Video Modal System
+        function openVideoModal(url, title) {
+            const modal = document.getElementById('videoModal');
+            const frame = document.getElementById('videoModalFrame');
+            const titleEl = document.getElementById('videoModalTitle');
+            if (frame) frame.src = url;
+            if (titleEl) titleEl.textContent = title || 'Cinematic Real Travel Showcase';
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const frame = document.getElementById('videoModalFrame');
+            if (frame) frame.src = '';
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // Booking Modal System
+        function openBookingModal(tourName) {
+            const modal = document.getElementById('bookingModal');
+            const title = document.getElementById('bookingTourTitle');
+            if (title) title.textContent = `${tourName} — Band Qilish`;
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('bookingModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function handleModalBooking(e) {
+            e.preventDefault();
+            closeBookingModal();
+            showToast("Sizning bandligingiz muvaffaqiyatli qabul qilindi! Tez orada menejerimiz bog'lanadi.");
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast("Murojaatingiz yuborildi! Tez orada siz bilan bog'lanamiz.");
+        }
+
+        function handleNewsletter(e) {
+            e.preventDefault();
+            e.target.reset();
+            showToast("Email muvaffaqiyatli obuna qilindi!");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            if (toastMsg) toastMsg.textContent = msg;
+            if (toast) {
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 4000);
+            }
+        }
+
+        // Multi-language switch
+        function setLanguage(lang) {
+            ['uz', 'ru', 'en'].forEach(l => {
+                const btn = document.getElementById(`lang-${l}`);
+                if (btn) {
+                    if (l === lang) {
+                        btn.className = 'lang-btn px-2.5 py-1 rounded-lg transition-all active-lang bg-gold-accent text-navy-950 font-bold';
+                    } else {
+                        btn.className = 'lang-btn px-2.5 py-1 rounded-lg text-slate-300 hover:text-white transition-all font-bold';
+                    }
+                }
+                document.querySelectorAll(`.lang-${l}`).forEach(el => el.classList.remove('hidden'));
+                ['uz', 'ru', 'en'].filter(x => x !== lang).forEach(other => {
+                    document.querySelectorAll(`.lang-${other}`).forEach(el => el.classList.add('hidden'));
+                });
+            });
+        }
+
+        // Initialize Map in Khonqa, Khorezm
+        let mapInitialized = false;
+        function initMap() {
+            if (mapInitialized) return;
+            // Coordinates for Khonqa, Khorezm region
+            const lat = 41.4812;
+            const lng = 60.7717;
+
+            const map = L.map('map').setView([lat, lng], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
+
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup('<b>OOO "REALGO TRAVEL"</b><br>Xorazm viloyati, Xonqa tumani')
+                .openPopup();
+
+            mapInitialized = true;
+        }
+
+        // Initialize page state
+        document.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (['home', 'tours', 'about', 'contact'].includes(hash)) {
+                navigateTo(hash);
+            } else {
+                navigateTo('home');
+            }
+            renderCatalogTours(CATALOG_TOURS);
         });
     </script>
 </body>

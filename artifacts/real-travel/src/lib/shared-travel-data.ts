@@ -17,7 +17,7 @@ export type SharedTour = {
   location: string;
   region: RegionKey;
   price: number;
-  /** Price in so'm — what customers are actually charged via Paylov. */
+  /** Price in so'm — what customers are actually charged. */
   priceUzs: number;
   duration: number;
   description: string;
@@ -315,141 +315,57 @@ function orderToRow(order: SharedOrder): Record<string, unknown> {
  * `tours` / `orders` tables; writes upsert the provided array and delete any
  * rows no longer present. A realtime subscription keeps every open tab in sync.
  */
-export const DEFAULT_TOURS: SharedTour[] = [
-  {
-    id: "t_turkey_2026",
-    slug: "turkiya-antaliya-istanbul",
-    name: "Turkiya: Antaliya & Istanbul",
-    location: "Antaliya, Istanbul (Turkiya)",
-    region: "europe",
-    price: 360,
-    priceUzs: 4500000,
-    duration: 5,
-    description: "Istanbulning tarixiy obidalari hamda Antaliyaning eng sara 5 yulduzli kurortlarida unutilmas hordiq chiqarish imkoniyati.",
-    image: "/images/tour-turkey.jpg",
-    highlights: ["5★ Mehmonxonada yashash (All Inclusive)", "Istanbul bo'ylab ekskursiya va Boshpor bo'g'ozi krossoveri", "Antaliya sohillari va sharsharalar"],
-    included: ["Aviachiptalar (Toshkent-Istanbul-Antaliya)", "5★ Mehmonxona va ovqatlanish", "Transfer xizmatlari", "Tibbiy sug'urta"],
-    excluded: ["Shaxsiy xarajatlar", "Qo'shimcha ekskursiyalar"],
-    gallery: [
-      "/images/tour-turkey.jpg"
-    ],
-    itinerary: [
-      { day: 1, title: "Istanbulga yetib kelish", text: "Aeroportda kutib olish, mehmonxonaga joylashish va tungi Istanbul sayri." },
-      { day: 2, title: "Tarixiy Obidalar", text: "Sultonahmet, Moviy Masjid va Boshpor bo'ylab katerda sayohat." },
-      { day: 3, title: "Antaliyaga uchish", text: "Antaliya kurortiga joylashish va dengiz bo'yida dam olish." }
-    ],
-    groupSize: 15
-  },
-  {
-    id: "t_egypt_2026",
-    slug: "misr-sharm-el-sheyx",
-    name: "Misr: Sharm el-Sheyx & Piramidalar",
-    location: "Sharm el-Sheyx, Qohira (Misr)",
-    region: "africa",
-    price: 460,
-    priceUzs: 5800000,
-    duration: 6,
-    description: "Qizil dengizning marjon qoyalari, dayving hamda Qohiraning qadimiy Piramidalariga sehrli sayohat.",
-    image: "/images/tour-egypt.jpg",
-    highlights: ["Qizil dengizda dayving va snorkeling", "Giza Piramidalari va Sfinks sayri", "Sahro safarisi hamda Badaviy kechasi"],
-    included: ["To'g'ridan-to'g'ri aviachipta", "All Inclusive Mehmonxona", "Transfer va gid xizmati"],
-    excluded: ["Viza yig'imi", "Shaxsiy xarajatlar"],
-    gallery: [
-      "/images/tour-egypt.jpg"
-    ],
-    itinerary: [
-      { day: 1, title: "Sharm el-Sheyxga kelish", text: "Aeroportda kutib olish va lyuks mehmonxonaga joylashish." },
-      { day: 2, title: "Dengiz sayri", text: "Katerda Ras Muhammad milliy parkiga sayohat va snorkeling." },
-      { day: 3, title: "Sahro Safarisi", text: "Kvadrotsikllarda sahro bo'ylab poyga va badaviylar shousi." }
-    ],
-    groupSize: 20
-  },
-  {
-    id: "t_dubai_2026",
-    slug: "dubay-sehrli-shahar",
-    name: "BAA: Dubay & Abu Dabi Premium",
-    location: "Dubay, Abu Dabi (BAA)",
-    region: "asia",
-    price: 440,
-    priceUzs: 5500000,
-    duration: 5,
-    description: "Burj Xalifa, Kelajak Muzeyi va Abu Dabi Shayx Zayd Masjidi — zamonaviy mo'jizalar markaziga sayohat.",
-    image: "/images/tour-dubai.jpg",
-    highlights: ["Burj Xalifa kuzatuv maydonchasi", "Kelajak Muzeyi (Museum of the Future)", "Shayx Zayd Oq Masjidi (Abu Dabi)"],
-    included: ["Aviachiptalar", "4★ Mehmonxona va nonushta", "Ekskursiya va transferlar"],
-    excluded: ["Tushlik va kechki ovqat", "Shaxsiy shopping"],
-    gallery: [
-      "/images/tour-dubai.jpg"
-    ],
-    itinerary: [
-      { day: 1, title: "Dubayga parvoz", text: "Aeroportdan kutib olish va mehmonxonaga joylashish." },
-      { day: 2, title: "Zamonaviy Dubay", text: "Burj Xalifa, Dubai Mall va musiqali favvoralar shousi." }
-    ],
-    groupSize: 12
-  },
-  {
-    id: "t_georgia_2026",
-    slug: "gruziya-tbilisi-batumi",
-    name: "Gruziya: Tbilisi & Batumi Kavkaz Turi",
-    location: "Tbilisi, Batumi (Gruziya)",
-    region: "europe",
-    price: 300,
-    priceUzs: 3800000,
-    duration: 5,
-    description: "Kavkaz bag'ridagi qadimiy Tbilisi, Kazbegi tog'lari va Qora dengiz bo'yidagi Batumi shahrida mehmondo'stlik.",
-    image: "/images/tour-georgia.jpg",
-    highlights: ["Tbilisi qadimgi shahar va Narikala qal'asi", "Kazbegi tog'lariga kanat yo'li sayri", "Batumi dengiz bo'yi bulvari"],
-    included: ["To'g'ridan-to'g'ri parvoz", "Mehmonxona va nonushtalar", "Gid xizmati va barcha transferlar"],
-    excluded: ["Tushlik va milliy taomlar restorani"],
-    gallery: [
-      "/images/tour-georgia.jpg"
-    ],
-    itinerary: [
-      { day: 1, title: "Tbilisiga xush kelibsiz", text: "Aeroportda kutib olish, milliy taomlar bilan kutib olish." },
-      { day: 2, title: "Kazbegi Turi", text: "Kavkaz tog'lari bag'ridagi Gergeti cherkoviga sayohat." }
-    ],
-    groupSize: 18
-  },
-  {
-    id: "t_phuket_2026",
-    slug: "tailand-phuket-orollari",
-    name: "Tailand: Phuket Orollari & Tropik Janna",
-    location: "Phuket, Phi Phi Orollari (Tailand)",
-    region: "asia",
-    price: 470,
-    priceUzs: 5900000,
-    duration: 7,
-    description: "Phi Phi tropik orollari, zangori laguna, fil va bumeranglar bog'ida ekzotik ta'til.",
-    image: "/images/tour-thailand.jpg",
-    highlights: ["Phi Phi va Maya Bay orollariga speedboat sayri", "Patong va Karon tropik plyajlari", "Katta Budda ibodatxonasi"],
-    included: ["Aviachiptalar", "4★ Tropik Mehmonxona", "Nonushta va orollar bo'ylab transferlar"],
-    excluded: ["Milliy park kirish badallari", "Shaxsiy xarajatlar"],
-    gallery: [
-      "/images/tour-thailand.jpg"
-    ],
-    itinerary: [
-      { day: 1, title: "Phuketga yetib kelish", text: "Aeroportdan transfer va plyaj boyidagi mehmonxonaga joylashuv." },
-      { day: 2, title: "Phi Phi Orollari", text: "Tezkor katerda orollarga ekskursiya va firuza suvda suzish." }
-    ],
-    groupSize: 15
-  }
-];
-
-export const DEFAULT_TOUR_DATES: TourDate[] = [
-  { id: "td_turkey_1", tourId: "t_turkey_2026", departureDate: "2026-08-10", seatsTotal: 15 },
-  { id: "td_turkey_2", tourId: "t_turkey_2026", departureDate: "2026-08-20", seatsTotal: 12 },
-  { id: "td_egypt_1", tourId: "t_egypt_2026", departureDate: "2026-08-15", seatsTotal: 20 },
-  { id: "td_dubai_1", tourId: "t_dubai_2026", departureDate: "2026-08-12", seatsTotal: 10 },
-  { id: "td_georgia_1", tourId: "t_georgia_2026", departureDate: "2026-08-18", seatsTotal: 18 },
-  { id: "td_phuket_1", tourId: "t_phuket_2026", departureDate: "2026-08-25", seatsTotal: 15 }
-];
-
 export function useSharedTravelData() {
-  const [tours, setTours] = useState<SharedTour[]>(DEFAULT_TOURS);
-  const [tourDates, setTourDates] = useState<TourDate[]>(DEFAULT_TOUR_DATES);
+  const [tours, setTours] = useState<SharedTour[]>([]);
+  const [tourDates, setTourDates] = useState<TourDate[]>([]);
   const [orders, setOrders] = useState<SharedOrder[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [homeGallery, setHomeGallery] = useState<string[]>([]);
   const [depositPercent, setDepositPercent] = useState(30);
+  const [loading, setLoading] = useState(true);
+
+  // Re-fetch everything
+  const fetchAll = useCallback(async () => {
+    try {
+      const [toursRes, datesRes, ordersRes, settingsRes, reviewsRes] = await Promise.all([
+        supabase.from("tours").select("*").order("created_at", { ascending: true }),
+        supabase.from("tour_dates").select("*").order("departure_date", { ascending: true }),
+        supabase.from("orders").select("*").order("date", { ascending: false }),
+        supabase.from("settings").select("*").in("key", ["deposit_percent", "home_gallery"]),
+        supabase.from("reviews").select("*").order("sort_order", { ascending: true })
+      ]);
+
+      if (toursRes.error) throw toursRes.error;
+      if (datesRes.error) throw datesRes.error;
+      if (ordersRes.error) throw ordersRes.error;
+      if (settingsRes.error) throw settingsRes.error;
+      if (reviewsRes.error) throw reviewsRes.error;
+
+      setTours(toursRes.data.map(rowToTour));
+      setTourDates(datesRes.data.map(rowToTourDate));
+      setOrders(ordersRes.data.map(rowToOrder));
+      
+      const depositSetting = settingsRes.data.find(s => s.key === "deposit_percent");
+      if (depositSetting) {
+        setDepositPercent(Number(depositSetting.value) || 30);
+      }
+      
+      const gallerySetting = settingsRes.data.find(s => s.key === "home_gallery");
+      if (gallerySetting) {
+        try {
+          setHomeGallery(JSON.parse(gallerySetting.value || "[]"));
+        } catch {
+          setHomeGallery([]);
+        }
+      }
+
+      setReviews(reviewsRes.data.map(rowToReview));
+    } catch (err) {
+      console.error("Data load error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -460,7 +376,7 @@ export function useSharedTravelData() {
         supabase.from("tours").select("*").order("created_at", { ascending: true }),
         supabase.from("tour_dates").select("*").order("departure_date", { ascending: true }),
         supabase.from("orders").select("*").order("date", { ascending: false }),
-        supabase.from("settings").select("*").eq("key", "deposit_percent").limit(1),
+        supabase.from("settings").select("*").in("key", ["deposit_percent", "home_gallery"]),
         supabase.from("reviews").select("*").order("sort_order", { ascending: true })
       ]);
 
@@ -468,18 +384,35 @@ export function useSharedTravelData() {
 
       const rawTours = ((toursRes.data as TourRow[] | null) ?? []).map(rowToTour);
       const validDbTours = rawTours.filter((t) => t.priceUzs > 50000);
-      const finalTours = validDbTours.length >= 5 ? validDbTours : DEFAULT_TOURS;
+      const finalTours = validDbTours;
 
       const rawDates = ((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate);
-      const finalDates = rawDates.length >= 5 ? rawDates : DEFAULT_TOUR_DATES;
+      const finalDates = rawDates;
+
+      const rawOrders = ((ordersRes.data as OrderRow[] | null) ?? []).map(rowToOrder);
+
+      let currentDeposit = 30;
+      let currentGallery: string[] = [];
+      if (settingsRes.data) {
+        const d = settingsRes.data.find((s: any) => s.key === "deposit_percent");
+        if (d && d.value) currentDeposit = Number(d.value) || 30;
+        
+        const g = settingsRes.data.find((s: any) => s.key === "home_gallery");
+        if (g && g.value) {
+          try {
+            currentGallery = JSON.parse(g.value);
+          } catch {}
+        }
+      }
+
+      const currentReviews = ((reviewsRes.data as ReviewRow[] | null) ?? []).map(rowToReview);
 
       setTours(finalTours);
       setTourDates(finalDates);
-      setOrders(((ordersRes.data as OrderRow[] | null) ?? []).map(rowToOrder));
-      setReviews(((reviewsRes.data as ReviewRow[] | null) ?? []).map(rowToReview));
-
-      const percent = Number((settingsRes.data as { value: string }[] | null)?.[0]?.value);
-      if (Number.isFinite(percent) && percent > 0) setDepositPercent(Math.round(percent));
+      setOrders(rawOrders);
+      setDepositPercent(currentDeposit);
+      setHomeGallery(currentGallery);
+      setReviews(currentReviews);
 
       setIsLoaded(true);
     };
@@ -623,6 +556,16 @@ export function useSharedTravelData() {
     }
   };
 
+  /** Saves the home gallery. Admin only. */
+  const saveHomeGallery = async (gallery: string[]) => {
+    setHomeGallery(gallery);
+    const { error } = await supabase.from("settings").upsert({
+      key: "home_gallery",
+      value: JSON.stringify(gallery)
+    });
+    if (error) throw new Error(error.message);
+  };
+
   const createOrder = async (order: SharedOrder) => {
     const normalized = normalizeOrder(order, tours, 0);
     setOrders((prev) => [normalized, ...prev]);
@@ -664,6 +607,8 @@ export function useSharedTravelData() {
     orders,
     reviews,
     saveReviews,
+    homeGallery,
+    saveHomeGallery,
     depositPercent,
     saveTours,
     saveTourDates,
