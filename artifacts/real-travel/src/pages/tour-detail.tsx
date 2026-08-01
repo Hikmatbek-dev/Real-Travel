@@ -116,7 +116,7 @@ export function TourDetailPage() {
                 </div>
                 <div className="pb-8 pt-2">
                   <h3 className="text-xl font-medium text-slate-900 mb-3">{item.title}</h3>
-                  <p className="text-slate-600 leading-relaxed">{item.text || item.desc}</p>
+                  <p className="text-slate-600 leading-relaxed">{item.text}</p>
                 </div>
               </div>
             ))}
