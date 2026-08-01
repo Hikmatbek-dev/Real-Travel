@@ -290,7 +290,7 @@ export function HomePage() {
                 ))}
               </div>
               <p className="text-slate-600 text-lg leading-relaxed mb-8 italic">"{review.text}"</p>
-              <div className="font-semibold text-slate-900 text-lg">{review.name}</div>
+              <div className="font-semibold text-slate-900 text-lg">{review.author}</div>
             </div>
           ))}
         </div>
