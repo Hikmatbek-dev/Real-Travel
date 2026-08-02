@@ -63,10 +63,17 @@ export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: 
 
       if (response.ok && data.checkout_url) {
         window.location.href = data.checkout_url;
+      } else if (data.error === "too_many_orders") {
+        setError("Bu raqamdan juda ko'p so'rov yuborildi. Birozdan so'ng urinib ko'ring yoki bizga qo'ng'iroq qiling.");
+        setIsLoading(false);
       } else {
-        setError(data.error === "too_many_orders"
-          ? "Bu raqamdan juda ko'p so'rov yuborildi. Birozdan so'ng urinib ko'ring yoki bizga qo'ng'iroq qiling."
-          : "To'lov havolasini olishda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
+        // Temporary: surface the server reason so payment issues can be diagnosed.
+        const reason = data?.detail
+          ? (typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail))
+          : data?.error;
+        setError(
+          `To'lov havolasini olishda xatolik yuz berdi.${reason ? ` [${String(reason).slice(0, 400)}]` : ""}`
+        );
         setIsLoading(false);
       }
     } catch (err) {
