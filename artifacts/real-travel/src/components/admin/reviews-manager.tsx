@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Plus, Quote, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,6 +43,15 @@ export function ReviewsManager({
 
   const remove = (id: string) => setItems((prev) => prev.filter((review) => review.id !== id));
 
+  const move = (idx: number, dir: -1 | 1) =>
+    setItems((prev) => {
+      const next = [...prev];
+      const j = idx + dir;
+      if (j < 0 || j >= next.length) return prev;
+      [next[idx], next[j]] = [next[j], next[idx]];
+      return next;
+    });
+
   const save = async () => {
     setIsSaving(true);
     try {
@@ -61,12 +70,14 @@ export function ReviewsManager({
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-900">Sharhlar</h2>
-          <p className="text-sm text-slate-500">Faqat ism va sharх. Yozib bo'lgach "Saqlash"ni bosing.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Sharhlar</h2>
+          <p className="text-sm text-slate-500">
+            Bosh sahifada shu tartibda ko'rinadi. Yozib bo'lgach "Saqlash"ni bosing.
+          </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
           <Button variant="outline" onClick={add}>
             <Plus className="mr-2 h-4 w-4" /> Qo'shish
           </Button>
@@ -82,39 +93,78 @@ export function ReviewsManager({
         </div>
       ) : (
         <div className="space-y-4">
-          {items.map((review) => (
-            <div key={review.id} className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="grid gap-2">
-                <Label className="text-slate-700">Ism</Label>
-                <Input
-                  value={review.author}
-                  placeholder="Masalan: Sarvar"
-                  onChange={(e) => update(review.id, { author: e.target.value })}
-                  className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
-                />
+          {items.map((review, idx) => (
+            <div
+              key={review.id}
+              className="relative rounded-2xl border border-slate-200 bg-white p-5 pl-14 shadow-sm"
+            >
+              {/* Order badge */}
+              <div className="absolute left-4 top-5 flex h-7 w-7 items-center justify-center rounded-full bg-sky-50 text-sm font-semibold text-sky-600">
+                {idx + 1}
               </div>
 
-              <div className="grid gap-2">
-                <Label className="text-slate-700">Sharh</Label>
-                <Textarea
-                  rows={3}
-                  value={review.text}
-                  placeholder="Sayohat haqida fikr..."
-                  onChange={(e) => update(review.id, { text: e.target.value })}
-                  className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
-                />
-              </div>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 space-y-3">
+                  <div className="grid gap-1.5">
+                    <Label className="text-xs font-medium uppercase tracking-wide text-slate-500">Ism</Label>
+                    <Input
+                      value={review.author}
+                      placeholder="Masalan: Sarvar"
+                      onChange={(e) => update(review.id, { author: e.target.value })}
+                      className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400 font-medium"
+                    />
+                  </div>
 
-              <div className="flex items-center justify-end border-t border-slate-100 pt-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive"
-                  onClick={() => remove(review.id)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" /> O'chirish
-                </Button>
+                  <div className="grid gap-1.5">
+                    <Label className="text-xs font-medium uppercase tracking-wide text-slate-500">Sharh</Label>
+                    <div className="relative">
+                      <Quote className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-300" />
+                      <Textarea
+                        rows={3}
+                        value={review.text}
+                        placeholder="Sayohat haqida fikr..."
+                        onChange={(e) => update(review.id, { text: e.target.value })}
+                        className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400 pl-9"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reorder + delete */}
+                <div className="flex shrink-0 flex-col items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={idx === 0}
+                    onClick={() => move(idx, -1)}
+                    aria-label="Yuqoriga"
+                  >
+                    <ArrowUp className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={idx === items.length - 1}
+                    onClick={() => move(idx, 1)}
+                    aria-label="Pastga"
+                  >
+                    <ArrowDown className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive"
+                    onClick={() => remove(review.id)}
+                    aria-label="O'chirish"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           ))}

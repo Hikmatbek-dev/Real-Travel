@@ -57,12 +57,19 @@ export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave:
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Galereya</h2>
-          <p className="text-slate-500">Bosh sahifadagi "Sarguzashtlaridan namunalar" — rasm va videolar.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+            Galereya
+            {items.length > 0 && (
+              <span className="ml-2 align-middle text-sm font-medium text-slate-400">({items.length} ta)</span>
+            )}
+          </h2>
+          <p className="text-slate-500">
+            Bosh sahifadagi "Sarguzashtlaridan namunalar" — shu tartibda ko'rinadi.
+          </p>
         </div>
-        <Button onClick={handleSave} disabled={isSaving}>
+        <Button onClick={handleSave} disabled={isSaving} className="shrink-0">
           {isSaving ? "Tasdiqlanmoqda..." : "Tasdiqlash"}
         </Button>
       </div>
@@ -98,9 +105,11 @@ export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave:
           ) : (
             <div className="space-y-3">
               {items.map((url, idx) => (
-                <div key={idx} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3">
-                  <span className="w-6 shrink-0 text-center text-xs font-medium text-slate-400">{idx + 1}</span>
-                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-md border bg-slate-100">
+                <div key={idx} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-50 text-xs font-semibold text-sky-600">
+                    {idx + 1}
+                  </span>
+                  <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md border bg-slate-100">
                     {url ? (
                       isVideoUrl(url) ? (
                         <video src={url} muted className="h-full w-full object-cover" />
@@ -108,6 +117,11 @@ export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave:
                         <img src={url} alt="" className="h-full w-full object-cover" />
                       )
                     ) : null}
+                    {url && (
+                      <span className="absolute bottom-0 right-0 rounded-tl-md bg-slate-900/70 px-1 text-[10px] font-medium text-white">
+                        {isVideoUrl(url) ? "Video" : "Rasm"}
+                      </span>
+                    )}
                   </div>
                   <Input
                     value={url}
@@ -116,10 +130,10 @@ export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave:
                     className="flex-1 bg-white text-slate-900 border-slate-300"
                   />
                   <div className="flex shrink-0 items-center">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => move(idx, -1)} aria-label="Yuqoriga">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" disabled={idx === 0} onClick={() => move(idx, -1)} aria-label="Yuqoriga">
                       <ArrowUp className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => move(idx, 1)} aria-label="Pastga">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" disabled={idx === items.length - 1} onClick={() => move(idx, 1)} aria-label="Pastga">
                       <ArrowDown className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => remove(idx)} aria-label="O'chirish">

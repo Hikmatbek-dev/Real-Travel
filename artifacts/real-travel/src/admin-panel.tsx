@@ -41,7 +41,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { OrderStatus, RegionKey, SharedOrder, SharedTour, useSharedTravelData } from "@/lib/shared-travel-data";
+import { OrderStatus, RegionKey, SharedOrder, SharedTour, slugify, useSharedTravelData } from "@/lib/shared-travel-data";
 import { useAdminAuth } from "@/lib/use-admin-auth";
 import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
 import { ReviewsManager } from "@/components/admin/reviews-manager";
@@ -367,7 +367,14 @@ export function AdminPanel() {
         toast({ title: "Tur yangilandi", description: "Saytda darrov ko'rinadi." });
       } else {
         const newTourId = `t${Date.now()}`;
-        await upsertTour({ ...(tourForm as SharedTour), id: newTourId });
+        // The tours table has a UNIQUE(slug) constraint, so two tours named the
+        // same ("Test", "Test") would collide. Derive a slug and bump it until
+        // it is free among the loaded tours.
+        const base = slugify(tourForm.name || "") || newTourId;
+        const taken = new Set(tours.map((t) => t.slug));
+        let slug = base;
+        for (let n = 2; taken.has(slug); n += 1) slug = `${base}-${n}`;
+        await upsertTour({ ...(tourForm as SharedTour), id: newTourId, slug });
         const d1 = new Date(); d1.setDate(d1.getDate() + 10);
         const d2 = new Date(); d2.setDate(d2.getDate() + 25);
         const d3 = new Date(); d3.setDate(d3.getDate() + 40);
