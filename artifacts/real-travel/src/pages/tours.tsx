@@ -16,6 +16,7 @@ export function ToursPage() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedTourName, setSelectedTourName] = useState<string | undefined>();
   const [selectedTourSlug, setSelectedTourSlug] = useState<string | undefined>();
+  const [selectedTourPrice, setSelectedTourPrice] = useState<number | undefined>();
   const { tours } = useSharedTravelData();
 
   const filteredTours = useMemo(() => {
@@ -27,9 +28,10 @@ export function ToursPage() {
     });
   }, [search, selectedCountry, selectedSeason, tours]);
 
-  const handleBook = (tourName: string, tourSlug?: string) => {
+  const handleBook = (tourName: string, tourSlug?: string, priceUzs?: number) => {
     setSelectedTourName(tourName);
     setSelectedTourSlug(tourSlug);
+    setSelectedTourPrice(priceUzs);
     setIsBookingOpen(true);
   };
 
@@ -150,7 +152,7 @@ export function ToursPage() {
                     </div>
                     <div className="absolute -bottom-6 right-6 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-[#2298F0] group-hover:text-white transition-colors duration-300 z-10 cursor-pointer" onClick={(e) => {
                       e.stopPropagation();
-                      handleBook(tour.name, tour.slug);
+                      handleBook(tour.name, tour.slug, tour.priceUzs);
                     }}>
                       <ArrowRight className="w-5 h-5" />
                     </div>
@@ -179,7 +181,7 @@ export function ToursPage() {
         </div>
       </div>
       </div>
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={selectedTourName} tourSlug={selectedTourSlug} />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={selectedTourName} tourSlug={selectedTourSlug} priceUzs={selectedTourPrice} />
     </div>
   );
 }

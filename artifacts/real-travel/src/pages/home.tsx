@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, Star, CheckCircle2, Phone, Search, ChevronDown } from "lucide-react";
+import { ArrowRight, Star, CheckCircle2, Phone, Search, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
 import { Input } from "@/components/ui/input";
@@ -66,8 +66,10 @@ export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [lightbox, setLightbox] = useState<string | null>(null);
   const [selectedTourName, setSelectedTourName] = useState<string | undefined>();
   const [selectedTourSlug, setSelectedTourSlug] = useState<string | undefined>();
+  const [selectedTourPrice, setSelectedTourPrice] = useState<number | undefined>();
   const { tours, homeGallery, reviews } = useSharedTravelData();
 
   // Show up to 3 tours on the home page as featured tours
@@ -92,9 +94,10 @@ export function HomePage() {
     }
   };
 
-  const handleBook = (tourName?: string, tourSlug?: string) => {
+  const handleBook = (tourName?: string, tourSlug?: string, priceUzs?: number) => {
     setSelectedTourName(tourName);
     setSelectedTourSlug(tourSlug);
+    setSelectedTourPrice(priceUzs);
     setIsBookingOpen(true);
   };
 
@@ -184,7 +187,7 @@ export function HomePage() {
                   <Button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleBook(tour.name, tour.slug);
+                      handleBook(tour.name, tour.slug, tour.priceUzs);
                     }} 
                     className="w-full bg-[#F5B400] hover:bg-[#e0a500] text-slate-900 rounded-xl py-6 font-semibold transition-all shadow-md hover:shadow-lg relative z-20 hover:-translate-y-0.5"
                   >
@@ -311,9 +314,11 @@ export function HomePage() {
         {/* Masonry — grows with however many images/videos the admin adds. */}
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-6 [column-fill:_balance]">
           {galleryItems.map((src, idx) => (
-            <div
+            <button
+              type="button"
               key={`${src}-${idx}`}
-              className="group relative mb-4 md:mb-6 break-inside-avoid overflow-hidden rounded-[2rem] shadow-lg"
+              onClick={() => setLightbox(src)}
+              className="group relative mb-4 md:mb-6 block w-full break-inside-avoid overflow-hidden rounded-[2rem] shadow-lg cursor-pointer"
             >
               {isVideoUrl(src) ? (
                 <video
@@ -334,7 +339,7 @@ export function HomePage() {
                 />
               )}
               <div className="absolute inset-0 bg-slate-900/0 transition-colors duration-500 group-hover:bg-slate-900/15" />
-            </div>
+            </button>
           ))}
         </div>
       </section>
@@ -368,7 +373,40 @@ export function HomePage() {
         </div>
       </section>
 
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={selectedTourName} tourSlug={selectedTourSlug} />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={selectedTourName} tourSlug={selectedTourSlug} priceUzs={selectedTourPrice} />
+
+      {/* GALEREYA LIGHTBOX */}
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/90 backdrop-blur-sm p-4 md:p-10 animate-in fade-in duration-200"
+        >
+          <button
+            onClick={() => setLightbox(null)}
+            aria-label="Yopish"
+            className="absolute top-5 right-5 md:top-8 md:right-8 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </button>
+          {isVideoUrl(lightbox) ? (
+            <video
+              src={lightbox}
+              controls
+              autoPlay
+              playsInline
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[90vh] max-w-[90vw] rounded-2xl shadow-2xl"
+            />
+          ) : (
+            <img
+              src={lightbox}
+              alt="Sarguzasht"
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl"
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

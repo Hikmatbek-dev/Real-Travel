@@ -10,9 +10,10 @@ interface BookingModalProps {
   onClose: () => void;
   tourName?: string;
   tourSlug?: string;
+  priceUzs?: number;
 }
 
-export function BookingModal({ isOpen, onClose, tourName, tourSlug }: BookingModalProps) {
+export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: BookingModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -132,7 +133,11 @@ export function BookingModal({ isOpen, onClose, tourName, tourSlug }: BookingMod
               disabled={isLoading || phone.length < 17}
               className="w-full h-14 rounded-2xl bg-[#F5B400] hover:bg-[#e0a500] text-slate-900 text-base font-semibold transition-colors shadow-md hover:shadow-lg disabled:opacity-70"
             >
-              {isLoading ? "To'lov sahifasiga o'tilmoqda..." : "To'lovga o'tish (150,000 UZS)"}
+              {isLoading
+                ? "To'lov sahifasiga o'tilmoqda..."
+                : priceUzs && priceUzs > 0
+                  ? `To'lovga o'tish — ${Number(priceUzs).toLocaleString("uz-UZ")} so'm`
+                  : "To'lovga o'tish"}
             </Button>
           </form>
         </div>
