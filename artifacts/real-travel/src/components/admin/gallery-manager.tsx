@@ -47,7 +47,7 @@ export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave:
     setIsSaving(true);
     try {
       await onSave(items.map((s) => s.trim()).filter(Boolean));
-      toast({ title: "Saqlandi", description: "Bosh sahifa galereyasi yangilandi." });
+      toast({ title: "Tasdiqlandi", description: "Galereya saytda chiqdi." });
     } catch {
       toast({ title: "Xatolik", description: "Galereyani saqlab bo'lmadi.", variant: "destructive" });
     } finally {
@@ -63,7 +63,7 @@ export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave:
           <p className="text-slate-500">Bosh sahifadagi "Sarguzashtlaridan namunalar" — rasm va videolar.</p>
         </div>
         <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Saqlanmoqda..." : "Galereyani saqlash"}
+          {isSaving ? "Tasdiqlanmoqda..." : "Tasdiqlash"}
         </Button>
       </div>
 

@@ -178,7 +178,7 @@ function LoginScreen({ onSignIn }: { onSignIn: (username: string, password: stri
 }
 
 export function AdminPanel() {
-  const { tours, tourDates, orders, reviews, homeGallery, saveTours, saveTourDates, saveOrders, saveReviews, saveHomeGallery, isLoaded } = useSharedTravelData();
+  const { tours, tourDates, orders, reviews, homeGallery, saveTourDates, saveOrders, saveReviews, saveHomeGallery, upsertTour, deleteTour: removeTourFromDb, isLoaded } = useSharedTravelData();
   const { user, displayName, loading: isAuthLoading, signIn, signOut } = useAdminAuth();
   const { toast } = useToast();
   const [route, setRoute] = useState<AdminRoute>(() => normalizeAdminRoute(window.location.pathname));
@@ -356,18 +356,18 @@ export function AdminPanel() {
   };
 
   const saveTour = async () => {
-    if (!tourForm.name || !tourForm.location || !tourForm.region || !tourForm.price || !tourForm.duration) {
-      toast({ title: "Validation error", description: "Please fill required tour fields.", variant: "destructive" });
+    if (!tourForm.name || !tourForm.location || !tourForm.duration || !tourForm.priceUzs) {
+      toast({ title: "Ma'lumot yetishmayapti", description: "Tur nomi, davlat, davomiyligi va narxni to'ldiring.", variant: "destructive" });
       return;
     }
 
     try {
       if (editingTour) {
-        await saveTours(tours.map((tour) => (tour.id === editingTour.id ? { ...tour, ...tourForm } as SharedTour : tour)));
-        toast({ title: "Tour updated", description: "Public catalog has been updated in Supabase global database." });
+        await upsertTour({ ...editingTour, ...tourForm } as SharedTour);
+        toast({ title: "Tur yangilandi", description: "Saytda darrov ko'rinadi." });
       } else {
         const newTourId = `t${Date.now()}`;
-        await saveTours([{ ...(tourForm as SharedTour), id: newTourId }, ...tours]);
+        await upsertTour({ ...(tourForm as SharedTour), id: newTourId });
         const d1 = new Date(); d1.setDate(d1.getDate() + 10);
         const d2 = new Date(); d2.setDate(d2.getDate() + 25);
         const d3 = new Date(); d3.setDate(d3.getDate() + 40);
@@ -388,13 +388,12 @@ export function AdminPanel() {
   const deleteTour = async () => {
     if (!tourToDelete) return;
     try {
-      await saveTours(tours.filter((tour) => tour.id !== tourToDelete));
-      await saveOrders(orders.filter((order) => order.tourId !== tourToDelete));
+      await removeTourFromDb(tourToDelete);
       setTourToDelete(null);
       setIsDeleteAlertOpen(false);
-      toast({ title: "Tour deleted", description: "Tour removed from global database." });
+      toast({ title: "Tur o'chirildi", description: "Tur bazadan olib tashlandi." });
     } catch (err: any) {
-      toast({ title: "Delete failed", description: err?.message || "Could not delete tour from Supabase.", variant: "destructive" });
+      toast({ title: "O'chirib bo'lmadi", description: err?.message || "Turni o'chirib bo'lmadi.", variant: "destructive" });
     }
   };
 

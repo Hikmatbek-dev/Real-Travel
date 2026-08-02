@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Plus, Star, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,96 +39,44 @@ export function ReviewsManager({
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-primary">Reviews</h2>
-          <p className="text-sm text-muted-foreground">
-            Shown on the home page. Unpublished reviews stay hidden from visitors.
-          </p>
+          <h2 className="text-2xl font-semibold text-slate-900">Sharhlar</h2>
+          <p className="text-sm text-slate-500">Bosh sahifada ko'rinadi. Faqat ism va sharх yozing.</p>
         </div>
         <Button onClick={add}>
-          <Plus className="mr-2 h-4 w-4" /> Add review
+          <Plus className="mr-2 h-4 w-4" /> Sharh qo'shish
         </Button>
       </div>
 
       {sorted.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground">
-          No reviews yet. The section is hidden on the site until you add one.
+        <div className="rounded-2xl border border-dashed border-slate-200 py-16 text-center text-sm text-slate-500">
+          Hali sharh yo'q. Birinchi sharhni qo'shing.
         </div>
       ) : (
         <div className="space-y-4">
           {sorted.map((review) => (
-            <div key={review.id} className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label>Name</Label>
-                  <Input value={review.author} onChange={(e) => update(review.id, { author: e.target.value })} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>City / tour</Label>
-                  <Input
-                    value={review.location}
-                    placeholder="Toshkent — Turkiya"
-                    onChange={(e) => update(review.id, { location: e.target.value })}
-                  />
-                </div>
-              </div>
-
+            <div key={review.id} className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="grid gap-2">
-                <Label>Review</Label>
-                <Textarea
-                  rows={3}
-                  value={review.text}
-                  onChange={(e) => update(review.id, { text: e.target.value })}
+                <Label className="text-slate-700">Ism</Label>
+                <Input
+                  value={review.author}
+                  placeholder="Masalan: Sarvar"
+                  onChange={(e) => update(review.id, { author: e.target.value })}
+                  className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
                 />
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label>Photo URL (optional)</Label>
-                  <Input
-                    value={review.photo}
-                    placeholder="/reviews/sarvar.jpg"
-                    onChange={(e) => update(review.id, { photo: e.target.value })}
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label>Rating</Label>
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        aria-label={`${value} stars`}
-                        onClick={() => update(review.id, { rating: value })}
-                        className="p-1"
-                      >
-                        <Star
-                          className={`h-5 w-5 ${value <= review.rating ? "fill-accent text-accent" : "text-border"}`}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              <div className="grid gap-2">
+                <Label className="text-slate-700">Sharh</Label>
+                <Textarea
+                  rows={3}
+                  value={review.text}
+                  placeholder="Sayohat haqida fikr..."
+                  onChange={(e) => update(review.id, { text: e.target.value })}
+                  className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400"
+                />
               </div>
 
-              <div className="flex items-center justify-between border-t border-border pt-3">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => update(review.id, { published: !review.published })}
-                >
-                  {review.published ? (
-                    <>
-                      <Eye className="mr-2 h-4 w-4" /> Published
-                    </>
-                  ) : (
-                    <>
-                      <EyeOff className="mr-2 h-4 w-4" /> Hidden
-                    </>
-                  )}
-                </Button>
-
+              <div className="flex items-center justify-end border-t border-slate-100 pt-3">
                 <Button
                   type="button"
                   variant="ghost"
@@ -136,7 +84,7 @@ export function ReviewsManager({
                   className="text-destructive"
                   onClick={() => remove(review.id)}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete
+                  <Trash2 className="mr-2 h-4 w-4" /> O'chirish
                 </Button>
               </div>
             </div>

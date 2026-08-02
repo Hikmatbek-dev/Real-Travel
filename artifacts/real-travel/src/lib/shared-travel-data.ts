@@ -463,6 +463,26 @@ export function useSharedTravelData() {
     }
   };
 
+  /**
+   * Adds or updates a single tour. Unlike saveTours it never deletes anything,
+   * so adding a tour cannot wipe the others just because local state was empty.
+   */
+  const upsertTour = async (tour: SharedTour) => {
+    const norm = normalizeTour(tour);
+    setTours((prev) =>
+      prev.some((t) => t.id === norm.id) ? prev.map((t) => (t.id === norm.id ? norm : t)) : [norm, ...prev],
+    );
+    const { error } = await supabase.from("tours").upsert(tourToRow(norm));
+    if (error) throw new Error(error.message);
+  };
+
+  /** Deletes one tour by id. */
+  const deleteTour = async (id: string) => {
+    setTours((prev) => prev.filter((t) => t.id !== id));
+    const { error } = await supabase.from("tours").delete().eq("id", id);
+    if (error) throw new Error(error.message);
+  };
+
   const saveOrders = async (nextOrders: SharedOrder[]) => {
     const knownIds = new Set(orders.map((order) => order.id));
     const normalized = nextOrders.map((order, index) => normalizeOrder(order, tours, index));
@@ -609,6 +629,8 @@ export function useSharedTravelData() {
     saveReviews,
     homeGallery,
     saveHomeGallery,
+    upsertTour,
+    deleteTour,
     depositPercent,
     saveTours,
     saveTourDates,
