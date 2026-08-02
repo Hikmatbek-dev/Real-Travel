@@ -39,7 +39,7 @@ const HONEYMOON_TOURS = [
 const POPULAR_COUNTRIES = [
   { name: "Xitoy", image: "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=800&q=80" },
   { name: "Misr", image: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=800&q=80" },
-  { name: "Azerbaijan", image: "https://images.unsplash.com/photo-1587315573456-6f81e605d336?auto=format&fit=crop&w=800&q=80" },
+  { name: "Azerbaijan", image: "https://images.unsplash.com/photo-1601751818941-571144562ff8?auto=format&fit=crop&w=800&q=80" },
   { name: "Turkiya", image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" },
   { name: "Indoneziya", image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80" },
   { name: "BAA", image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" },
@@ -75,7 +75,7 @@ export function HomePage() {
   const galleryImages = [
     homeGallery[0] || (tours[0]?.image || "https://images.unsplash.com/photo-1454496522488-7a8e488e8606?auto=format&fit=crop&w=800&q=80"),
     homeGallery[1] || (tours[1]?.image || "https://images.unsplash.com/photo-1511225070737-5af5ac9a690d?auto=format&fit=crop&w=800&q=80"),
-    homeGallery[2] || (tours[2]?.image || "https://images.unsplash.com/photo-1473116763249-2faaef81cc88?auto=format&fit=crop&w=800&q=80"),
+    homeGallery[2] || (tours[2]?.image || "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800&q=80"),
     homeGallery[3] || (tours[3]?.image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80")
   ];
 
