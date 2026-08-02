@@ -28,7 +28,7 @@ export function ContactPage() {
       {/* HEADER HERO */}
       <section className="relative h-[60vh] flex flex-col justify-center overflow-hidden mb-24">
         <div className="absolute inset-0 z-0 bg-slate-900">
-          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=80" alt="Aloqa" className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite] opacity-90" />
+          <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=2000&q=85" alt="Aloqa" className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite] opacity-90" />
           <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-[2px] pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent pointer-events-none" />
         </div>

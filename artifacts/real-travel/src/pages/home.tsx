@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
 import { Input } from "@/components/ui/input";
 import { useSharedTravelData } from "@/lib/shared-travel-data";
+import { isVideoUrl } from "@/lib/upload-image";
 
 const HONEYMOON_TOURS = [
   {
@@ -39,7 +40,7 @@ const HONEYMOON_TOURS = [
 const POPULAR_COUNTRIES = [
   { name: "Xitoy", image: "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=800&q=80" },
   { name: "Misr", image: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=800&q=80" },
-  { name: "Azerbaijan", image: "https://images.unsplash.com/photo-1601751818941-571144562ff8?auto=format&fit=crop&w=800&q=80" },
+  { name: "Azerbaijan", image: "https://images.unsplash.com/photo-1565008576549-57569a49371d?auto=format&fit=crop&w=800&q=80" },
   { name: "Turkiya", image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" },
   { name: "Indoneziya", image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80" },
   { name: "BAA", image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" },
@@ -66,6 +67,7 @@ export function HomePage() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [selectedTourName, setSelectedTourName] = useState<string | undefined>();
+  const [selectedTourSlug, setSelectedTourSlug] = useState<string | undefined>();
   const { tours, homeGallery, reviews } = useSharedTravelData();
 
   // Show up to 3 tours on the home page as featured tours
@@ -78,6 +80,8 @@ export function HomePage() {
     homeGallery[2] || (tours[2]?.image || "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800&q=80"),
     homeGallery[3] || (tours[3]?.image || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80")
   ];
+  // Admin-managed media (images/videos); falls back to the defaults above.
+  const galleryItems = homeGallery.length > 0 ? homeGallery : galleryImages;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,8 +92,9 @@ export function HomePage() {
     }
   };
 
-  const handleBook = (tourName?: string) => {
+  const handleBook = (tourName?: string, tourSlug?: string) => {
     setSelectedTourName(tourName);
+    setSelectedTourSlug(tourSlug);
     setIsBookingOpen(true);
   };
 
@@ -99,7 +104,7 @@ export function HomePage() {
       <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=100"
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=90"
             alt="Hero Background" 
             className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite]"
           />
@@ -179,7 +184,7 @@ export function HomePage() {
                   <Button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleBook(tour.name);
+                      handleBook(tour.name, tour.slug);
                     }} 
                     className="w-full bg-[#F5B400] hover:bg-[#e0a500] text-slate-900 rounded-xl py-6 font-semibold transition-all shadow-md hover:shadow-lg relative z-20 hover:-translate-y-0.5"
                   >
@@ -303,27 +308,34 @@ export function HomePage() {
           <p className="text-slate-500 max-w-xl mx-auto font-light">Biz bilan sayohat qilgan mijozlarimizning ajoyib damlaridan yorqin lavhalar</p>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          <div className="col-span-2 row-span-2 rounded-[2rem] overflow-hidden h-[400px] md:h-[600px] shadow-xl group cursor-pointer relative" onClick={() => tours[0] && setLocation(`/tour/${tours[0].slug}`)}>
-             <img src={galleryImages[0]} alt="Travel" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-             <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors duration-500" />
-             <div className="absolute bottom-6 left-6 text-white font-semibold text-2xl drop-shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">{tours[0]?.name}</div>
-          </div>
-          <div className="rounded-[2rem] overflow-hidden h-[192px] md:h-[288px] shadow-lg group cursor-pointer relative" onClick={() => tours[1] && setLocation(`/tour/${tours[1].slug}`)}>
-             <img src={galleryImages[1]} alt="Travel" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-             <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/30 transition-colors duration-500" />
-             <div className="absolute bottom-4 left-4 text-white font-medium drop-shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">{tours[1]?.name}</div>
-          </div>
-          <div className="rounded-[2rem] overflow-hidden h-[192px] md:h-[288px] shadow-lg group cursor-pointer relative" onClick={() => tours[2] && setLocation(`/tour/${tours[2].slug}`)}>
-             <img src={galleryImages[2]} alt="Travel" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-             <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/30 transition-colors duration-500" />
-             <div className="absolute bottom-4 left-4 text-white font-medium drop-shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">{tours[2]?.name}</div>
-          </div>
-          <div className="md:col-span-2 rounded-[2rem] overflow-hidden h-[192px] md:h-[288px] shadow-lg group cursor-pointer relative" onClick={() => tours[3] && setLocation(`/tour/${tours[3].slug}`)}>
-             <img src={galleryImages[3]} alt="Travel" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-             <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/30 transition-colors duration-500" />
-             <div className="absolute bottom-6 left-6 text-white font-semibold text-xl drop-shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">{tours[3]?.name}</div>
-          </div>
+        {/* Masonry — grows with however many images/videos the admin adds. */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-6 [column-fill:_balance]">
+          {galleryItems.map((src, idx) => (
+            <div
+              key={`${src}-${idx}`}
+              className="group relative mb-4 md:mb-6 break-inside-avoid overflow-hidden rounded-[2rem] shadow-lg"
+            >
+              {isVideoUrl(src) ? (
+                <video
+                  src={src}
+                  muted
+                  loop
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                  className="w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
+              ) : (
+                <img
+                  src={src}
+                  alt="Sarguzasht"
+                  loading="lazy"
+                  className="w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
+              )}
+              <div className="absolute inset-0 bg-slate-900/0 transition-colors duration-500 group-hover:bg-slate-900/15" />
+            </div>
+          ))}
         </div>
       </section>
 
@@ -356,7 +368,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={selectedTourName} />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={selectedTourName} tourSlug={selectedTourSlug} />
     </div>
   );
 }

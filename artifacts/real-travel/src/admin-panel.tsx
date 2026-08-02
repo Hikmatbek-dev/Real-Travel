@@ -1,6 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import { format, subMonths } from "date-fns";
 import { Link } from "wouter";
 import {
@@ -46,7 +44,6 @@ import { useToast } from "@/hooks/use-toast";
 import { OrderStatus, RegionKey, SharedOrder, SharedTour, useSharedTravelData } from "@/lib/shared-travel-data";
 import { useAdminAuth } from "@/lib/use-admin-auth";
 import { TourDatesDialog } from "@/components/admin/tour-dates-dialog";
-import { TourContentEditor } from "@/components/admin/tour-content-editor";
 import { ReviewsManager } from "@/components/admin/reviews-manager";
 import { GalleryManager } from "@/components/admin/gallery-manager";
 import { uploadTourImage } from "@/lib/upload-image";
@@ -821,56 +818,45 @@ export function AdminPanel() {
             <DialogTitle>{editingTour ? "Edit Tour" : "Add Tour"}</DialogTitle>
             <DialogDescription>Changes here are reflected in the user section too.</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <div className="grid gap-2"><Label>Name</Label><Input value={tourForm.name || ""} onChange={(e) => setTourForm({ ...tourForm, name: e.target.value })} /></div>
-            <div className="grid gap-2"><Label>Location</Label><Input value={tourForm.location || ""} onChange={(e) => setTourForm({ ...tourForm, location: e.target.value })} /></div>
-            <div className="grid gap-2 sm:grid-cols-3">
-              <div className="grid gap-2">
-                <Label>Region</Label>
-                <Select value={(tourForm.region as RegionKey) || "europe"} onValueChange={(value) => setTourForm({ ...tourForm, region: value as RegionKey })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="europe">Europe</SelectItem>
-                    <SelectItem value="asia">Asia</SelectItem>
-                    <SelectItem value="americas">Americas</SelectItem>
-                    <SelectItem value="africa">Africa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2"><Label>Price ($)</Label><Input type="number" value={tourForm.price || ""} onChange={(e) => setTourForm({ ...tourForm, price: Number(e.target.value) })} /></div>
-              <div className="grid gap-2">
-                <Label>Narx (so'm) — to'lov shu summada olinadi</Label>
-                <Input type="number" value={tourForm.priceUzs || ""} onChange={(e) => setTourForm({ ...tourForm, priceUzs: Number(e.target.value) })} />
-                {tourForm.priceUzs ? <p className="text-xs text-muted-foreground">{Number(tourForm.priceUzs).toLocaleString("uz-UZ")} so'm</p> : null}
-              </div>
-              <div className="grid gap-2"><Label>Duration</Label><Input type="number" value={tourForm.duration || ""} onChange={(e) => setTourForm({ ...tourForm, duration: Number(e.target.value) })} /></div>
+          <div className="grid gap-4 py-2 text-slate-900">
+            <div className="grid gap-1.5">
+              <Label className="text-slate-700 font-medium">Tur nomi</Label>
+              <Input value={tourForm.name || ""} onChange={(e) => setTourForm({ ...tourForm, name: e.target.value })} placeholder="Masalan: Dubay sayohati" className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400" />
             </div>
-            <div className="grid gap-2">
-              <Label>Description (Rich Text)</Label>
-              <div className="bg-white [&_.ql-editor]:min-h-[150px] [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md">
-                <ReactQuill 
-                  theme="snow" 
-                  value={tourForm.description || ""} 
-                  onChange={(val) => setTourForm({ ...tourForm, description: val })} 
-                />
+            <div className="grid gap-1.5">
+              <Label className="text-slate-700 font-medium">Davlat / Shahar</Label>
+              <Input value={tourForm.location || ""} onChange={(e) => setTourForm({ ...tourForm, location: e.target.value })} placeholder="Masalan: BAA, Dubay" className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label className="text-slate-700 font-medium">Davomiyligi (kun)</Label>
+                <Input type="number" min={1} value={tourForm.duration || ""} onChange={(e) => setTourForm({ ...tourForm, duration: Number(e.target.value) })} placeholder="7" className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400" />
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-slate-700 font-medium">Narx (so'm)</Label>
+                <Input type="number" min={0} value={tourForm.priceUzs || ""} onChange={(e) => setTourForm({ ...tourForm, priceUzs: Number(e.target.value) })} placeholder="1000000" className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400" />
+                {tourForm.priceUzs ? <p className="text-xs text-slate-500">{Number(tourForm.priceUzs).toLocaleString("uz-UZ")} so'm — to'lov shu summada olinadi</p> : null}
               </div>
             </div>
-            <div className="grid gap-2">
-              <Label>Image</Label>
-              <Input type="file" accept="image/*" disabled={isUploadingImage} onChange={handleImageUpload} />
+            <div className="grid gap-1.5">
+              <Label className="text-slate-700 font-medium">Rasm — havola (URL) yoki fayl</Label>
+              <Input value={tourForm.image || ""} onChange={(e) => setTourForm({ ...tourForm, image: e.target.value })} placeholder="https://... rasm havolasi" className="bg-white text-slate-900 border-slate-300 placeholder:text-slate-400" />
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400">yoki fayl yuklang:</span>
+                <Input type="file" accept="image/*" disabled={isUploadingImage} onChange={handleImageUpload} className="bg-white text-slate-900 border-slate-300 text-xs" />
+              </div>
               {isUploadingImage ? (
-                <p className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading...
+                <p className="flex items-center gap-2 text-xs text-slate-500">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" /> Yuklanmoqda...
                 </p>
               ) : null}
               {tourForm.image && (
-                <div className="mt-2 relative h-40 w-full rounded-md border border-border bg-muted flex items-center justify-center overflow-hidden p-2">
-                  <img src={tourForm.image} alt="Preview" className="max-h-full max-w-full object-contain" />
+                <div className="mt-1 relative h-40 w-full rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden p-2">
+                  <img src={tourForm.image} alt="Ko'rinish" className="max-h-full max-w-full object-contain" />
                 </div>
               )}
             </div>
           </div>
-          <TourContentEditor draft={tourForm} onChange={(patch) => setTourForm({ ...tourForm, ...patch })} />
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsTourModalOpen(false)}>Cancel</Button>

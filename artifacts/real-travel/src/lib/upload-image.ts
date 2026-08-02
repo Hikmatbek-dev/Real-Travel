@@ -62,3 +62,28 @@ export async function uploadTourImage(file: File): Promise<string> {
 
   return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
+
+/** True for a URL or filename that points at a video the site should <video>. */
+export function isVideoUrl(url: string): boolean {
+  return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url);
+}
+
+/**
+ * Uploads an image (resized) or a video (as-is) to Storage and returns its URL.
+ * Videos skip the canvas resize path and go up unchanged.
+ */
+export async function uploadMedia(file: File): Promise<string> {
+  if (!file.type.startsWith("video/")) return uploadTourImage(file);
+
+  const ext = file.name.split(".").pop()?.toLowerCase() || "mp4";
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+    contentType: file.type,
+    cacheControl: "31536000",
+    upsert: false
+  });
+  if (error) throw new Error(error.message);
+
+  return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+}

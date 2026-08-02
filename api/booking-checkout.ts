@@ -1,11 +1,11 @@
 import { STATE_PENDING, payxCreateInvoice, sbSelect, sbUpdate } from "./_lib";
 
-type TourRow = { id: string };
+type TourRow = { id: string; price_uzs: number | string | null };
 
 const DEFAULT_FEE_UZS = 150000;
 
-/** Booking fee in so'm, read from settings so the admin controls it, never the client. */
-async function bookingFeeUzs(): Promise<number> {
+/** Fallback booking fee in so'm, used only when a tour has no price set. */
+async function fallbackFeeUzs(): Promise<number> {
   const rows = await sbSelect<{ value: string }>("settings", "key=eq.booking_fee&select=value&limit=1");
   const parsed = Number(rows[0]?.value);
   return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : DEFAULT_FEE_UZS;
@@ -54,14 +54,20 @@ export default async function handler(req: any, res: any) {
 
     const phone = `+998 ${rawPhone.slice(-9)}`;
 
-    // Optional link to a tour, for the operator's context. Never trusted for pricing.
+    // Price comes from the tour in the database, never from the client. When a
+    // tour is chosen, we charge that tour's price; only a booking with no tour
+    // (or a tour with no price set) falls back to the flat booking fee.
     let tourId: string | null = null;
+    let feeUzs = 0;
     if (tourSlug) {
-      const tours = await sbSelect<TourRow>("tours", `slug=eq.${encodeURIComponent(tourSlug)}&select=id&limit=1`);
+      const tours = await sbSelect<TourRow>(
+        "tours",
+        `slug=eq.${encodeURIComponent(tourSlug)}&select=id,price_uzs&limit=1`,
+      );
       tourId = tours[0]?.id ?? null;
+      feeUzs = Math.round(Number(tours[0]?.price_uzs) || 0);
     }
-
-    const feeUzs = await bookingFeeUzs();
+    if (feeUzs <= 0) feeUzs = await fallbackFeeUzs();
     const orderId = `b${Date.now()}${Math.floor(Math.random() * 1000)}`;
 
     // The trigger forces order_number, status='New', payment_state=0.

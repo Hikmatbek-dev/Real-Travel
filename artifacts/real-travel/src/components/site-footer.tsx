@@ -87,8 +87,19 @@ export function SiteFooter() {
         </div>
 
         {/* COPYRIGHT */}
-        <div className="pt-8 border-t border-slate-100 flex flex-col items-center justify-center text-xs text-slate-400 font-medium">
-          <p>© 2024 REAL TRAVEL. Barcha huquqlar himoyalangan.</p>
+        <div className="pt-8 border-t border-slate-100 flex flex-col items-center justify-center gap-1 text-xs text-slate-400 font-medium text-center">
+          <p>© {new Date().getFullYear()} REAL TRAVEL. Barcha huquqlar himoyalangan.</p>
+          <p>
+            Developed by{" "}
+            <a
+              href="https://t.me/Hikmatdev"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[#2298F0] hover:underline"
+            >
+              Hikmatdev
+            </a>
+          </p>
         </div>
       </div>
     </footer>

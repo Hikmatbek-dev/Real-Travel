@@ -1,38 +1,55 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Trash2, Plus, GripVertical, Image as ImageIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { isVideoUrl, uploadMedia } from "@/lib/upload-image";
 
+/**
+ * Manages the home page "Sarguzashtlaridan namunalar" gallery. Items can be
+ * images or videos, added by uploading a file or pasting a URL, in any number
+ * and any order.
+ */
 export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave: (g: string[]) => void }) {
   const { toast } = useToast();
   const [items, setItems] = useState<string[]>(gallery);
   const [isSaving, setIsSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  const addImage = () => {
-    setItems([...items, ""]);
-  };
-
-  const removeImage = (idx: number) => {
-    setItems(items.filter((_, i) => i !== idx));
-  };
-
-  const updateImage = (idx: number, url: string) => {
+  const update = (idx: number, url: string) => setItems(items.map((v, i) => (i === idx ? url : v)));
+  const remove = (idx: number) => setItems(items.filter((_, i) => i !== idx));
+  const move = (idx: number, dir: -1 | 1) => {
     const next = [...items];
-    next[idx] = url;
+    const j = idx + dir;
+    if (j < 0 || j >= next.length) return;
+    [next[idx], next[j]] = [next[j], next[idx]];
     setItems(next);
+  };
+
+  const onFiles = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) urls.push(await uploadMedia(file));
+      setItems((prev) => [...prev, ...urls]);
+    } catch (e) {
+      toast({ title: "Yuklashda xatolik", description: (e as Error).message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const valid = items.map(s => s.trim()).filter(Boolean);
-      await onSave(valid);
-      toast({ title: "Gallery saved", description: "Home page gallery has been updated." });
-    } catch (e) {
-      toast({ title: "Error saving", description: "Could not save gallery.", variant: "destructive" });
+      await onSave(items.map((s) => s.trim()).filter(Boolean));
+      toast({ title: "Saqlandi", description: "Bosh sahifa galereyasi yangilandi." });
+    } catch {
+      toast({ title: "Xatolik", description: "Galereyani saqlab bo'lmadi.", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }
@@ -42,59 +59,75 @@ export function GalleryManager({ gallery, onSave }: { gallery: string[]; onSave:
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Gallery</h2>
-          <p className="text-muted-foreground">Manage the 4 main images shown on the Home Page ("Sarguzashtlaridan namunalar").</p>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Galereya</h2>
+          <p className="text-slate-500">Bosh sahifadagi "Sarguzashtlaridan namunalar" — rasm va videolar.</p>
         </div>
         <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Gallery"}
+          {isSaving ? "Saqlanmoqda..." : "Galereyani saqlash"}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Home Page Gallery Images</CardTitle>
-          <CardDescription>Enter valid image URLs. We recommend 4 high quality images.</CardDescription>
+          <CardTitle className="text-slate-900">Rasm / video qo'shish</CardTitle>
+          <CardDescription>Fayl yuklang (rasm yoki video, 50MB gacha) yoki havola qo'shing. Istalgancha element.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-3">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              className="hidden"
+              onChange={(e) => onFiles(e.target.files)}
+            />
+            <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading}>
+              {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+              Fayl yuklash
+            </Button>
+            <Button variant="outline" onClick={() => setItems([...items, ""])}>
+              <ImagePlus className="mr-2 h-4 w-4" /> Havola qo'shish
+            </Button>
+          </div>
+
           {items.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed rounded-lg">
-              <ImageIcon className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-              <h3 className="text-lg font-medium text-slate-900 mb-2">No images</h3>
-              <p className="text-sm text-slate-500 mb-6">You haven't added any images to the home gallery yet.</p>
-              <Button variant="outline" onClick={addImage}>
-                <Plus className="mr-2 h-4 w-4" /> Add Image
-              </Button>
+            <div className="rounded-xl border-2 border-dashed border-slate-200 py-12 text-center text-sm text-slate-500">
+              Hali element yo'q. Fayl yuklang yoki havola qo'shing.
             </div>
           ) : (
             <div className="space-y-3">
               {items.map((url, idx) => (
-                <div key={idx} className="flex gap-3 items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
-                  <GripVertical className="h-5 w-5 text-slate-400 cursor-grab active:cursor-grabbing shrink-0" />
-                  <div className="flex-1">
-                    <Label className="sr-only">Image URL {idx + 1}</Label>
-                    <Input 
-                      placeholder="https://..." 
-                      value={url} 
-                      onChange={(e) => updateImage(idx, e.target.value)} 
-                      className="bg-white"
-                    />
+                <div key={idx} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3">
+                  <span className="w-6 shrink-0 text-center text-xs font-medium text-slate-400">{idx + 1}</span>
+                  <div className="h-14 w-20 shrink-0 overflow-hidden rounded-md border bg-slate-100">
+                    {url ? (
+                      isVideoUrl(url) ? (
+                        <video src={url} muted className="h-full w-full object-cover" />
+                      ) : (
+                        <img src={url} alt="" className="h-full w-full object-cover" />
+                      )
+                    ) : null}
                   </div>
-                  {url ? (
-                    <div className="h-10 w-10 shrink-0 rounded border bg-slate-100 overflow-hidden">
-                      <img src={url} alt="" className="h-full w-full object-cover" />
-                    </div>
-                  ) : null}
-                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0" onClick={() => removeImage(idx)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <Input
+                    value={url}
+                    onChange={(e) => update(idx, e.target.value)}
+                    placeholder="https://... rasm yoki video havolasi"
+                    className="flex-1 bg-white text-slate-900 border-slate-300"
+                  />
+                  <div className="flex shrink-0 items-center">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => move(idx, -1)} aria-label="Yuqoriga">
+                      <ArrowUp className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => move(idx, 1)} aria-label="Pastga">
+                      <ArrowDown className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => remove(idx)} aria-label="O'chirish">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
-              
-              <div className="pt-4">
-                <Button variant="outline" onClick={addImage} className="w-full border-dashed">
-                  <Plus className="mr-2 h-4 w-4" /> Add Another Image
-                </Button>
-              </div>
             </div>
           )}
         </CardContent>
