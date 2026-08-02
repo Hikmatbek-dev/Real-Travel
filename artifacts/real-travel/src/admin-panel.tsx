@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { format, subMonths } from "date-fns";
 import { Link } from "wouter";
 import {
@@ -843,7 +845,16 @@ export function AdminPanel() {
               </div>
               <div className="grid gap-2"><Label>Duration</Label><Input type="number" value={tourForm.duration || ""} onChange={(e) => setTourForm({ ...tourForm, duration: Number(e.target.value) })} /></div>
             </div>
-            <div className="grid gap-2"><Label>Description</Label><Textarea value={tourForm.description || ""} onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })} className="min-h-[120px]" /></div>
+            <div className="grid gap-2">
+              <Label>Description (Rich Text)</Label>
+              <div className="bg-white [&_.ql-editor]:min-h-[150px] [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md">
+                <ReactQuill 
+                  theme="snow" 
+                  value={tourForm.description || ""} 
+                  onChange={(val) => setTourForm({ ...tourForm, description: val })} 
+                />
+              </div>
+            </div>
             <div className="grid gap-2">
               <Label>Image</Label>
               <Input type="file" accept="image/*" disabled={isUploadingImage} onChange={handleImageUpload} />

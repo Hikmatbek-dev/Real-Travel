@@ -69,7 +69,7 @@ export function TourDetailPage() {
               <div className="text-sm text-slate-500 flex items-center md:justify-end gap-1.5"><Calendar className="w-4 h-4" /> {tour.duration}</div>
             </div>
           </div>
-          <p className="text-lg text-slate-600 leading-relaxed font-light">{tour.description}</p>
+          <div className="text-lg text-slate-600 leading-relaxed font-light prose prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: tour.description }} />
         </div>
 
         {/* DETAILS GRID */}

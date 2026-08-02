@@ -115,32 +115,51 @@ export function ToursPage() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {filteredTours.map((tour) => (
-              <div 
-                key={tour.id} 
-                onClick={() => setLocation(`/tour/${tour.slug}`)}
-                className="group flex flex-col bg-white rounded-3xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_10px_40px_rgba(0,0,0,0.08)] transition-all duration-500 border border-slate-100 cursor-pointer"
+          {filteredTours.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 px-4 text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+                <MapPin className="w-10 h-10 text-slate-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2 font-heading">Turlar topilmadi</h3>
+              <p className="text-slate-500 max-w-md">Kechirasiz, siz qidirgan yo'nalish yoki mavsum bo'yicha turlar hozircha yo'q. Iltimos, boshqa parametrlarni sinab ko'ring.</p>
+              <Button 
+                onClick={() => {
+                  setSearch("");
+                  setSelectedCountry("Barchasi");
+                  setSelectedSeason("Barchasi");
+                }}
+                className="mt-6 bg-[#2298F0] hover:bg-[#1a85d6] text-white rounded-xl px-8"
               >
-                <div className="relative h-64 overflow-hidden">
-                  <img src={tour.image || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800"} alt={tour.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-slate-900 flex items-center gap-1 shadow-sm">
-                    {tour.location}
+                Barcha turlarni ko'rish
+              </Button>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+              {filteredTours.map((tour) => (
+                <div 
+                  key={tour.id} 
+                  onClick={() => setLocation(`/tour/${tour.slug}`)}
+                  className="group flex flex-col bg-white rounded-3xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_10px_40px_rgba(0,0,0,0.08)] transition-all duration-500 border border-slate-100 cursor-pointer"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img src={tour.image || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800"} alt={tour.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-slate-900 flex items-center gap-1 shadow-sm">
+                      {tour.location}
+                    </div>
+                    <div className="absolute -bottom-6 right-6 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-[#2298F0] group-hover:text-white transition-colors duration-300 z-10 cursor-pointer" onClick={(e) => {
+                      e.stopPropagation();
+                      handleBook(tour.name);
+                    }}>
+                      <ArrowRight className="w-5 h-5" />
+                    </div>
                   </div>
-                  <div className="absolute -bottom-6 right-6 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:bg-[#2298F0] group-hover:text-white transition-colors duration-300 z-10 cursor-pointer" onClick={(e) => {
-                    e.stopPropagation();
-                    handleBook(tour.name);
-                  }}>
-                    <ArrowRight className="w-5 h-5" />
-                  </div>
-                </div>
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-[#2298F0] transition-colors">{tour.name}</h3>
-                    <div className="bg-slate-50 text-slate-600 px-2 py-1 rounded text-xs font-semibold whitespace-nowrap">{tour.duration} Kun</div>
-                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-[#2298F0] transition-colors">{tour.name}</h3>
+                      <div className="bg-slate-50 text-slate-600 px-2 py-1 rounded text-xs font-semibold whitespace-nowrap">{tour.duration} Kun</div>
+                    </div>
                   
-                  <p className="text-slate-500 text-sm mb-6 leading-relaxed flex-1 line-clamp-3">{tour.description}</p>
+                  <div className="text-slate-500 text-sm mb-6 leading-relaxed flex-1 line-clamp-3 prose prose-sm prose-slate max-w-none" dangerouslySetInnerHTML={{ __html: tour.description }} />
                   
                   <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
                     <div>
@@ -154,29 +173,10 @@ export function ToursPage() {
               </div>
             ))}
           </div>
-          
-          {filteredTours.length === 0 && (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Search className="w-10 h-10 text-slate-300" />
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-2">Hech narsa topilmadi</h3>
-              <p className="text-slate-500 max-w-md mx-auto">Siz qidirayotgan yo'nalish bo'yicha turlar afsuski hozircha mavjud emas. Boshqa kalit so'zlar bilan izlab ko'ring.</p>
-              <Button 
-                variant="outline" 
-                className="mt-8 rounded-xl border-[#2298F0] text-[#2298F0] hover:bg-[#2298F0] hover:text-white"
-                onClick={() => {
-                  setSearch("");
-                  setSelectedCountry("Barchasi");
-                }}
-              >
-                Filtrlarni tozalash
-              </Button>
-            </div>
           )}
         </div>
       </div>
-    </div>
+      </div>
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={selectedTourName} />
     </div>
   );
