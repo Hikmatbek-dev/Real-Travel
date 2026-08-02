@@ -382,9 +382,11 @@ export function useSharedTravelData() {
 
       if (!active) return;
 
-      const rawTours = ((toursRes.data as TourRow[] | null) ?? []).map(rowToTour);
-      const validDbTours = rawTours.filter((t) => t.priceUzs > 50000);
-      const finalTours = validDbTours;
+      // Show every tour in the DB. An earlier price>50000 filter hid cheap /
+      // test tours from both the admin and the site, which meant the admin
+      // could neither see nor delete them, and their slugs silently collided
+      // with new tours of the same name (the tours_slug_key unique error).
+      const finalTours = ((toursRes.data as TourRow[] | null) ?? []).map(rowToTour);
 
       const rawDates = ((datesRes.data as TourDateRow[] | null) ?? []).map(rowToTourDate);
       const finalDates = rawDates;
