@@ -72,7 +72,7 @@ export default async function handler(req: any, res: any) {
 
     if (tour) {
       const prefix = lang ? `/${lang}` : "";
-      const url = `${origin}${prefix}/tours/${tour.slug}`;
+      const url = `${origin}${prefix}/tour/${tour.slug}`;
       const title = `${tour.name} — ${tour.location} | Real Travel`;
       const description = (tour.description || tour.location).slice(0, 200);
       const image = absoluteImage(origin, tour.image || "");

@@ -23,7 +23,7 @@ export default async function handler(req: any, res: any) {
     // An empty tour list still produces a valid sitemap of the static pages.
   }
 
-  const paths = ["/", "/order", ...slugs.map((slug) => `/tours/${slug}`)];
+  const paths = ["/", "/order", ...slugs.map((slug) => `/tour/${slug}`)];
 
   const urls = paths
     .map((path) => {
