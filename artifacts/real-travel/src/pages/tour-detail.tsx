@@ -175,7 +175,7 @@ export function TourDetailPage() {
         </div>
       </div>
 
-      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={tour.title} />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} tourName={tour.title} tourSlug={params?.id} />
     </div>
   );
 }

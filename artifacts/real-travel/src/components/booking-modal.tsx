@@ -9,11 +9,14 @@ interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   tourName?: string;
+  tourSlug?: string;
 }
 
-export function BookingModal({ isOpen, onClose, tourName }: BookingModalProps) {
+export function BookingModal({ isOpen, onClose, tourName, tourSlug }: BookingModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [note, setNote] = useState("");
   const [phone, setPhone] = useState("+998 ");
 
   if (!isOpen) return null;
@@ -42,24 +45,27 @@ export function BookingModal({ isOpen, onClose, tourName }: BookingModalProps) {
     setError(null);
 
     try {
-      const response = await fetch("/api/payx/api/v1/invoice", {
+      // Server records the booking and sets the amount itself — the client
+      // sends no secret and no price.
+      const response = await fetch("/api/booking-checkout", {
         method: "POST",
-        headers: {
-          "Authorization": "Bearer b52ef20c-7723-4233-9ff5-e53bac44e06a",
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          payer_reference: `order-${Date.now()}`,
-          amount: 150000 // Standard booking fee
+          customerName: name,
+          phone,
+          note: tourName ? `Tur: ${tourName}${note ? ` — ${note}` : ""}` : note,
+          tourSlug: tourSlug ?? ""
         })
       });
 
       const data = await response.json();
-      
-      if (data.pay_url) {
-        window.location.href = data.pay_url;
+
+      if (response.ok && data.checkout_url) {
+        window.location.href = data.checkout_url;
       } else {
-        setError("To'lov havolasini olishda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
+        setError(data.error === "too_many_orders"
+          ? "Bu raqamdan juda ko'p so'rov yuborildi. Birozdan so'ng urinib ko'ring yoki bizga qo'ng'iroq qiling."
+          : "To'lov havolasini olishda xatolik yuz berdi. Iltimos qayta urinib ko'ring.");
         setIsLoading(false);
       }
     } catch (err) {
@@ -101,7 +107,7 @@ export function BookingModal({ isOpen, onClose, tourName }: BookingModalProps) {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <Label className="text-xs font-medium text-slate-500 mb-1.5 block">Ism va Familiya *</Label>
-              <Input required placeholder="Ismingizni kiriting" className="rounded-xl h-12 bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm" />
+              <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ismingizni kiriting" className="rounded-xl h-12 bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm" />
             </div>
 
             <div>
@@ -118,7 +124,7 @@ export function BookingModal({ isOpen, onClose, tourName }: BookingModalProps) {
 
             <div>
               <Label className="text-xs font-medium text-slate-500 mb-1.5 block">Qo'shimcha xabar (ixtiyoriy)</Label>
-              <Textarea placeholder="Qandaydir istaklaringiz bo'lsa yozib qoldiring..." className="rounded-xl min-h-[100px] resize-none bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm py-3" />
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Qandaydir istaklaringiz bo'lsa yozib qoldiring..." className="rounded-xl min-h-[100px] resize-none bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm py-3" />
             </div>
 
             <Button

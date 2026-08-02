@@ -6,6 +6,7 @@ import { ToursPage } from "@/pages/tours";
 import { TourDetailPage } from "@/pages/tour-detail";
 import { AboutPage } from "@/pages/about";
 import { ContactPage } from "@/pages/contact";
+import { PaymentReturnPage } from "@/pages/payment-return";
 
 import { useState, useEffect } from "react";
 import { AdminPanel } from "@/admin-panel";
@@ -21,6 +22,7 @@ export function PublicSite() {
           <Route path="/tour/:id" component={TourDetailPage} />
           <Route path="/about" component={AboutPage} />
           <Route path="/contact" component={ContactPage} />
+          <Route path="/payment/return" component={PaymentReturnPage} />
           <Route>
             <div className="pt-40 pb-32 text-center flex flex-col items-center justify-center min-h-[60vh]">
               <h1 className="text-5xl font-light text-slate-900 tracking-tight mb-4">Sahifa topilmadi</h1>
