@@ -1,14 +1,5 @@
-import {
-  PAYMENT_PROVIDERS,
-  STATE_PENDING,
-  isMockMode,
-  paylovRequest,
-  sbSelect,
-  sbUpdate,
-  type PaymentProvider,
-} from "./_lib";
+import { STATE_PENDING, payxCreateInvoice, sbSelect, sbUpdate } from "./_lib";
 
-type CheckoutResponse = { order_id: number | string; checkout_url: string | null };
 type TourRow = { id: string };
 
 const DEFAULT_FEE_UZS = 150000;
@@ -38,14 +29,12 @@ async function sbInsertOrder(row: Record<string, unknown>): Promise<void> {
 }
 
 /**
- * POST /api/booking-checkout
- *   { customerName, phone, note?, tourSlug?, provider? }
+ * POST /api/booking-checkout  { customerName, phone, note?, tourSlug? }
  *
- * Records a booking request and starts a Paylov checkout for the flat booking
- * fee. The amount is read from settings on the server — the client never sends
- * it — so the previous version's client-controlled "amount: 150000" (and its
- * hardcoded bearer token) are gone. The order's payment_state is forced to 0
- * by the DB trigger, so nothing here can mark a booking paid.
+ * Records a booking request and opens a PayX invoice for the flat booking fee.
+ * The amount is read from settings on the server — the client sends no secret
+ * and no price. The DB trigger forces payment_state=0, so a client cannot mark
+ * a booking paid; that only happens when PayX's signed webhook confirms it.
  */
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
@@ -59,11 +48,9 @@ export default async function handler(req: any, res: any) {
     const rawPhone = String(body.phone ?? "").replace(/\D/g, "");
     const note = String(body.note ?? "").trim().slice(0, 500);
     const tourSlug = String(body.tourSlug ?? "").trim();
-    const provider = (String(body.provider ?? "payme").trim() as PaymentProvider);
 
     if (!customerName) return res.status(400).json({ error: "customerName is required" });
     if (rawPhone.length < 9) return res.status(400).json({ error: "A valid phone is required" });
-    if (!PAYMENT_PROVIDERS.includes(provider)) return res.status(400).json({ error: "Invalid provider" });
 
     const phone = `+998 ${rawPhone.slice(-9)}`;
 
@@ -75,8 +62,6 @@ export default async function handler(req: any, res: any) {
     }
 
     const feeUzs = await bookingFeeUzs();
-    const amountTiyin = feeUzs * 100;
-
     const orderId = `b${Date.now()}${Math.floor(Math.random() * 1000)}`;
 
     // The trigger forces order_number, status='New', payment_state=0.
@@ -90,34 +75,20 @@ export default async function handler(req: any, res: any) {
       total_amount: feeUzs,
     });
 
-    const siteUrl = (process.env.SITE_URL || `https://${req.headers.host}`).replace(/\/$/, "");
-
-    const settle = (paylovOrderId: string) =>
-      sbUpdate("orders", `id=eq.${encodeURIComponent(orderId)}`, {
-        payment_state: STATE_PENDING,
-        payment_provider: provider,
-        paylov_order_id: paylovOrderId,
-        amount_tiyin: amountTiyin,
-      });
-
-    if (isMockMode()) {
-      await settle(`mock-${orderId}`);
-      return res.status(200).json({ checkout_url: `${siteUrl}/payment/mock?order=${encodeURIComponent(orderId)}`, mock: true });
+    // payer_reference is our order id, so the webhook can find the booking.
+    const invoice = await payxCreateInvoice(orderId, feeUzs);
+    if (!invoice.ok) {
+      return res.status(502).json({ error: "PayX invoice failed", detail: invoice.error });
     }
 
-    const result = await paylovRequest<CheckoutResponse>("POST", "/integrations/checkout", {
-      external_id: orderId,
-      amount: amountTiyin,
-      payment_provider: provider,
-      return_url: `${siteUrl}/payment/return?order=${encodeURIComponent(orderId)}`,
+    await sbUpdate("orders", `id=eq.${encodeURIComponent(orderId)}`, {
+      payment_state: STATE_PENDING,
+      payment_provider: "payx",
+      paylov_order_id: invoice.uuid, // reused column: the provider's invoice reference
+      amount_tiyin: feeUzs * 100,
     });
 
-    if (!result.ok || !result.data.checkout_url) {
-      return res.status(502).json({ error: "Paylov checkout failed", detail: result.ok ? result.data : result.error });
-    }
-
-    await settle(String(result.data.order_id));
-    return res.status(200).json({ checkout_url: result.data.checkout_url });
+    return res.status(200).json({ checkout_url: invoice.payUrl });
   } catch (err) {
     return res.status(500).json({ error: (err as Error).message });
   }

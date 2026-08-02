@@ -150,6 +150,49 @@ export async function paylovOrderState(
   return { paid: order.paid === true, canceled: order.canceled === true };
 }
 
+// ---------------------------------------------------------------------------
+// PayX
+//
+// POST /api/v1/invoice with a Bearer token returns { uuid, pay_url }. The token
+// is a server-only secret (never shipped to the browser). Amount is in so'm.
+// Payment confirmation arrives later as a signed PayX webhook.
+// ---------------------------------------------------------------------------
+
+const PAYX_BASE_URL = (process.env.PAYX_BASE_URL || "https://backend.payx.uz").replace(/\/$/, "");
+
+export type PayxInvoice = { ok: true; uuid: string; payUrl: string } | { ok: false; status: number; error: string };
+
+export async function payxCreateInvoice(payerReference: string, amountUzs: number): Promise<PayxInvoice> {
+  const token = process.env.PAYX_TOKEN;
+  if (!token) return { ok: false, status: 500, error: "PAYX_TOKEN is not configured" };
+
+  let res: Response;
+  try {
+    res = await fetch(`${PAYX_BASE_URL}/api/v1/invoice`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ payer_reference: payerReference, amount: amountUzs }),
+    });
+  } catch (err) {
+    return { ok: false, status: 502, error: `PayX unreachable: ${(err as Error).message}` };
+  }
+
+  const text = await res.text();
+  if (!res.ok) return { ok: false, status: res.status, error: text.slice(0, 300) };
+
+  try {
+    const data = JSON.parse(text) as { uuid?: string; pay_url?: string };
+    if (!data.pay_url) return { ok: false, status: 502, error: `PayX returned no pay_url: ${text.slice(0, 200)}` };
+    return { ok: true, uuid: String(data.uuid ?? ""), payUrl: data.pay_url };
+  } catch {
+    return { ok: false, status: 502, error: `PayX returned non-JSON: ${text.slice(0, 200)}` };
+  }
+}
+
 /**
  * Verifies that the caller is a signed-in admin.
  *
