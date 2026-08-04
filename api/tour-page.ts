@@ -104,13 +104,21 @@ export default async function handler(req: any, res: any) {
           : {}),
       };
 
+      // Point the canonical at this tour. index.html ships a static canonical
+      // for the home page, so replace it rather than appending a second one —
+      // two conflicting canonicals would make Google ignore both.
+      const canonicalTag = `<link rel="canonical" href="${url}" />`;
+      html = /<link\s+rel="canonical"[^>]*>/i.test(html)
+        ? html.replace(/<link\s+rel="canonical"[^>]*>/i, canonicalTag)
+        : html.replace("</head>", `    ${canonicalTag}\n  </head>`);
+
       // Escape "<" so a description containing "</script>" cannot break out of
-      // the JSON-LD block and inject markup.
+      // the JSON-LD block and inject markup. This TouristTrip block sits
+      // alongside the static Organization/WebSite one — multiple blocks are fine.
       const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
       html = html.replace(
         "</head>",
-        `    <link rel="canonical" href="${url}" />\n` +
-          `    <script type="application/ld+json">${jsonLdSafe}</script>\n  </head>`,
+        `    <script type="application/ld+json">${jsonLdSafe}</script>\n  </head>`,
       );
     }
   } catch {

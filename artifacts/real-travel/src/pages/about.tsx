@@ -1,7 +1,14 @@
 import { COMPANY } from "@/lib/company";
 import { Plane } from "lucide-react";
+import { useSeo } from "@/lib/use-seo";
 
 export function AboutPage() {
+  useSeo({
+    title: "Biz haqimizda — Real Travel | O'zbekiston sayohat agentligi",
+    description:
+      "Real Travel — Xorazm, Xonqadagi ishonchli sayohat agentligi. Jamoamiz, qadriyatlarimiz va mijozlarga g'amxo'rligimiz haqida.",
+    path: "/about",
+  });
   return (
     <div className="font-sans bg-white pb-32">
       {/* HEADER HERO */}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Phone, MapPin, Instagram, Clock, Send, CheckCircle2 } from "lucide-react";
+import { useSeo } from "@/lib/use-seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +8,12 @@ import { Label } from "@/components/ui/label";
 import { COMPANY } from "@/lib/company";
 
 export function ContactPage() {
+  useSeo({
+    title: "Aloqa — Real Travel | Telefon va manzil",
+    description:
+      "Real Travel bilan bog'laning: +998 95 008 71 47. Manzil: Xorazm viloyati, Xonqa. Turlar va sayohatlar bo'yicha maslahat oling.",
+    path: "/contact",
+  });
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

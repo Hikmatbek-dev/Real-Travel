@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
+import { useSeo } from "@/lib/use-seo";
 import { Search, Calendar, ChevronDown, MapPin, Filter, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,12 @@ import { BookingModal } from "@/components/booking-modal";
 import { useSharedTravelData } from "@/lib/shared-travel-data";
 
 export function ToursPage() {
+  useSeo({
+    title: "Turlar va tur paketlari — Real Travel",
+    description:
+      "Real Travel tur paketlari: xorijiy va ichki sayohatlar, narxlari va davomiyligi bilan. O'zingizga mos turni tanlang va band qiling.",
+    path: "/tours",
+  });
   const [, setLocation] = useLocation();
   const [search, setSearch] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("Barchasi");

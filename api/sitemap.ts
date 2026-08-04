@@ -2,14 +2,13 @@ import { sbSelect } from "./_lib";
 
 type TourRow = { slug: string };
 
-const LANGUAGES = ["", "ru", "en"] as const;
-
 /**
  * GET /sitemap.xml
  *
  * Built from the database so newly published tours are discoverable without a
- * redeploy. Every URL is listed in all three languages with hreflang, which is
- * how Google learns the pages are translations rather than duplicates.
+ * redeploy. Lists only the real, single-language routes the redesigned site
+ * serves — the old /order page and the /ru,/en language variants were removed,
+ * and listing dead URLs only wastes crawl budget.
  */
 export default async function handler(req: any, res: any) {
   const host = req.headers["x-forwarded-host"] || req.headers.host;
@@ -23,28 +22,28 @@ export default async function handler(req: any, res: any) {
     // An empty tour list still produces a valid sitemap of the static pages.
   }
 
-  const paths = ["/", "/order", ...slugs.map((slug) => `/tour/${slug}`)];
+  const entries: { path: string; priority: string; changefreq: string }[] = [
+    { path: "/", priority: "1.0", changefreq: "daily" },
+    { path: "/tours", priority: "0.9", changefreq: "daily" },
+    { path: "/about", priority: "0.6", changefreq: "monthly" },
+    { path: "/contact", priority: "0.6", changefreq: "monthly" },
+    ...slugs.map((slug) => ({ path: `/tour/${slug}`, priority: "0.8", changefreq: "weekly" })),
+  ];
 
-  const urls = paths
-    .map((path) => {
-      const alternates = LANGUAGES.map((lang) => {
-        const href = `${origin}${lang ? `/${lang}` : ""}${path === "/" && lang ? "" : path}`;
-        return `      <xhtml:link rel="alternate" hreflang="${lang || "uz"}" href="${href}" />`;
-      }).join("\n");
-
-      return (
+  const urls = entries
+    .map(
+      ({ path, priority, changefreq }) =>
         `    <url>\n` +
         `      <loc>${origin}${path}</loc>\n` +
-        `${alternates}\n` +
-        `      <changefreq>weekly</changefreq>\n` +
-        `    </url>`
-      );
-    })
+        `      <changefreq>${changefreq}</changefreq>\n` +
+        `      <priority>${priority}</priority>\n` +
+        `    </url>`,
+    )
     .join("\n");
 
   const xml =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
-    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     `${urls}\n` +
     `</urlset>`;
 

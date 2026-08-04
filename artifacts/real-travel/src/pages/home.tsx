@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useSeo } from "@/lib/use-seo";
 import { ArrowRight, Star, CheckCircle2, Phone, Search, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
@@ -62,6 +63,12 @@ const FAQS = [
 ];
 
 export function HomePage() {
+  useSeo({
+    title: "Real Travel — O'zbekiston sayohat agentligi | real-travel.uz",
+    description:
+      "Real Travel (real-travel.uz) — O'zbekistondagi ishonchli sayohat agentligi. Xorijiy va ichki turlar, aviabiletlar, viza va mehmonxona xizmatlari. Tel: +998 95 008 71 47.",
+    path: "/",
+  });
   const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isBookingOpen, setIsBookingOpen] = useState(false);
