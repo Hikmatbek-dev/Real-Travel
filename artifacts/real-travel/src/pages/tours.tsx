@@ -59,7 +59,7 @@ export function ToursPage() {
       {/* HEADER HERO */}
       <section className="relative h-[60vh] flex flex-col justify-center overflow-hidden mb-16">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80" alt="Real Travel sayohat turlari" className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite]" />
+          <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=2000&q=80" alt="Real Travel sayohat turlari" fetchPriority="high" className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite]" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-slate-900/10 pointer-events-none" />
         </div>
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 md:px-12 w-full mt-20 text-center">

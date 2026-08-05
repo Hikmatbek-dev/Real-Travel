@@ -15,7 +15,7 @@ export function AboutPage() {
       {/* HEADER HERO */}
       <section className="relative h-[80vh] flex flex-col justify-center overflow-hidden mb-24">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=80" alt="Real Travel jamoasi va hikoyasi" className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite] origin-center" />
+          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=80" alt="Real Travel jamoasi va hikoyasi" fetchPriority="high" className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite] origin-center" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent pointer-events-none" />
         </div>
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-12 w-full mt-20 text-center">

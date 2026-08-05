@@ -16,7 +16,17 @@
     <meta name="author" content="Real Travel" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <meta name="theme-color" content="#2298F0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Real Travel" />
     <link rel="canonical" href="https://real-travel.uz/" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Speed: warm up the hosts that serve fonts, photos and data (better LCP) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://buuuswuscbmdufdkhyat.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="Real Travel" />
@@ -143,6 +153,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <h1>Real Travel — O'zbekiston sayohat agentligi</h1>
+      <p>
+        Real Travel (real-travel.uz) — Xorazm, Xonqadagi ishonchli sayohat agentligi. Xorijiy va ichki
+        turlar, aviabiletlar, viza va mehmonxona xizmatlari.
+      </p>
+      <p>
+        <a href="/tours">Turlar</a> · <a href="/about">Biz haqimizda</a> · <a href="/contact">Aloqa</a>
+      </p>
+      <p>Telefon: <a href="tel:+998950087147">+998 95 008 71 47</a></p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

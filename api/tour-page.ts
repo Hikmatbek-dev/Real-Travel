@@ -112,13 +112,27 @@ export default async function handler(req: any, res: any) {
         ? html.replace(/<link\s+rel="canonical"[^>]*>/i, canonicalTag)
         : html.replace("</head>", `    ${canonicalTag}\n  </head>`);
 
+      // Breadcrumb trail (Home › Tours › This tour) so Google can show a
+      // breadcrumb path in the result instead of a bare URL.
+      const breadcrumb = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Bosh sahifa", item: `${origin}/` },
+          { "@type": "ListItem", position: 2, name: "Turlar", item: `${origin}/tours` },
+          { "@type": "ListItem", position: 3, name: tour.name, item: url },
+        ],
+      };
+
       // Escape "<" so a description containing "</script>" cannot break out of
-      // the JSON-LD block and inject markup. This TouristTrip block sits
-      // alongside the static Organization/WebSite one — multiple blocks are fine.
+      // the JSON-LD block and inject markup. These blocks sit alongside the
+      // static Organization/WebSite one — multiple blocks are fine.
       const jsonLdSafe = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
+      const breadcrumbSafe = JSON.stringify(breadcrumb).replace(/</g, "\\u003c");
       html = html.replace(
         "</head>",
-        `    <script type="application/ld+json">${jsonLdSafe}</script>\n  </head>`,
+        `    <script type="application/ld+json">${jsonLdSafe}</script>\n` +
+          `    <script type="application/ld+json">${breadcrumbSafe}</script>\n  </head>`,
       );
     }
   } catch {

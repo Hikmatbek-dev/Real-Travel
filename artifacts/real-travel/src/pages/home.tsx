@@ -73,7 +73,7 @@ export function HomePage() {
           <img 
             src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=90"
             alt="Real Travel — dunyo bo'ylab premium sayohatlar" 
-            className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite]"
+            fetchPriority="high" className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite]"
           />
         </div>
 
