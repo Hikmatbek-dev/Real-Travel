@@ -72,7 +72,7 @@ export function HomePage() {
         <div className="absolute inset-0">
           <img 
             src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=90"
-            alt="Hero Background" 
+            alt="Real Travel — dunyo bo'ylab premium sayohatlar" 
             className="w-full h-full object-cover scale-105 animate-[pulse_20s_ease-in-out_infinite]"
           />
         </div>
@@ -297,7 +297,7 @@ export function HomePage() {
               ) : (
                 <img
                   src={src}
-                  alt="Sarguzasht"
+                  alt="Real Travel sayohat lavhalari"
                   loading="lazy"
                   className="w-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
@@ -364,7 +364,7 @@ export function HomePage() {
           ) : (
             <img
               src={lightbox}
-              alt="Sarguzasht"
+              alt="Real Travel sayohat lavhalari"
               onClick={(e) => e.stopPropagation()}
               className="max-h-[90vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl"
             />
