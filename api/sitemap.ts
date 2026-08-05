@@ -13,10 +13,15 @@ function xml(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
-/** Turns a stored image reference into an absolute, crawlable URL (or null). */
+/**
+ * Turns a stored image reference into an absolute, crawlable URL (or null).
+ * Videos are rejected — an image sitemap's <image:loc> must be an image, and
+ * Google just ignores video files listed there.
+ */
 function absImage(origin: string, image: string | null | undefined): string | null {
   if (!image) return null;
   const src = image.trim();
+  if (/\.(mp4|webm|mov|ogg|m4v)(\?|#|$)/i.test(src)) return null;
   if (/^https?:\/\//i.test(src)) return src;
   if (src.startsWith("/")) return `${origin}${src}`;
   return null;
