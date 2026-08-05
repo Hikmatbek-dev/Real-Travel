@@ -1,8 +1,10 @@
 import { Link } from "wouter";
-import { Instagram, MapPin, Phone, MessageCircle, Clock } from "lucide-react";
+import { Instagram, MapPin, Phone, Clock } from "lucide-react";
 import { COMPANY } from "@/lib/company";
+import { useLang } from "@/i18n/lang";
 
 export function SiteFooter() {
+  const { t, lang } = useLang();
   return (
     <footer className="bg-white border-t border-slate-100 pt-24 pb-12 font-sans">
       <div className="container mx-auto px-6 md:px-12 max-w-7xl">
@@ -18,35 +20,35 @@ export function SiteFooter() {
               />
             </Link>
             <p className="text-sm text-slate-500 max-w-xs leading-relaxed mb-8 font-light">
-              Biz dunyo bo'ylab eng yaxshi lyuks turlarni va unutilmas sayohatlarni taqdim etuvchi premium turistik agentlikmiz. Sayohatni biz bilan his qiling.
+              {t.footer.tagline}
             </p>
           </div>
 
           {/* MENUS (Span 4) */}
           <div className="md:col-span-4 flex flex-col sm:flex-row gap-12 sm:gap-24">
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">Menyu</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">{t.footer.menu}</h4>
               <ul className="space-y-4 text-sm font-medium text-slate-500">
-                <li><Link href="/" className="hover:text-[#2298F0] transition-colors">Bosh sahifa</Link></li>
-                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Turlarimiz</Link></li>
-                <li><Link href="/about" className="hover:text-[#2298F0] transition-colors">Biz haqimizda</Link></li>
-                <li><Link href="/contact" className="hover:text-[#2298F0] transition-colors">Aloqa</Link></li>
+                <li><Link href="/" className="hover:text-[#2298F0] transition-colors">{t.nav.home}</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">{t.nav.tours}</Link></li>
+                <li><Link href="/about" className="hover:text-[#2298F0] transition-colors">{t.nav.about}</Link></li>
+                <li><Link href="/contact" className="hover:text-[#2298F0] transition-colors">{t.nav.contact}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">Turlar</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">{t.footer.toursHeading}</h4>
               <ul className="space-y-4 text-sm font-medium text-slate-500">
-                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Asal oyi</Link></li>
-                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Sarguzasht</Link></li>
-                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Oila</Link></li>
-                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">Shaharlar</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">{t.footer.t1}</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">{t.footer.t2}</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">{t.footer.t3}</Link></li>
+                <li><Link href="/tours" className="hover:text-[#2298F0] transition-colors">{t.footer.t4}</Link></li>
               </ul>
             </div>
           </div>
 
           {/* CONTACT INFO (Span 4) */}
           <div className="md:col-span-4">
-            <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">Aloqa Ma'lumotlari</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-900 mb-6">{t.footer.contactHeading}</h4>
             <ul className="space-y-4 text-sm font-medium text-slate-500">
               <li>
                 <a href={`tel:${COMPANY.phone.replace(/[^\d+]/g, "")}`} className="flex items-center gap-3 hover:text-[#2298F0] transition-colors group">
@@ -61,7 +63,7 @@ export function SiteFooter() {
                   <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-[#2298F0]/10 flex items-center justify-center shrink-0 transition-colors">
                     <MapPin className="w-4 h-4 text-[#2298F0]" />
                   </div>
-                  <span className="leading-relaxed mt-1">{COMPANY.address.uz}</span>
+                  <span className="leading-relaxed mt-1">{COMPANY.address[lang]}</span>
                 </div>
               </li>
               <li>
@@ -69,7 +71,7 @@ export function SiteFooter() {
                   <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-[#2298F0]/10 flex items-center justify-center shrink-0 transition-colors">
                     <Clock className="w-4 h-4 text-[#2298F0]" />
                   </div>
-                  <span>Dush-Shan: 09:00 - 18:30</span>
+                  <span>{t.footer.hours}</span>
                 </div>
               </li>
 
@@ -88,9 +90,9 @@ export function SiteFooter() {
 
         {/* COPYRIGHT */}
         <div className="pt-8 border-t border-slate-100 flex flex-col items-center justify-center gap-1 text-xs text-slate-400 font-medium text-center">
-          <p>© {new Date().getFullYear()} REAL TRAVEL. Barcha huquqlar himoyalangan.</p>
+          <p>© {new Date().getFullYear()} REAL TRAVEL. {t.footer.rights}</p>
           <p>
-            Developed by{" "}
+            {t.footer.developedBy}{" "}
             <a
               href="https://t.me/Hikmatdev"
               target="_blank"

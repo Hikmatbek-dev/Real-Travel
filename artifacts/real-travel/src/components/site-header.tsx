@@ -4,12 +4,38 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
+import { useLang, LANGS, LANG_LABELS } from "@/i18n/lang";
 
 export function SiteHeader() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const { t, lang, setLang } = useLang();
+
+  const LangSwitch = ({ dark }: { dark?: boolean }) => (
+    <div
+      className={`inline-flex items-center rounded-full p-0.5 ${
+        dark ? "bg-slate-100" : isScrolled ? "bg-slate-100" : "bg-white/15 backdrop-blur-md"
+      }`}
+    >
+      {LANGS.map((l) => (
+        <button
+          key={l}
+          onClick={() => setLang(l)}
+          className={`px-2.5 py-1 text-xs font-semibold rounded-full transition-colors ${
+            lang === l
+              ? "bg-[#F5B400] text-slate-900"
+              : dark || isScrolled
+                ? "text-slate-500 hover:text-slate-900"
+                : "text-white/80 hover:text-white"
+          }`}
+        >
+          {LANG_LABELS[l]}
+        </button>
+      ))}
+    </div>
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,10 +47,10 @@ export function SiteHeader() {
   }, []);
 
   const navLinks = [
-    { label: "Bosh sahifa", href: "/" },
-    { label: "Turlarimiz", href: "/tours" },
-    { label: "Biz haqimizda", href: "/about" },
-    { label: "Aloqa", href: "/contact" }
+    { label: t.nav.home, href: "/" },
+    { label: t.nav.tours, href: "/tours" },
+    { label: t.nav.about, href: "/about" },
+    { label: t.nav.contact, href: "/contact" }
   ];
 
   return (
@@ -65,23 +91,27 @@ export function SiteHeader() {
             })}
           </nav>
 
-          {/* BOOK BUTTON CTA */}
-          <div className="hidden lg:block">
+          {/* LANG + BOOK BUTTON CTA */}
+          <div className="hidden lg:flex items-center gap-4">
+            <LangSwitch />
             <Button
               onClick={() => setIsBookingOpen(true)}
               className="bg-[#F5B400] hover:bg-[#e0a500] text-slate-900 rounded-full px-8 py-6 text-sm font-semibold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
             >
-              Turni Band Qilish
+              {t.nav.book}
             </Button>
           </div>
 
-          {/* MOBILE MENU TOGGLE */}
-          <button
-            className={`p-2 rounded-full lg:hidden z-50 transition-colors ${isScrolled ? "text-slate-900 hover:bg-slate-100" : "text-white hover:bg-white/10"}`}
-            onClick={() => setIsMobileMenuOpen((o) => !o)}
-          >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* MOBILE: lang + menu toggle */}
+          <div className="flex items-center gap-3 lg:hidden">
+            <LangSwitch />
+            <button
+              className={`p-2 rounded-full z-50 transition-colors ${isScrolled ? "text-slate-900 hover:bg-slate-100" : "text-white hover:bg-white/10"}`}
+              onClick={() => setIsMobileMenuOpen((o) => !o)}
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* MOBILE MENU */}
@@ -113,7 +143,7 @@ export function SiteHeader() {
                 }}
                 className="bg-[#F5B400] hover:bg-[#e0a500] text-slate-900 rounded-2xl py-7 text-base font-semibold w-full shadow-md"
               >
-                Turni Band Qilish
+                {t.nav.book}
               </Button>
             </motion.div>
           )}

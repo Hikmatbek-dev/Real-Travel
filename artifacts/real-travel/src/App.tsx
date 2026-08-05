@@ -10,10 +10,12 @@ import { PaymentReturnPage } from "@/pages/payment-return";
 
 import { useState, useEffect } from "react";
 import { AdminPanel } from "@/admin-panel";
+import { LangProvider, useLang } from "@/i18n/lang";
 
 export function PublicSite() {
+  const { t } = useLang();
   return (
-    <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans selection:bg-sky-500 selection:text-white overflow-x-hidden">
       <SiteHeader />
       <main className="flex-grow">
         <Switch>
@@ -25,10 +27,10 @@ export function PublicSite() {
           <Route path="/payment/return" component={PaymentReturnPage} />
           <Route>
             <div className="pt-40 pb-32 text-center flex flex-col items-center justify-center min-h-[60vh]">
-              <h1 className="text-5xl font-light text-slate-900 tracking-tight mb-4">Sahifa topilmadi</h1>
-              <p className="text-slate-500 mb-8 max-w-md">Kechirasiz, siz qidirayotgan sahifa mavjud emas yoki o'chirilgan.</p>
+              <h1 className="text-5xl font-light text-slate-900 tracking-tight mb-4">{t.notFound.title}</h1>
+              <p className="text-slate-500 mb-8 max-w-md">{t.notFound.text}</p>
               <a href="/" className="bg-sky-500 hover:bg-sky-600 text-white px-8 py-4 rounded-2xl text-sm font-medium transition-colors">
-                Bosh sahifaga qaytish
+                {t.notFound.back}
               </a>
             </div>
           </Route>
@@ -52,5 +54,9 @@ export default function App() {
     return <AdminPanel />;
   }
 
-  return <PublicSite />;
+  return (
+    <LangProvider>
+      <PublicSite />
+    </LangProvider>
+  );
 }

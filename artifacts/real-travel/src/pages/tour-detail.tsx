@@ -4,8 +4,10 @@ import { Check, X, MapPin, Calendar, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
 import { useSharedTravelData } from "@/lib/shared-travel-data";
+import { useLang } from "@/i18n/lang";
 
 export function TourDetailPage() {
+  const { t } = useLang();
   const [, params] = useRoute("/tour/:id");
   const [, setLocation] = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -16,9 +18,9 @@ export function TourDetailPage() {
   if (!tour) {
     return (
       <div className="bg-white min-h-screen flex flex-col items-center justify-center font-sans gap-4">
-        <h1 className="text-3xl font-light text-slate-900">Tur topilmadi</h1>
+        <h1 className="text-3xl font-light text-slate-900">{t.detail.notFound}</h1>
         <Button onClick={() => setLocation("/tours")} className="bg-[#2298F0] hover:bg-[#1a85d6] text-white">
-          Barcha turlarga qaytish
+          {t.detail.allTours}
         </Button>
       </div>
     );
@@ -45,7 +47,7 @@ export function TourDetailPage() {
           onClick={() => setLocation("/tours")}
           className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors mb-8"
         >
-          <ArrowLeft className="w-4 h-4" /> Barcha turlar
+          <ArrowLeft className="w-4 h-4" /> {t.detail.back}
         </button>
 
         {/* Title block */}
@@ -61,7 +63,7 @@ export function TourDetailPage() {
             </h1>
           </div>
           <div className="shrink-0 flex items-center gap-2 text-slate-500 text-sm">
-            <Calendar className="w-4 h-4" /> {tour.duration} kun
+            <Calendar className="w-4 h-4" /> {tour.duration} {t.detail.day}
           </div>
         </div>
 
@@ -75,7 +77,7 @@ export function TourDetailPage() {
         {/* Price card */}
         {priceLabel && (
           <div className="flex items-center justify-between rounded-2xl bg-slate-50 border border-slate-100 px-6 py-5 mb-10">
-            <span className="text-slate-500 text-sm">Narx (bir kishi uchun)</span>
+            <span className="text-slate-500 text-sm">{t.detail.perPersonPrice}</span>
             <span className="text-2xl md:text-3xl font-medium text-slate-900">{priceLabel}</span>
           </div>
         )}
@@ -93,7 +95,7 @@ export function TourDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
             {included.length > 0 && (
               <div>
-                <h2 className="text-xl font-medium text-slate-900 mb-5">Kiritilgan</h2>
+                <h2 className="text-xl font-medium text-slate-900 mb-5">{t.detail.included}</h2>
                 <ul className="space-y-3">
                   {included.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-3">
@@ -108,7 +110,7 @@ export function TourDetailPage() {
             )}
             {excluded.length > 0 && (
               <div>
-                <h2 className="text-xl font-medium text-slate-900 mb-5">Kiritilmagan</h2>
+                <h2 className="text-xl font-medium text-slate-900 mb-5">{t.detail.excluded}</h2>
                 <ul className="space-y-3">
                   {excluded.map((item, idx) => (
                     <li key={idx} className="flex items-start gap-3">
@@ -127,7 +129,7 @@ export function TourDetailPage() {
         {/* Itinerary — only if entered */}
         {itinerary.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-2xl font-light text-slate-900 mb-8 tracking-tight">Sayohat dasturi</h2>
+            <h2 className="text-2xl font-light text-slate-900 mb-8 tracking-tight">{t.detail.itinerary}</h2>
             <div className="space-y-6">
               {itinerary.map((item, idx) => (
                 <div key={idx} className="flex gap-5">
@@ -159,7 +161,7 @@ export function TourDetailPage() {
             onClick={() => setIsBookingOpen(true)}
             className="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-slate-900 px-10 py-6 rounded-2xl text-base font-semibold shadow-sm transition-all"
           >
-            Turni band qilish
+            {t.detail.book}
           </Button>
         </div>
       </div>

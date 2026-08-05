@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useSeo } from "@/lib/use-seo";
-import { ArrowRight, Star, CheckCircle2, Phone, Search, ChevronDown, X } from "lucide-react";
+import { useLang } from "@/i18n/lang";
+import { Star, Search, ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
 import { Input } from "@/components/ui/input";
@@ -63,6 +64,7 @@ const FAQS = [
 ];
 
 export function HomePage() {
+  const { t } = useLang();
   useSeo({
     title: "Real Travel — O'zbekiston sayohat agentligi | real-travel.uz",
     description:
@@ -122,16 +124,16 @@ export function HomePage() {
 
         <div className="relative z-10 w-full max-w-6xl mx-auto text-center px-6 mt-16">
           <div className="inline-flex items-center gap-2 mb-8 px-5 py-2.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white font-medium tracking-[0.2em] text-xs md:text-sm uppercase shadow-2xl">
-            <span className="w-2 h-2 rounded-full bg-[#F5B400] animate-pulse" /> Premium Tur Operator
+            <span className="w-2 h-2 rounded-full bg-[#F5B400] animate-pulse" /> {t.hero.badge}
           </div>
-          
-          <h1 className="text-6xl md:text-8xl lg:text-[140px] font-bold text-white tracking-tighter leading-[0.9] mb-8 drop-shadow-2xl font-heading">
-            Sayohatni<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] to-[#ffd043] italic pr-4">his qiling.</span>
+
+          <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[140px] font-bold text-white tracking-tighter leading-[0.9] mb-8 drop-shadow-2xl font-heading">
+            {t.hero.title1}<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] to-[#ffd043] italic pr-4">{t.hero.title2}</span>
           </h1>
-          
-          <p className="text-xl md:text-3xl text-white/90 font-light max-w-3xl mx-auto mb-16 drop-shadow-md">
-            Dunyodagi eng sara sayohatlar va unutilmas sarguzashtlar.
+
+          <p className="text-lg sm:text-xl md:text-3xl text-white/90 font-light max-w-3xl mx-auto mb-16 drop-shadow-md">
+            {t.hero.subtitle}
           </p>
 
           {/* SEARCH BAR (Premium) */}
@@ -141,7 +143,7 @@ export function HomePage() {
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Qayerga sayohat qilmoqchisiz?"
+                  placeholder={t.hero.searchPlaceholder}
                   className="w-full h-16 pl-8 rounded-full border-none bg-transparent focus-visible:ring-0 text-white placeholder:text-white/70 text-lg md:text-xl font-light"
                 />
               </div>
@@ -159,8 +161,8 @@ export function HomePage() {
       {/* ASAL OYI TURLARI */}
       <section className="py-32 px-6 max-w-7xl mx-auto font-sans">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-light text-slate-900 tracking-tight mb-4 font-heading">Eksklyuziv Turlar</h2>
-          <p className="text-slate-500 max-w-xl mx-auto">Premium toifadagi maxsus romantik va qiziqarli sayohat paketlari.</p>
+          <h2 className="text-4xl font-light text-slate-900 tracking-tight mb-4 font-heading">{t.exclusive.title}</h2>
+          <p className="text-slate-500 max-w-xl mx-auto">{t.exclusive.subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -189,7 +191,7 @@ export function HomePage() {
                     variant="outline" 
                     className="w-full text-[#2298F0] border-[#2298F0] group-hover:bg-[#2298F0] group-hover:text-white rounded-xl py-6 font-medium transition-all pointer-events-none"
                   >
-                    Tafsilotlar
+                    {t.card.details}
                   </Button>
                   <Button 
                     onClick={(e) => {
@@ -198,7 +200,7 @@ export function HomePage() {
                     }} 
                     className="w-full bg-[#F5B400] hover:bg-[#e0a500] text-slate-900 rounded-xl py-6 font-semibold transition-all shadow-md hover:shadow-lg relative z-20 hover:-translate-y-0.5"
                   >
-                    Band qilish
+                    {t.card.book}
                   </Button>
                 </div>
               </div>
@@ -206,7 +208,7 @@ export function HomePage() {
           ))}
           {featuredTours.length === 0 && (
             <div className="col-span-3 text-center py-12 text-slate-500">
-              Hozircha turlar mavjud emas. Admin paneldan qo'shing.
+              {t.card.empty}
             </div>
           )}
         </div>
@@ -218,10 +220,10 @@ export function HomePage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col items-center mb-20">
             <h2 className="text-4xl md:text-5xl font-light text-white tracking-tight mb-4 font-heading text-center">
-              Mashhur davlatlar
+              {t.popular.title}
             </h2>
             <p className="text-white/60 font-light max-w-xl text-center">
-              Eng ko'p sayohat qilinadigan va sevib tanlanadigan manzillar
+              {t.popular.subtitle}
             </p>
           </div>
           
@@ -240,12 +242,12 @@ export function HomePage() {
       </section>
 
       {/* PREMIUM XIZMATLAR */}
-      <section className="py-32 px-6 max-w-7xl mx-auto font-sans relative">
+      <section className="py-32 px-6 max-w-7xl mx-auto font-sans relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#2298F0]/5 rounded-full blur-3xl -z-10" />
         
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-4 font-heading">Nega aynan biz?</h2>
-          <p className="text-slate-500 max-w-xl mx-auto font-light">Boshqalardan ajralib turadigan o'ziga xos qulayliklarimiz</p>
+          <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-4 font-heading">{t.why.title}</h2>
+          <p className="text-slate-500 max-w-xl mx-auto font-light">{t.why.subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
@@ -256,8 +258,8 @@ export function HomePage() {
                 <path d="M10.7 12L12 8L13.3 12H10.7Z" fill="white" />
               </svg>
             </div>
-            <h3 className="text-2xl font-medium text-slate-900 mb-4 font-heading group-hover:text-[#2298F0] transition-colors">Premium Xizmat</h3>
-            <p className="text-slate-500 text-base font-light leading-relaxed">Bizning barcha turlarimiz yuqori sifat va mutlaq lyuks sharoitlarni kafolatlaydi.</p>
+            <h3 className="text-2xl font-medium text-slate-900 mb-4 font-heading group-hover:text-[#2298F0] transition-colors">{t.why.f1t}</h3>
+            <p className="text-slate-500 text-base font-light leading-relaxed">{t.why.f1d}</p>
           </div>
           <div className="flex flex-col items-center p-12 bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/40 hover:-translate-y-2 transition-transform duration-500 border border-slate-100 text-center group">
             <div className="w-20 h-20 mb-8 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-[#F5B400]/10 transition-colors duration-500">
@@ -266,8 +268,8 @@ export function HomePage() {
                 <path d="M8 12L11 15L16 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h3 className="text-2xl font-medium text-slate-900 mb-4 font-heading group-hover:text-[#2298F0] transition-colors">Ortiqcha xarajatsiz</h3>
-            <p className="text-slate-500 text-base font-light leading-relaxed">Agentlik bilan to'g'ridan-to'g'ri aloqa o'rnatib, ortiqcha vositachilarsiz sayohat qiling.</p>
+            <h3 className="text-2xl font-medium text-slate-900 mb-4 font-heading group-hover:text-[#2298F0] transition-colors">{t.why.f2t}</h3>
+            <p className="text-slate-500 text-base font-light leading-relaxed">{t.why.f2d}</p>
           </div>
           <div className="flex flex-col items-center p-12 bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/40 hover:-translate-y-2 transition-transform duration-500 border border-slate-100 text-center group">
             <div className="w-20 h-20 mb-8 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-[#F5B400]/10 transition-colors duration-500">
@@ -276,8 +278,8 @@ export function HomePage() {
                 <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h3 className="text-2xl font-medium text-slate-900 mb-4 font-heading group-hover:text-[#2298F0] transition-colors">24/7 Qo'llab-quvvatlash</h3>
-            <p className="text-slate-500 text-base font-light leading-relaxed">Sayohat davomida har qanday yordam uchun mutaxassislarimiz doim aloqada.</p>
+            <h3 className="text-2xl font-medium text-slate-900 mb-4 font-heading group-hover:text-[#2298F0] transition-colors">{t.why.f3t}</h3>
+            <p className="text-slate-500 text-base font-light leading-relaxed">{t.why.f3d}</p>
           </div>
         </div>
       </section>
@@ -285,13 +287,13 @@ export function HomePage() {
       {/* MIJOZLAR FIKRI */}
       <section className="py-32 px-6 max-w-7xl mx-auto font-sans text-center">
         <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-20 font-heading">
-          Mijozlarimiz fikri
+          {t.reviewsHome.title}
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {reviews.length === 0 && (
             <div className="col-span-3 text-center py-12 text-slate-500">
-              Hozircha mijozlar fikri mavjud emas.
+              {t.reviewsHome.empty}
             </div>
           )}
           {reviews.map((review, idx) => (
@@ -314,8 +316,8 @@ export function HomePage() {
       {/* GALEREYA */}
       <section className="py-32 px-6 max-w-7xl mx-auto font-sans text-center mb-10">
         <div className="mb-20">
-          <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-4 font-heading">REAL TRAVEL <br/> sarguzashtlaridan namunalar</h2>
-          <p className="text-slate-500 max-w-xl mx-auto font-light">Biz bilan sayohat qilgan mijozlarimizning ajoyib damlaridan yorqin lavhalar</p>
+          <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-4 font-heading">{t.galleryHome.title1} <br/> {t.galleryHome.title2}</h2>
+          <p className="text-slate-500 max-w-xl mx-auto font-light">{t.galleryHome.subtitle}</p>
         </div>
         
         {/* Masonry — grows with however many images/videos the admin adds. */}
@@ -354,12 +356,12 @@ export function HomePage() {
       {/* FAQ */}
       <section className="py-32 px-6 max-w-4xl mx-auto font-sans">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-4 font-heading">Tez-tez beriladigan savollar</h2>
-          <p className="text-slate-500 font-light text-lg">Sayohatga oid savollaringizga qisqa javoblar</p>
+          <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-4 font-heading">{t.faq.title}</h2>
+          <p className="text-slate-500 font-light text-lg">{t.faq.subtitle}</p>
         </div>
-        
+
         <div className="space-y-4">
-          {FAQS.map((faq, idx) => (
+          {t.faq.items.map((faq, idx) => (
             <div key={idx} className="bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-[#2298F0]/30 transition-colors">
               <button
                 onClick={() => setOpenFaq(openFaq === idx ? null : idx)}

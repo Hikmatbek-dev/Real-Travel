@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useLang } from "@/i18n/lang";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface BookingModalProps {
 }
 
 export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: BookingModalProps) {
+  const { t } = useLang();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -64,20 +66,18 @@ export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: 
       if (response.ok && data.checkout_url) {
         window.location.href = data.checkout_url;
       } else if (data.error === "too_many_orders") {
-        setError("Bu raqamdan juda ko'p so'rov yuborildi. Birozdan so'ng urinib ko'ring yoki bizga qo'ng'iroq qiling.");
+        setError(t.booking.errTooMany);
         setIsLoading(false);
       } else {
         // Temporary: surface the server reason so payment issues can be diagnosed.
         const reason = data?.detail
           ? (typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail))
           : data?.error;
-        setError(
-          `To'lov havolasini olishda xatolik yuz berdi.${reason ? ` [${String(reason).slice(0, 400)}]` : ""}`
-        );
+        setError(`${t.booking.errGeneric}${reason ? ` [${String(reason).slice(0, 400)}]` : ""}`);
         setIsLoading(false);
       }
     } catch (err) {
-      setError("Internet tarmog'i bilan muammo yoki server xatosi. Iltimos qayta urinib ko'ring.");
+      setError(t.booking.errNetwork);
       setIsLoading(false);
     }
   };
@@ -94,14 +94,14 @@ export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: 
 
         <div>
           <div className="mb-8">
-            <h2 className="text-2xl font-light tracking-tight text-slate-900 mb-2">Band qilish</h2>
+            <h2 className="text-2xl font-light tracking-tight text-slate-900 mb-2">{t.booking.title}</h2>
             <p className="text-sm text-slate-500">
               {tourName ? (
                 <>
-                  <span className="font-medium text-slate-900">{tourName}</span> turi bo'yicha so'rov qoldiring.
+                  <span className="font-medium text-slate-900">{tourName}</span> {t.booking.subTourSuffix}
                 </>
               ) : (
-                "Sayohat bo'yicha so'rov qoldiring."
+                t.booking.subNoTour
               )}
             </p>
           </div>
@@ -114,12 +114,12 @@ export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: 
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <Label className="text-xs font-medium text-slate-500 mb-1.5 block">Ism va Familiya *</Label>
-              <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ismingizni kiriting" className="rounded-xl h-12 bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm" />
+              <Label className="text-xs font-medium text-slate-500 mb-1.5 block">{t.booking.nameLabel}</Label>
+              <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder={t.booking.namePlaceholder} className="rounded-xl h-12 bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm" />
             </div>
 
             <div>
-              <Label className="text-xs font-medium text-slate-500 mb-1.5 block">Telefon raqam *</Label>
+              <Label className="text-xs font-medium text-slate-500 mb-1.5 block">{t.booking.phoneLabel}</Label>
               <Input 
                 required 
                 type="tel" 
@@ -131,8 +131,8 @@ export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: 
             </div>
 
             <div>
-              <Label className="text-xs font-medium text-slate-500 mb-1.5 block">Qo'shimcha xabar (ixtiyoriy)</Label>
-              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Qandaydir istaklaringiz bo'lsa yozib qoldiring..." className="rounded-xl min-h-[100px] resize-none bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm py-3" />
+              <Label className="text-xs font-medium text-slate-500 mb-1.5 block">{t.booking.noteLabel}</Label>
+              <Textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={t.booking.notePlaceholder} className="rounded-xl min-h-[100px] resize-none bg-slate-50 border-transparent focus:bg-white focus:border-[#2298F0] focus:ring-1 focus:ring-[#2298F0] transition-all text-sm py-3" />
             </div>
 
             <Button
@@ -141,10 +141,10 @@ export function BookingModal({ isOpen, onClose, tourName, tourSlug, priceUzs }: 
               className="w-full h-14 rounded-2xl bg-[#F5B400] hover:bg-[#e0a500] text-slate-900 text-base font-semibold transition-colors shadow-md hover:shadow-lg disabled:opacity-70"
             >
               {isLoading
-                ? "To'lov sahifasiga o'tilmoqda..."
+                ? t.booking.processing
                 : priceUzs && priceUzs > 0
-                  ? `To'lovga o'tish — ${Number(priceUzs).toLocaleString("uz-UZ")} so'm`
-                  : "To'lovga o'tish"}
+                  ? `${t.booking.payGo} — ${Number(priceUzs).toLocaleString("uz-UZ")} ${t.currency}`
+                  : t.booking.payGo}
             </Button>
           </form>
         </div>
