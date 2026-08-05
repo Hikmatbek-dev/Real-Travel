@@ -9,36 +9,6 @@ import { Input } from "@/components/ui/input";
 import { useSharedTravelData } from "@/lib/shared-travel-data";
 import { isVideoUrl } from "@/lib/upload-image";
 
-const HONEYMOON_TOURS = [
-  {
-    id: "maldives-honeymoon",
-    title: "Maldiv Orollari",
-    country: "Maldiv",
-    duration: "7 Kun",
-    price: "24,000,000 UZS",
-    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=800&q=80",
-    description: "Ocean Pool Villa, 5 yulduzli xizmat va to'liq pansion."
-  },
-  {
-    id: "bali-romance",
-    title: "Bali Romantikasi",
-    country: "Indoneziya",
-    duration: "8 Kun",
-    price: "18,500,000 UZS",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80",
-    description: "Ubud o'rmonlari va muqaddas ibodatxonalar."
-  },
-  {
-    id: "paris-love",
-    title: "Parij Oqshomlari",
-    country: "Fransiya",
-    duration: "5 Kun",
-    price: "21,000,000 UZS",
-    image: "https://images.unsplash.com/photo-1502602881460-59df98cb332a?auto=format&fit=crop&w=800&q=80",
-    description: "Eyfel minorasi manzarasidagi lyuks mehmonxona."
-  }
-];
-
 const POPULAR_COUNTRIES = [
   { name: "Xitoy", image: "https://images.unsplash.com/photo-1547981609-4b6bfe67ca0b?auto=format&fit=crop&w=800&q=80" },
   { name: "Misr", image: "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=800&q=80" },
@@ -46,21 +16,6 @@ const POPULAR_COUNTRIES = [
   { name: "Turkiya", image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80" },
   { name: "Indoneziya", image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80" },
   { name: "BAA", image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" },
-];
-
-const FAQS = [
-  {
-    q: "Turlarni qanday qilib band qilsam bo'ladi?",
-    a: "Saytdagi 'Turni band qilish' tugmasini bosing va o'z ma'lumotlaringizni qoldiring. Menejerlarimiz tez orada siz bilan bog'lanishadi."
-  },
-  {
-    q: "Premium turlarga nimalar kiradi?",
-    a: "Barcha premium turlarimiz 5 yulduzli mehmonxonalar, shaxsiy transferlar va eksklyuziv ekskursiyalarni o'z ichiga oladi."
-  },
-  {
-    q: "To'lov qanday amalga oshiriladi?",
-    a: "To'lov ofisimizda shartnoma asosida naqd yoki pul o'tkazish yo'li bilan amalga oshiriladi."
-  }
 ];
 
 export function HomePage() {

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BookingModal } from "@/components/booking-modal";
 import { useSharedTravelData } from "@/lib/shared-travel-data";
 import { useLang } from "@/i18n/lang";
+import { useSeo } from "@/lib/use-seo";
 
 export function TourDetailPage() {
   const { t } = useLang();
@@ -13,7 +14,18 @@ export function TourDetailPage() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const { tours } = useSharedTravelData();
-  const tour = tours.find((t) => t.slug === params?.id);
+  const tour = tours.find((item) => item.slug === params?.id);
+
+  // Per-tour browser title/description on client navigation (crawlers get the
+  // same from the SSR in api/tour-page.ts). Called before the early return so
+  // hook order stays stable.
+  useSeo({
+    title: tour ? `${tour.name} — ${tour.location} | Real Travel` : "Real Travel",
+    description: tour
+      ? (tour.description || tour.location).replace(/<[^>]*>/g, "").slice(0, 160)
+      : undefined,
+    path: tour ? `/tour/${tour.slug}` : undefined,
+  });
 
   if (!tour) {
     return (
